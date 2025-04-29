@@ -1,7 +1,17 @@
+import { SignIn, SignUp } from "./pages/Auth/index";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <>
-      <h1 className="bg-red-500">hello good afternnon</h1>
+      <Router>
+        <Routes>
+          <Route path="/" element={<SignUp />} />
+          <Route path="/login" element={<SignIn />} />
+        </Routes>
+      </Router>
+      <ToastContainer />
     </>
   );
 }
