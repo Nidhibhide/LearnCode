@@ -2,12 +2,12 @@ import Joi from "joi";
 
 const userRegisterValidation = Joi.object({
   name: Joi.string()
-    .pattern(/^[a-zA-Z]+$/)
+    .pattern(/^[a-zA-Z\s]+$/)
     .min(3)
     .max(50)
     .required()
     .messages({
-      "string.pattern.base": "Only alphabets are allowed",
+      "string.pattern.base": "Only alphabets and spaces are allowed",
       "string.min": "Name must be at least 3 characters",
       "string.max": "Name should not exceed 50 characters",
       "any.required": "Name is required",

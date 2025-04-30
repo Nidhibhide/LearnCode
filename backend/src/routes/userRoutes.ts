@@ -1,7 +1,7 @@
 import {
   registerUser,
 //   verifyUser,
-//   login,
+  login,
 //   getMe,
 //   logOut,
 //   changePassword,
@@ -9,7 +9,7 @@ import {
 //   resetPass,
 } from "../controllers/user";
 import express from "express";
-import IsLoggeedIn from "../middlewares/Auth";
+// import IsLoggeedIn from "../middlewares/Auth";
 
 import {
   userRegisterMid,
@@ -21,7 +21,7 @@ const router = express.Router();
 router.post("/register", userRegisterMid, registerUser);
 // router.get("/verify/:token", verifyUser);
 
-// router.post("/login", LoginValidtorMid, login);
+router.post("/login", LoginValidtorMid, login);
 // router.get("/getMe", IsLoggeedIn, getMe);
 // router.get("/logout", IsLoggeedIn, logOut);
 // router.post("/changePass", IsLoggeedIn, changePassword);

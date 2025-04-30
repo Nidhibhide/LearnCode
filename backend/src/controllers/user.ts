@@ -54,48 +54,48 @@ const registerUser = async (req: Request, res: Response) => {
 //   }
 // };
 
-// const login = async (req, res) => {
-//   //install jswt token and cookie
-//   //generate cookie and set in cookie
-//   try {
-//     const { password, email } = req.body;
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return responseFun(res, 400, "User not found", false);
-//     }
+const login = async (req: Request, res: Response) => {
+  try {
+    const { password, email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return responseFun(res, 404, "User not found", false);
+    }
 
-//     //compare password
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     console.log(isMatch);
-//     if (!isMatch) {
-//       return responseFun(res, 400, "Incorrect password", false);
-//     }
-//     const token = jwt.sign(
-//       { id: user._id, role: user.role },
-//       process.env.JWT_SECRET_KEY,
-//       {
-//         expiresIn: "1h",
-//       }
-//     );
+    //compare password
+    const isMatch = await bcrypt.compare(password, user.password);
 
-//     //set token in cookie
-//     const cookieOptions = {
-//       httpOnly: true,
-//       secure: true,
-//       maxAge: 60 * 60 * 1000,
-//     };
-//     res.cookie("token", token, cookieOptions);
+    if (!isMatch) {
+      return responseFun(res, 401, "Incorrect password", false);
+    }
+    const token = jwt.sign(
+      { id: user._id, name: user.name },
+      process.env.JWT_SECRET_KEY as string,
+      {
+        expiresIn: "1h",
+      }
+    );
 
-//     return responseFun(
-//       res,
-//       200,
-//       "Login successful",
-//       true,
-//       user.isVerified,
-//       token
-//     );
-//   } catch (error) {}
-// };
+    //set token in cookie
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      maxAge: 60 * 60 * 1000,
+    };
+    res.cookie("token", token, cookieOptions);
+
+    return responseFun(
+      res,
+      200,
+      "Login successful",
+      true,
+      user.isVerified,
+      token
+    );
+  } catch (error) {
+    responseFun(res, 500, "unexpected error occurred while sign in", false);
+  }
+};
 
 // const getMe = async (req, res) => {
 //   try {
@@ -211,7 +211,7 @@ const registerUser = async (req: Request, res: Response) => {
 export {
   registerUser,
   // verifyUser,
-  // login,
+  login,
   // getMe,
   // logOut,
   // changePassword,
