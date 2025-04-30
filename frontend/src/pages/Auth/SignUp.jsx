@@ -34,7 +34,7 @@ const SignUp = () => {
   // validation schema
   const validationSchema = Yup.object({
     name: Yup.string()
-      .matches(/^[a-zA-Z]+$/, "Only alphabets are allowed")
+      .matches(/^[a-zA-Z\s]+$/, "Only alphabets and spaces are allowed")
       .min(3, "Name must be at least 3 characters")
       .max(50, "Name should not exceed 50 characters")
       .required("Name is required"),
@@ -118,7 +118,7 @@ const SignUp = () => {
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2"
+                  className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2   hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
                   Create Account
                 </button>
