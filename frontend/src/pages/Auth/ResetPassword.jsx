@@ -1,0 +1,132 @@
+import React,{useState} from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { resetPass } from "../../api/user";
+import { toast } from "react-toastify";
+import InputField from "../../components/InputField";
+import { codingImage } from "../../images/index";
+
+const ResetPassword = () => {
+  const statusMessages = {
+    200: "Password reset successfully",
+    404: "User not found",
+    500: "Unexpected error occurred",
+  };
+  const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const status = searchParams.get("status");
+  const response_msg = searchParams.get("message");
+  const email = searchParams.get("email");
+
+  const handleResetPassword = async (values, { resetForm }) => {
+    try {
+      if (loading) return;
+      setLoading(true);
+      const data = {
+        password: values.password,
+        email,
+      };
+console.log(data);
+      const response = await resetPass(data);
+
+      const message = statusMessages[response?.status];
+
+      if (response?.status === 200) {
+        toast.success(message);
+        setTimeout(() => navigate("/login"), 3000);
+      } else if (message) {
+        toast.error(message);
+      }
+      resetForm();
+    } catch (err) {
+      alert(err.message || "Something went wrong. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const validationSchema = Yup.object({
+    password: Yup.string()
+      .matches(/^\d+$/, "Password must contain digits only")
+      .min(5, "Password must be at least 5 characters")
+      .max(10, "Password must not exceed 10 characters")
+      .required("Password is required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Confirm Password is required"),
+  });
+
+  return (
+    <div className="h-screen flex bg-slate-200">
+      <div className="lg:w-[50%] w-full rounded-tl-2xl rounded-bl-2xl px-4 md:px-12 bg-white">
+        <div className="h-full flex flex-col justify-center">
+          <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-8">
+            LearnCode
+          </p>
+          <p className="font-semibold text-2xl md:text-3xl mb-14">
+            Please enter and confirm your new password to reset your account.
+          </p>
+
+          {status === "fail" ? (
+            <>
+              <p className="text-2xl text-red-600 font-semibold mb-4">
+                {response_msg}
+              </p>
+              <button
+                type="button"
+                className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+                onClick={() => navigate("/forgotPass")}
+              >
+                Send Again
+              </button>
+            </>
+          ) : (
+            <Formik
+              initialValues={{ password: "", confirmPassword: "" }}
+              validationSchema={validationSchema}
+              onSubmit={handleResetPassword}
+            >
+              {({ handleSubmit }) => (
+                <>
+                  <div className="flex flex-col space-y-4 mb-12">
+                    <InputField
+                      label="New Password"
+                      name="password"
+                      type="password"
+                      placeholder="Enter new password"
+                    />
+                    <InputField
+                      label="Confirm Password"
+                      name="confirmPassword"
+                      type="password"
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+                  >
+                    {loading ? "Loading..." : "Reset Password"}
+                  </button>
+                </>
+              )}
+            </Formik>
+          )}
+        </div>
+      </div>
+
+      <div className="w-[50%] lg:block hidden">
+        <img
+          src={codingImage}
+          className="h-full w-full object-fill rounded-tr-2xl rounded-br-2xl"
+          alt="Coding"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default ResetPassword;

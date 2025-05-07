@@ -24,6 +24,10 @@ const userRegisterValidation = Joi.object({
     "string.pattern.base": "Password must contain digits only",
     "any.required": "Password is required",
   }),
+  role: Joi.string().valid("user", "admin").required().messages({
+    "any.only": "Role must be either 'user' or 'admin'",
+    "any.required": "Role is required",
+  }),
 });
 
 const LoginValidation = Joi.object({
@@ -39,4 +43,25 @@ const LoginValidation = Joi.object({
   }),
 });
 
-export { userRegisterValidation, LoginValidation };
+const EmailValidation = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Invalid email format",
+    "any.required": "Email is required",
+  }),
+});
+
+// const ResetPassValidation = Joi.object({
+//   password: Joi.string().min(5).max(10).pattern(/^\d+$/).required().messages({
+//     "string.min": "Password must be at least 5 characters",
+//     "string.max": "Password should not exceed 10 characters",
+//     "string.pattern.base": "Password must contain digits only",
+//     "any.required": "Password is required",
+//   }),
+// });
+
+export {
+  userRegisterValidation,
+  LoginValidation,
+  EmailValidation,
+  // ResetPassValidation,
+};

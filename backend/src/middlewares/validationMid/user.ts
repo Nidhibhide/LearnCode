@@ -1,4 +1,9 @@
-import { userRegisterValidation, LoginValidation } from "../../validation/user";
+import {
+  userRegisterValidation,
+  LoginValidation,
+  EmailValidation,
+  // ResetPassValidation,
+} from "../../validation/user";
 import { Request, Response, NextFunction } from "express";
 import responseFun from "../../utils/responseFun";
 
@@ -21,5 +26,31 @@ const LoginValidtorMid = (req: Request, res: Response, next: NextFunction) => {
   }
   next();
 };
+const EmailValidtorMid = (req: Request, res: Response, next: NextFunction) => {
+  const { error } = EmailValidation.validate(req.body);
 
-export { userRegisterMid, LoginValidtorMid };
+  if (error) {
+    const message = error.details[0].message;
+    return responseFun(res, 400, message, false);
+  }
+  next();
+};
+// const ResetPassValidtorMid = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { error } = ResetPassValidation.validate(req.body);
+
+//   if (error) {
+//     const message = error.details[0].message;
+//     return responseFun(res, 400, message, false);
+//   }
+//   next();
+// };
+export {
+  userRegisterMid,
+  LoginValidtorMid,
+  EmailValidtorMid,
+  // ResetPassValidtorMid,
+};

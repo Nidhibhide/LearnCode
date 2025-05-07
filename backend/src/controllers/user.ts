@@ -1,11 +1,20 @@
 import User from "../models/user";
+import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import responseFun from "../utils/responseFun";
+import expiretime from "../utils/expireTimeFun";
 import { Request, Response } from "express";
+import {
+  mailOptionsForVResetPass,
+  mailOptionsForVerify,
+  transporterFun,
+} from "../utils/sendEmailFun";
+import expireTime from "../utils/expireTimeFun";
 
 const registerUser = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -16,6 +25,7 @@ const registerUser = async (req: Request, res: Response) => {
       name,
       email,
       password,
+      role,
     });
     if (!user) {
       return responseFun(res, 500, "Failed to create user", false);
@@ -24,35 +34,118 @@ const registerUser = async (req: Request, res: Response) => {
     const hashedPass = await bcrypt.hash(password, 10);
     user.password = hashedPass;
 
+    const time = expiretime();
+    user.expireTime = time;
+
+    const token = crypto.randomBytes(32).toString("hex");
+    user.verificationToken = token;
+
     await user.save();
 
-    responseFun(res, 201, "New user created ", true);
+    await nodemailer.createTestAccount();
+
+    const transporter = transporterFun();
+
+    await transporter.sendMail(mailOptionsForVerify(email, token));
+
+    responseFun(
+      res,
+      201,
+      `User registered successfully. Verification email has been sent to ${email}  `,
+      true
+    );
   } catch (error) {
     responseFun(res, 500, "unexpected error occurred while sign up", false);
   }
 };
 
-// const verifyUser = async (req, res) => {
-//   try {
-//     const { token } = req.params;
+const resendVerificationEmail = async (req: Request, res: Response) => {
+  const { email } = req.body;
 
-//     if (!token) {
-//       return responseFun(res, 400, "Token not found", false);
-//     }
+  try {
+    const user = await User.findOne({ email });
 
-//     const user = await User.findOne({ verificationToken: token });
-//     if (!user) {
-//       return responseFun(res, 400, "User not found", false);
-//     }
-//     user.isVerified = true;
-//     user.verificationToken = undefined;
-//     await user.save();
+    if (!user) {
+      return responseFun(res, 404, "User not found", false);
+    }
 
-//     responseFun(res, 200, "User verified successfully", true);
-//   } catch (error) {
-//     responseFun(res, 400, "User not verified", false);
-//   }
-// };
+    // Optional: Check if already verified
+    if (user.isVerified === true) {
+      return responseFun(res, 400, "User already verified", false);
+    }
+
+    // Generate new verification token
+    const token = crypto.randomBytes(32).toString("hex");
+    const newExpireTime = expiretime();
+
+    user.verificationToken = token;
+    user.expireTime = newExpireTime;
+
+    await user.save();
+
+    await nodemailer.createTestAccount();
+    const transporter = transporterFun();
+
+    await transporter.sendMail(mailOptionsForVerify(email, token));
+
+    return responseFun(
+      res,
+      200,
+      `Verification email has been resent to ${email}`,
+      true
+    );
+  } catch (error) {
+    return responseFun(
+      res,
+      500,
+      "Error while resending verification email",
+      false
+    );
+  }
+};
+
+const verifyUser = async (req: Request, res: Response) => {
+  try {
+    const successURL = process.env.VERIFY_SUCCESS_URL;
+    const failURL = process.env.VERIFY_FAILURE_URL;
+    const { token } = req.params;
+
+    if (!token) {
+      return res.redirect(
+        `${failURL}?status=fail&message=Token not provided!!`
+      );
+    }
+
+    const user = await User.findOne({ verificationToken: token });
+
+    if (user?.isVerified) {
+      return res.redirect(
+        `${successURL}?status=success&message=User already verified!!`
+      );
+    }
+
+    if (!user?.expireTime || new Date() > user.expireTime) {
+      return res.redirect(
+        `${failURL}?status=fail&message=Verification link expired!!`
+      );
+    }
+
+    // Mark user as verified
+    user.isVerified = true;
+    // user.verificationToken = undefined;
+    await user.save();
+
+    return res.redirect(
+      `${successURL}?status=success&message=User verification Done!!`
+    );
+  } catch (error) {
+    console.error("Verification error:", error);
+    return res.status(500).json({
+      status: "fail",
+      message: "Internal Server Error",
+    });
+  }
+};
 
 const login = async (req: Request, res: Response) => {
   try {
@@ -61,7 +154,9 @@ const login = async (req: Request, res: Response) => {
     if (!user) {
       return responseFun(res, 404, "User not found", false);
     }
-
+    if (!user.isVerified) {
+      return responseFun(res, 403, "User is not verified", false);
+    }
     //compare password
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -145,76 +240,104 @@ const login = async (req: Request, res: Response) => {
 //   } catch (error) {}
 // };
 
-// const forgotPass = async (req, res) => {
-//   try {
-//     console.log("entered in api");
-//     const { email } = req.body;
+const forgotPass = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
 
-//     if (!email) {
-//       return responseFun(res, 400, "Email is required", false);
-//     }
-//     const user = await UserModel.findOne({ email });
-//     if (!user) {
-//       return responseFun(res, 400, "User not found", false);
-//     }
+    const user = await User.findOne({ email });
 
-//     const token = crypto.randomBytes(32).toString("hex");
-//     console.log(token);
-//     user.resetPasswordToken = token;
-//     const time = expireTime();
-//     user.resetPasswordExpire = time;
-//     await user.save();
+    if (!user) {
+      return responseFun(res, 400, "User not found", false);
+    }
 
-//     await nodemailer.createTestAccount();
+    const token = crypto.randomBytes(32).toString("hex");
 
-//     const transporter = transporterFun();
+    user.resetPasswordToken = token;
+    user.resetPasswordExpire = expireTime();
+    await user.save();
 
-//     await transporter.sendMail(mailOptionsForreset(email, token));
+    await nodemailer.createTestAccount();
 
-//     return responseFun(
-//       res,
-//       200,
-//       "Verification link send to ur email-ID click to reset Password",
-//       true
-//     );
-//   } catch (error) {}
-// };
+    const transporter = transporterFun();
 
-// const resetPass = async (req, res) => {
-//   const token = req.params.id;
-//   const { password } = req.body;
+    const mailOptions = mailOptionsForVResetPass(email, token);
 
-//   if (!token) {
-//     return responseFun(res, 400, "Token not found", false);
-//   }
-//   const user = await UserModel.findOne({
-//     resetPasswordToken: token,
-//   });
-//   if (!user) {
-//     return responseFun(res, 400, "User not found", false);
-//   }
-//   const expireTime = user.resetPasswordExpire;
-//   const currentTime = new Date();
+    await transporter.sendMail(mailOptions);
 
-//   if (currentTime > expireTime) {
-//     return responseFun(res, 400, "reset token is expired", false);
-//   }
+    return responseFun(
+      res,
+      200,
+      `Verification link sent to ${email}  Click it to reset your password.`,
+      true
+    );
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    return responseFun(
+      res,
+      500,
+      "Something went wrong. Please try again later.",
+      false
+    );
+  }
+};
 
-//   user.resetPasswordToken = undefined;
-//   await user.save();
+const resetPass = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const RESET_URL = process.env.RESET_URL;
 
-//   const hashedPass = await bcrypt.hash(password, 10);
-//   user.password = hashedPass;
-//   await user.save();
-//   responseFun(res, 201, "Password reset sucessfully", true);
-// };
+  // const { newPass } = req.body;
+
+  if (!token) {
+    return res.redirect(
+      `${RESET_URL}?status=fail&message=Token not provided!!`
+    );
+  }
+  const user = await User.findOne({
+    resetPasswordToken: token,
+  });
+  if (!user || !user.resetPasswordExpire) {
+    return res.redirect(`${RESET_URL}?status=fail&message=User not found!!`);
+  }
+  const expireTime = user?.resetPasswordExpire;
+  const currentTime = new Date();
+
+  if (currentTime > expireTime) {
+    return res.redirect(
+      `${RESET_URL}?status=fail&message=Reset link expired!!`
+    );
+  }
+
+  return res.redirect(`${RESET_URL}?status=success&email=${user?.email}`);
+};
+
+const changePassword = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return responseFun(res, 404, "User not found", false);
+    }
+
+    const hashedPass = await bcrypt.hash(password, 10);
+    user.password = hashedPass;
+
+    await user.save();
+
+    return responseFun(res, 200, "Password reset successfully", true);
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    return responseFun(res, 500, "Server error", false);
+  }
+};
 export {
   registerUser,
-  // verifyUser,
+  verifyUser,
+  resendVerificationEmail,
   login,
   // getMe,
   // logOut,
-  // changePassword,
-  // forgotPass,
-  // resetPass,
+  changePassword,
+  forgotPass,
+  resetPass,
 };

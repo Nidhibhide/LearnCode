@@ -1,33 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Formik, Field, ErrorMessage } from "formik";
+
+import { Formik } from "formik";
 import { googleIcon, codingImage } from "../../images/index";
 import { signup } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
+import InputField from "../../components/InputField";
 
 const SignUp = () => {
   const statusMessages = {
     409: "User already exists",
-    201: "Signup successful",
-    500: "Failed to SignUp User",
+    201: "User registered successfully. Verification email has been sent to ",
+    500: "Unexpected error occurred while sign up",
   };
 
+  const [loading, setLoading] = useState(false);
   // handle sign up
   const handleSignUp = async (values, { resetForm }) => {
     try {
+      if (loading) return;
+      setLoading(true);
       const response = await signup(values);
 
       const message = statusMessages[response?.status];
 
       if (response?.status === 201) {
-        toast.success(message);
+        toast.success(message + values?.email);
       } else if (message) {
         toast.error(message);
       }
       resetForm();
     } catch (err) {
       alert(err.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,6 +53,9 @@ const SignUp = () => {
       .min(5, "Password must be at least 5 characters")
       .max(10, "Password must not exceed 10 characters")
       .required("Password is required"),
+    role: Yup.string()
+      .oneOf(["user", "admin"], "Invalid role")
+      .required("Role is required"),
   });
 
   return (
@@ -64,7 +74,7 @@ const SignUp = () => {
           </button>
 
           <Formik
-            initialValues={{ name: "", email: "", password: "" }}
+            initialValues={{ name: "", email: "", password: "", role: "" }}
             validationSchema={validationSchema}
             onSubmit={handleSignUp}
           >
@@ -72,55 +82,45 @@ const SignUp = () => {
               <>
                 <div className="flex flex-col space-y-4 mb-12">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-base font-medium">Name</p>
-                    <Field
-                      type="text"
+                    <InputField
+                      label="Name"
                       name="name"
-                      className="py-3 px-4 rounded-lg border border-gray-300"
+                      type="text"
                       placeholder="Enter your name"
                     />
-                    <ErrorMessage
-                      name="name"
-                      component="p"
-                      className="text-sm text-red-500"
-                    />
                   </div>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-base font-medium">Email</p>
-                    <Field
+                    <InputField
+                      label="Email"
+                      name="email"
                       type="email"
-                      name="email"
-                      className="py-3 px-4 rounded-lg border border-gray-300"
-                      placeholder="Enter your email"
-                    />
-                    <ErrorMessage
-                      name="email"
-                      component="p"
-                      className="text-sm text-red-500"
+                      placeholder="Enter your Email"
                     />
                   </div>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-base font-medium">Password</p>
-                    <Field
-                      type="password"
+                    <InputField
+                      label="Password"
                       name="password"
-                      className="py-3 px-4 rounded-lg border border-gray-300"
+                      type="password"
                       placeholder="Enter your password"
                     />
-                    <ErrorMessage
-                      name="password"
-                      component="p"
-                      className="text-sm text-red-500"
+                  </div>
+                  <div className="flex flex-col space-y-1">
+                    <InputField
+                      label="Role"
+                      name="role"
+                      as="select"
+                      options={["user", "admin"]}
                     />
                   </div>
                 </div>
-
                 <button
                   type="button"
+                  disabled={loading}
                   onClick={handleSubmit}
                   className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2   hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
-                  Create Account
+                  {loading ? "Loading..." : "Create Account"}
                 </button>
               </>
             )}

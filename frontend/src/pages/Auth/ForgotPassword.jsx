@@ -1,51 +1,37 @@
-import React, { useState,useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+
 import { codingImage } from "../../images/index";
 import { Formik } from "formik";
-import { signin } from "../../api/user";
+import { forgotPass } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import InputField from "../../components/InputField";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
-const SignIn = () => {
+const ForgotPassword = () => {
   const statusMessages = {
-    200: "Login successful",
-    401: "Incorrect password",
-    404: "User not found",
-    403: "User not verified",
+    400: "User not found",
     500: "Unexpected error occurred while sign in",
   };
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const message = searchParams.get("message");
-  const status = searchParams.get("status");
-  useEffect(() => {
-    if (status === "success") {
-      toast.success(message);
-    }
-  }, [status, message, navigate]);
-  // handle sign in
-  const handleSignIn = async (values, { resetForm }) => {
+  // handle forgot Password
+  const handleForgotPass = async (values, { resetForm }) => {
     try {
       if (loading) return;
       setLoading(true);
-      const response = await signin(values);
+      const response = await forgotPass(values);
 
       const message = statusMessages[response?.status];
 
       if (response?.status === 200) {
-        toast.success(message);
-      } else if (response?.status === 403) {
-        toast.error(message);
-        setTimeout(() => navigate("/resend-verify"), 3000);
+        toast.success(
+          `Verification link sent to ${values?.email}  Click it to reset your password`
+        );
       } else if (message) {
         toast.error(message);
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "Registration failed");
+      alert(err.message || "Something went wrong. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -54,12 +40,6 @@ const SignIn = () => {
   // validation schema
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email").required("Email is required"),
-
-    password: Yup.string()
-      .matches(/^\d+$/, "Password must contain digits only")
-      .min(5, "Password must be at least 5 characters")
-      .max(10, "Password must not exceed 10 characters")
-      .required("Password is required"),
   });
   return (
     <div className="h-screen flex  bg-slate-200">
@@ -69,16 +49,16 @@ const SignIn = () => {
             LearnCode
           </p>
           <p className="font-semibold text-2xl md:text-3xl mb-14">
-            {" "}
-            Welcome to LearnCode! Please sign In to start your coding journey.
+            Forgot your password? Enter your email to receive reset
+            instructions.
           </p>
 
           {/* form */}
 
           <Formik
-            initialValues={{ email: "", password: "" }}
+            initialValues={{ email: "" }}
             validationSchema={validationSchema}
-            onSubmit={handleSignIn}
+            onSubmit={handleForgotPass}
           >
             {({ handleSubmit }) => (
               <>
@@ -91,33 +71,15 @@ const SignIn = () => {
                       placeholder="Enter your Email"
                     />
                   </div>
-                  <div className="flex flex-col space-y-1">
-                    <InputField
-                      label="Password"
-                      name="password"
-                      type="password"
-                      placeholder="Enter your password"
-                    />
-                  </div>
                 </div>
 
                 <button
                   onClick={handleSubmit}
                   type="button"
-                  disabled={loading}
                   className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
-                  {loading ? "Loading..." : "Sign In"}
+                  {loading ? "Loading..." : "Send reset Link"}
                 </button>
-                <p className="md:text-lg text-base ">
-                  Forgot Password?{" "}
-                  <Link
-                    to="/forgotPass"
-                    className="font-semibold text-blue-600 hover:underline"
-                  >
-                    Click Here
-                  </Link>
-                </p>
               </>
             )}
           </Formik>
@@ -133,4 +95,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default ForgotPassword;
