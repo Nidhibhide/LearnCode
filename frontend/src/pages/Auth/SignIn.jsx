@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { codingImage } from "../../images/index";
 import { Formik } from "formik";
-import { signin } from "../../api/user";
+import { getMe, signin } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import InputField from "../../components/InputField";
@@ -37,6 +37,13 @@ const SignIn = () => {
 
       if (response?.status === 200) {
         toast.success(message);
+        //fetch user api
+        const response = await getMe();
+        if (response?.status === 200) {
+          localStorage.setItem("data", JSON.stringify(response?.data?.data));
+        }
+
+        setTimeout(() => navigate("/dashboard/viewTest"), 3000);
       } else if (response?.status === 403) {
         toast.error(message);
         setTimeout(() => navigate("/resend-verify"), 3000);

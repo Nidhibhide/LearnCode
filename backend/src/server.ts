@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 
 //routes
 import userRoutes from "./routes/userRoutes";
+import testRoutes from "./routes/testRoutes";
+import authRoutes from "./routes/authRoutes";
 
 const corsOptions = {
   origin: "http://localhost:5173", // Frontend origin
@@ -26,6 +28,10 @@ app.use(cookieParser());
 
 //userRoutes
 app.use("/api/user", userRoutes);
+//authRoutes
+app.use("/api/auth", authRoutes);
+//testRoutes
+app.use("/api/test", testRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(` Server running on port ${PORT} `));

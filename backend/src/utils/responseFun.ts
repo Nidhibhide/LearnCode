@@ -5,18 +5,38 @@ const responseFun = (
   statusCode: number,
   message: string,
   success: boolean,
-  isVerified?: boolean,
-  token?: string
+  data?: Object
 ) => {
   const response: any = {
     message,
     success,
     statusCode,
-    ...(isVerified !== undefined && { isVerified }),
-    ...(token !== undefined && { token }),
+    data,
   };
 
   res.status(statusCode).json(response);
 };
 
-export default responseFun;
+const aggregateResponse = (
+  res: Response,
+  statusCode: number,
+  message: string,
+  data: any[],
+  total: number,
+  page: number,
+  limit: number
+) => {
+  const response = {
+    success: true,
+    statusCode,
+    message,
+    data,
+    total,
+    page,
+    limit,
+  };
+
+  res.status(statusCode).json(response);
+};
+
+export { responseFun, aggregateResponse };
