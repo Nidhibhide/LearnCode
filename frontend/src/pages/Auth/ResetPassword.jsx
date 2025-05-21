@@ -1,10 +1,10 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { resetPass } from "../../api/user";
+import { ChangePass } from "../../api/user";
 import { toast } from "react-toastify";
-import InputField from "../../components/InputField";
+import { InputField } from "../../components/index";
 import { codingImage } from "../../images/index";
 
 const ResetPassword = () => {
@@ -28,8 +28,8 @@ const ResetPassword = () => {
         password: values.password,
         email,
       };
-console.log(data);
-      const response = await resetPass(data);
+      console.log(data);
+      const response = await ChangePass(data);
 
       const message = statusMessages[response?.status];
 

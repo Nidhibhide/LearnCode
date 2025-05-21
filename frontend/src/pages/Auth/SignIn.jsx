@@ -5,7 +5,7 @@ import { Formik } from "formik";
 import { getMe, signin } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import InputField from "../../components/InputField";
+import {InputField} from "../../components/index";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const SignIn = () => {
@@ -52,7 +52,7 @@ const SignIn = () => {
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "Registration failed");
+      alert(err.message || "Login failed");
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import { IoMdAdd } from "react-icons/io";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { IoSettingsSharp } from "react-icons/io5";
 import { MdOutlineLogout } from "react-icons/md";
+import { MdOutlineRestore } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
@@ -43,15 +44,30 @@ const Sidebar = () => {
                 <IoMdAdd className="text-2xl" size={28} /> Create Test
               </Link>
             </li>
+            <li className="flex items-center gap-1 cursor-pointer hover:bg-[#a9a9a9] py-4 justify-center">
+              <Link
+                to="/dashboard/createTest"
+                className="flex items-center justify-center gap-2"
+              >
+                <MdOutlineRestore className="text-2xl" size={28} /> Restore
+                Tests
+              </Link>
+            </li>
 
             <li className="flex  items-center gap-2 cursor-pointer hover:bg-[#a9a9a9] py-4 justify-center">
-              <Link to="" className="flex items-center justify-center gap-2">
+              <Link
+                to="/dashboard/setting"
+                className="flex items-center justify-center gap-2"
+              >
                 <IoSettingsSharp size={28} />
                 Setting
               </Link>
             </li>
             <li className="flex  items-center gap-2 cursor-pointer hover:bg-[#a9a9a9] py-4 justify-center">
-              <Link to="/" className="flex items-center justify-center gap-2">
+              <Link
+                to="/dashboard/logout"
+                className="flex items-center justify-center gap-2"
+              >
                 <MdOutlineLogout size={28} />
                 LogOut
               </Link>

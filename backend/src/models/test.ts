@@ -14,6 +14,8 @@ const TestSchema = new mongoose.Schema(
       enum: ["Basic", "Intermediate", "Advanced"],
       required: true,
     },
+    
+    isDeleted: { type: Boolean, default:false },//softdelete field
   },
   {
     timestamps: true, // adds createdAt and updatedAt

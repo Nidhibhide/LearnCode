@@ -5,7 +5,7 @@ import { Formik } from "formik";
 import { forgotPass } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import InputField from "../../components/InputField";
+import {InputField} from "../../components/index";
 
 const ForgotPassword = () => {
   const statusMessages = {

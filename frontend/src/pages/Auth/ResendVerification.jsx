@@ -3,7 +3,7 @@ import { codingImage } from "../../images/index";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import { toast } from "react-toastify";
-import InputField from "../../components/InputField";
+import {InputField} from "../../components/index";
 import { resendVerify } from "../../api/user";
 import { useNavigate } from "react-router-dom";
 

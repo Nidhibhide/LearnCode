@@ -1,53 +1,33 @@
 import Joi from "joi";
+import {
+  stringValidator,
+  emailValidator,
+  passwordValidator,
+  selectValidator,
+} from "../utils/GlobalValidation";
 
 const userRegisterValidation = Joi.object({
-  name: Joi.string()
-    .pattern(/^[a-zA-Z\s]+$/)
-    .min(3)
-    .max(50)
-    .required()
-    .messages({
-      "string.pattern.base": "Only alphabets and spaces are allowed",
-      "string.min": "Name must be at least 3 characters",
-      "string.max": "Name should not exceed 50 characters",
-      "any.required": "Name is required",
-    }),
+  name: stringValidator("Name", 3, 50, true),
 
-  email: Joi.string().email().required().messages({
-    "string.email": "Email format is invalid",
-    "any.required": "Email is required",
-  }),
+  email: emailValidator(),
 
-  password: Joi.string().min(5).max(10).pattern(/^\d+$/).required().messages({
-    "string.min": "Password must be at least 5 characters",
-    "string.max": "Password should not exceed 10 characters",
-    "string.pattern.base": "Password must contain digits only",
-    "any.required": "Password is required",
-  }),
-  role: Joi.string().valid("user", "admin").required().messages({
-    "any.only": "Role must be either 'user' or 'admin'",
-    "any.required": "Role is required",
-  }),
+  password: passwordValidator(),
+
+  role: selectValidator("Role", ["user", "admin"]),
 });
 
 const LoginValidation = Joi.object({
-  email: Joi.string().email().required().messages({
-    "string.email": "Invalid email format",
-    "any.required": "Email is required",
-  }),
-  password: Joi.string().min(5).max(10).pattern(/^\d+$/).required().messages({
-    "string.min": "Password must be at least 5 characters",
-    "string.max": "Password should not exceed 10 characters",
-    "string.pattern.base": "Password must contain digits only",
-    "any.required": "Password is required",
-  }),
+  email: emailValidator(),
+  password: passwordValidator(),
 });
 
 const EmailValidation = Joi.object({
-  email: Joi.string().email().required().messages({
-    "string.email": "Invalid email format",
-    "any.required": "Email is required",
-  }),
+  email: emailValidator(),
+});
+
+const userUpdateValidation = Joi.object({
+  name: stringValidator("Name", 3, 50, true),
+  email: emailValidator(),
 });
 
 // const ResetPassValidation = Joi.object({
@@ -64,4 +44,5 @@ export {
   LoginValidation,
   EmailValidation,
   // ResetPassValidation,
+  userUpdateValidation,
 };

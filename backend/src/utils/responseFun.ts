@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-const responseFun = (
+const JsonOne = (
   res: Response,
   statusCode: number,
   message: string,
@@ -17,7 +17,7 @@ const responseFun = (
   res.status(statusCode).json(response);
 };
 
-const aggregateResponse = (
+const JsonAll = (
   res: Response,
   statusCode: number,
   message: string,
@@ -39,4 +39,4 @@ const aggregateResponse = (
   res.status(statusCode).json(response);
 };
 
-export { responseFun, aggregateResponse };
+export { JsonOne, JsonAll };

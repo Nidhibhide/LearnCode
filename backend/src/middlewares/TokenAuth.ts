@@ -1,4 +1,4 @@
-import { responseFun } from "../utils/responseFun";
+import { JsonOne } from "../utils/responseFun";
 import { Request, Response, NextFunction } from "express";
 import User from "../models/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -9,7 +9,7 @@ type User = InferSchemaType<typeof User.schema>;
 declare global {
   namespace Express {
     interface Request {
-      user?:User;
+      user?: User;
     }
   }
 }
@@ -18,7 +18,7 @@ const IsLoggeedIn = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies?.token;
 
     if (!token) {
-      return responseFun(res, 400, "Token not found", false);
+      return JsonOne(res, 400, "Token not found", false);
     }
 
     const decode = jwt.verify(
@@ -27,17 +27,17 @@ const IsLoggeedIn = async (req: Request, res: Response, next: NextFunction) => {
     ) as JwtPayload;
     const userID = decode.id;
     const user = await User.findById(userID).select(
-      "name  email   role   isVerified "
+      "name  email   role   isVerified createdAt "
     );
+
     if (!user) {
-      return responseFun(res, 404, "User not found", false);
+      return JsonOne(res, 404, "User not found", false);
     }
     req.user = user;
 
-
     next();
   } catch (error) {
-    return responseFun(res, 400, "Invalid or expired Token", false);
+    return JsonOne(res, 400, "Invalid or expired Token", false);
   }
 };
 

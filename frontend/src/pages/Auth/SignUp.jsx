@@ -6,7 +6,7 @@ import { googleIcon, codingImage } from "../../images/index";
 import { signup } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import InputField from "../../components/InputField";
+import {InputField} from "../../components/index";
 
 const SignUp = () => {
   const statusMessages = {

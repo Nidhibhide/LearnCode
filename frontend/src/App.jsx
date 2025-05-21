@@ -8,10 +8,21 @@ import {
   ResendVerification,
 } from "./pages/Auth/index";
 import Unauthorized from "./Unauthorized";
+import SessionExpired from "./SessionExpired";
 import {
   CreateTest,
   ViewTest,
+  Setting,
+  Logout,
 } from "./pages/Dashboard/Components/Content/index";
+import {
+  EditTest,
+  DeleteTest,
+} from "./pages/Dashboard/Components/Content/Components/ViewTest/Components/index";
+import {
+  ChangePassword,
+  EditProfile,
+} from "./pages/Dashboard/Components/Content/Components/Setting/Components/index";
 import { Dashboard } from "./pages/dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -23,6 +34,7 @@ function App() {
         <Routes>
           <Route path="/" element={<SignUp />} />
           <Route path="/unauthorize" element={<Unauthorized />} />
+          <Route path="/session-expired" element={<SessionExpired />} />
           <Route path="/login" element={<SignIn />} />
           <Route path="/forgotPass" element={<ForgotPassword />} />
           <Route path="/resetPass" element={<ResetPassword />} />
@@ -33,7 +45,7 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <RoleAuth allowedRoles={["admin"]}>
+              <RoleAuth allowedRoles={["admin", "user"]}>
                 <Dashboard />
               </RoleAuth>
             }
@@ -51,6 +63,56 @@ function App() {
               element={
                 <RoleAuth allowedRoles={["admin"]}>
                   <ViewTest />
+                </RoleAuth>
+              }
+            >
+              <Route
+                path="editTest/:testId"
+                element={
+                  <RoleAuth allowedRoles={["admin"]}>
+                    <EditTest />
+                  </RoleAuth>
+                }
+              />
+              <Route
+                path="deleteTest/:testId"
+                element={
+                  <RoleAuth allowedRoles={["admin"]}>
+                    <DeleteTest />
+                  </RoleAuth>
+                }
+              />
+            </Route>
+            <Route
+              path="setting"
+              element={
+                <RoleAuth allowedRoles={["admin", "user"]}>
+                  <Setting />
+                </RoleAuth>
+              }
+            >
+              <Route
+                path="changePassword"
+                element={
+                  <RoleAuth allowedRoles={["admin", "user"]}>
+                    <ChangePassword />
+                  </RoleAuth>
+                }
+              />
+              <Route
+                path="editProfile"
+                element={
+                  <RoleAuth allowedRoles={["admin", "user"]}>
+                    <EditProfile />
+                  </RoleAuth>
+                }
+              />
+            </Route>
+            <Route
+              path="logout"
+              element={
+                <RoleAuth allowedRoles={["admin", "user"]}>
+                  <Logout />
                 </RoleAuth>
               }
             />

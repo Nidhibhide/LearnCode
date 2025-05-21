@@ -1,14 +1,15 @@
 import { MdSort, MdFilterList } from "react-icons/md";
-import TestCard from "../../../../../components/TestCard";
-import { getAll } from "../../../../../api/test";
+import {TestCard} from "../../../../../../components/index";
+import { getAll } from "../../../../../../api/test";
 import { useEffect, useState } from "react";
-import { NotFound } from "../../../../../images/index";
-
-const ViewTest = () => {
+import { NotFound } from "../../../../../../images/index";
+import { Outlet } from "react-router-dom"; 
+const index = () => {
   const [tests, setTests] = useState([]);
   const [search, setSearch] = useState("");
   const [level, setLevel] = useState("All");
   const [sortOrder, setSortOrder] = useState("desc");
+
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
 
@@ -26,6 +27,7 @@ const ViewTest = () => {
       const response = await getAll(filters);
       // console.log(response?.data?.total)
       setTotal(response?.data?.total);
+
       setTests(response?.data?.data);
     } catch (err) {
       alert(err.message || "View Tests failed");
@@ -87,7 +89,7 @@ const ViewTest = () => {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 lg:gap-4 gap-8 h-full">
+      <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 gap-8 h-full">
         {tests.map((test, index) => (
           <TestCard key={index} test={test} />
         ))}
@@ -103,34 +105,10 @@ const ViewTest = () => {
             Previous
           </button>
 
-          {/* Page Numbers */}
-          <div className="flex items-center space-x-2">
-            <button
-              className="px-3 py-1 rounded bg-blue-500 text-white font-medium"
-              onClick={() => setPage(1)}
-            >
-              1
-            </button>
-            <button
-              className="px-3 py-1 rounded hover:bg-gray-200"
-              onClick={() => setPage(2)}
-            >
-              2
-            </button>
-
-            <span className="px-2 text-gray-500">...</span>
-            <button
-              className="px-3 py-1 rounded hover:bg-gray-200"
-              onClick={() => setPage(5)}
-            >
-              5
-            </button>
-          </div>
-
           <button
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
             onClick={() => setPage(page + 1)}
-            disabled={total === page}
+            disabled={tests.length < 5}
           >
             Next
           </button>
@@ -155,8 +133,9 @@ const ViewTest = () => {
           </p>{" "}
         </div>
       )}
+      <Outlet />
     </div>
   );
 };
 
-export default ViewTest;
+export default index;

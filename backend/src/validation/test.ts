@@ -1,36 +1,26 @@
 import Joi from "joi";
+import {
+  numberValidator,
+  selectValidator,
+  stringValidator,
+} from "../utils/GlobalValidation";
 
-const createTestValidation = Joi.object({
-  name: Joi.string().min(3).max(100).required().messages({
-    "string.base": "Test name must be a string",
-    "string.min": "Test name must be at least 3 characters",
-    "string.max": "Test name should not exceed 100 characters",
-    "any.required": "Test name is required",
-  }),
+const TestValidation = Joi.object({
+  name: stringValidator("Test Name", 3, 100, true),
 
-  numOfQuestions: Joi.number().integer().min(1).max(100).required().messages({
-    "number.base": "Number of questions must be a number",
-    "number.min": "There must be at least 1 question",
-    "number.max": "Questions should not exceed 100",
-    "any.required": "Number of questions is required",
-  }),
+  numOfQuestions: numberValidator("No of Questions", 1, 5, true),
 
-  language: Joi.string()
-    .valid("Java", "C++", "JavaScript", "Python", "C")
-    .required()
-    .messages({
-      "any.only":
-        "Language must be one of Java, React JS, JavaScript, Python, or C",
-      "any.required": "Language is required",
-    }),
+  language: selectValidator(
+    "Test language",
+    ["Java", "C++", "JavaScript", "Python", "C"],
+    true
+  ),
 
-  level: Joi.string()
-    .valid("Basic", "Intermediate", "Advanced")
-    .required()
-    .messages({
-      "any.only": "Level must be one of Basic, Intermediate, or Advanced",
-      "any.required": "Level is required",
-    }),
+  level: selectValidator(
+    "Test Level",
+    ["Basic", "Intermediate", "Advanced"],
+    true
+  ),
 });
 
-export { createTestValidation };
+export { TestValidation };

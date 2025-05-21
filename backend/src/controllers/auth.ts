@@ -1,9 +1,9 @@
 import User from "../models/user";
 import nodemailer from "nodemailer";
-
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import {responseFun} from "../utils/responseFun";
+import { JsonOne } from "../utils/responseFun";
 import expiretime from "../utils/expireTimeFun";
 import { Request, Response } from "express";
 import {
@@ -20,12 +20,12 @@ const resendVerificationEmail = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return responseFun(res, 404, "User not found", false);
+      return JsonOne(res, 404, "User not found", false);
     }
 
     // Optional: Check if already verified
     if (user.isVerified === true) {
-      return responseFun(res, 400, "User already verified", false);
+      return JsonOne(res, 400, "User already verified", false);
     }
 
     // Generate new verification token
@@ -42,22 +42,40 @@ const resendVerificationEmail = async (req: Request, res: Response) => {
 
     await transporter.sendMail(mailOptionsForVerify(email, token));
 
-    return responseFun(
+    return JsonOne(
       res,
       200,
       `Verification email has been resent to ${email}`,
       true
     );
   } catch (error) {
-    return responseFun(
+    return JsonOne(res, 500, "Error while resending verification email", false);
+  }
+};
+const verifyCurrentPassword = async (req: Request, res: Response) => {
+  try {
+    const { password, email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return JsonOne(res, 404, "User not found", false);
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return JsonOne(res, 401, "Incorrect password", false);
+    }
+
+    return JsonOne(res, 200, "Password Match Found", true);
+  } catch (error) {
+    JsonOne(
       res,
       500,
-      "Error while resending verification email",
+      "unexpected error occurred while verify current password",
       false
     );
   }
 };
-
 const verifyUser = async (req: Request, res: Response) => {
   try {
     const successURL = process.env.VERIFY_SUCCESS_URL;
@@ -101,51 +119,30 @@ const verifyUser = async (req: Request, res: Response) => {
   }
 };
 
-// const getMe = async (req, res) => {
-//   try {
-//     const user = req.user.id;
-//     console.log("user = " + user);
-
-//     if (!user) {
-//       return responseFun(res, 400, "Profile not found", false);
-//     }
-//     return responseFun(res, 200, "Profile found", true);
-//   } catch (error) {}
-// };
-
-// const logOut = async (req, res) => {
-//   try {
-//     res.cookie("token", "", {});
-//     const token = req.cookies?.token;
-
-//     return responseFun(res, 200, "Logout successfully", true);
-//   } catch (error) {}
-// };
-
 // const changePassword = async (req, res) => {
 //   try {
 //     const { oldPass, newPass } = req.body;
 //     const id = req.user?.id;
 
 //     if (!newPass || !oldPass) {
-//       return responseFun(res, 400, "All fields are required");
+//       return JsonOne(res, 400, "All fields are required");
 //     }
 
 //     const user = await UserModel.findById(id);
 //     if (!user) {
-//       return responseFun(res, 200, "User not found", false);
+//       return JsonOne(res, 200, "User not found", false);
 //     }
 
 //     const isMatch = await bcrypt.compare(oldPass, user.password);
 
 //     if (!isMatch) {
-//       return responseFun(res, 400, "Old password incorrect", false);
+//       return JsonOne(res, 400, "Old password incorrect", false);
 //     }
 
 //     const hashedPass = await bcrypt.hash(newPass, 10);
 //     user.password = hashedPass;
 
-//     return responseFun(res, 200, "Password changed successfully", true);
+//     return JsonOne(res, 200, "Password changed successfully", true);
 //   } catch (error) {}
 // };
 
@@ -156,7 +153,7 @@ const forgotPass = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return responseFun(res, 400, "User not found", false);
+      return JsonOne(res, 400, "User not found", false);
     }
 
     const token = crypto.randomBytes(32).toString("hex");
@@ -173,7 +170,7 @@ const forgotPass = async (req: Request, res: Response) => {
 
     await transporter.sendMail(mailOptions);
 
-    return responseFun(
+    return JsonOne(
       res,
       200,
       `Verification link sent to ${email}  Click it to reset your password.`,
@@ -181,7 +178,7 @@ const forgotPass = async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.error("Forgot Password Error:", error);
-    return responseFun(
+    return JsonOne(
       res,
       500,
       "Something went wrong. Please try again later.",
@@ -219,13 +216,32 @@ const resetPass = async (req: Request, res: Response) => {
   return res.redirect(`${RESET_URL}?status=success&email=${user?.email}`);
 };
 
+const checkToken = async (req: Request, res: Response) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return JsonOne(res, 401, "Token not found", false);
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY as string
+    ) as JwtPayload;
+
+    return JsonOne(res, 200, "Token valid", true);
+  } catch (err) {
+    return JsonOne(res, 500, "Token expired or invalid", false);
+  }
+};
+
 const changePassword = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
-      return responseFun(res, 404, "User not found", false);
+      return JsonOne(res, 404, "User not found", false);
     }
 
     const hashedPass = await bcrypt.hash(password, 10);
@@ -233,19 +249,18 @@ const changePassword = async (req: Request, res: Response) => {
 
     await user.save();
 
-    return responseFun(res, 200, "Password reset successfully", true);
+    return JsonOne(res, 200, "Password reset successfully", true);
   } catch (error) {
     console.error("Error resetting password:", error);
-    return responseFun(res, 500, "Server error", false);
+    return JsonOne(res, 500, "Server error", false);
   }
 };
 export {
   verifyUser,
   resendVerificationEmail,
-
-  // getMe,
-  // logOut,
   changePassword,
   forgotPass,
   resetPass,
+  checkToken,
+  verifyCurrentPassword,
 };

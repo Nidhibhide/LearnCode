@@ -15,11 +15,10 @@ const CreateTest = () => {
   // handle sign up
   const handleCreate = async (values, { resetForm }) => {
     try {
-      console.log("API ENTERED")
+      console.log("API ENTERED");
       if (loading) return;
       setLoading(true);
       const response = await create(values);
-      console.log(response)
 
       const message = statusMessages[response?.status];
 
@@ -47,7 +46,7 @@ const CreateTest = () => {
       .typeError("Number of questions must be a number")
       .integer("Number of questions must be an integer")
       .min(1, "There must be at least 1 question")
-      .max(100, "Questions should not exceed 100")
+      .max(5, "Questions should not exceed 5")
       .required("Number of questions is required"),
 
     language: Yup.string()

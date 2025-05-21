@@ -1,8 +1,10 @@
 import { MdDelete } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
-import {Tooltip} from "./index";
+import { Tooltip } from "./index";
+import { useNavigate } from "react-router-dom";
 
 const TestCard = ({ test }) => {
+  const navigate = useNavigate();
   const levelColor = {
     Basic: "border-green-400 bg-green-100",
     Intermediate: "border-yellow-400 bg-yellow-100",
@@ -15,6 +17,17 @@ const TestCard = ({ test }) => {
     Advanced: "text-red-700",
   };
 
+  const handleDelete = () => {
+    navigate(`/dashboard/viewTest/deleteTest/${test?._id}`,{
+      state:{name:test?.name}
+    });
+  };
+  const handleEdit = () => {
+    navigate(`/dashboard/viewTest/editTest/${test?._id}`,{
+      state:{test:test}
+    });
+  };
+
   return (
     <div
       className={`max-w-sm w-full mx-auto ${
@@ -25,9 +38,9 @@ const TestCard = ({ test }) => {
       <div className="flex absolute top-4 right-4 gap-2">
         {/* Delete Icon with Tooltip */}
 
-        <Tooltip icon={MdDelete} label="Delete" />
+        <Tooltip icon={MdDelete} label="Delete" onClick={handleDelete} />
         {/* Edit Icon with Tooltip */}
-        <Tooltip icon={MdModeEditOutline} label="Edit" />
+        <Tooltip icon={MdModeEditOutline} label="Edit" onClick={handleEdit} />
       </div>
 
       <p className="text-base text-gray-600">
