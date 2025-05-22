@@ -53,7 +53,7 @@ const getAll = async (req: Request, res: Response) => {
         { language: { $regex: search, $options: "i" } },
       ],
     };
-    // Add level filter only if selected and not equal to ALL ( means consider all )
+
     if (level && level !== "All") {
       matchStage["level"] = level;
     }
@@ -160,5 +160,67 @@ const edit = async (req: Request, res: Response) => {
     JsonOne(res, 500, "unexpected error occurred while updating test", false);
   }
 };
+const getDeletedAll = async (req: Request, res: Response) => {
+  try {
+    const {
+      search = "",
+      sortOrder = "desc",
+      page = "1",
+      limit = "5",
+      level = "All",
+    } = req.query as {
+      search?: string;
+      sortOrder?: "asc" | "desc";
+      page?: string;
+      limit?: string;
+      level?: string;
+    };
 
-export { create, getAll, softDelete, restore,edit };
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const sort = sortOrder === "asc" ? 1 : -1;
+
+    const matchStage: any = {
+      isDeleted: true,
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { language: { $regex: search, $options: "i" } },
+      ],
+    };
+
+    if (level && level !== "All") {
+      matchStage["level"] = level;
+    }
+
+    const aggregation: any[] = [
+      { $match: matchStage },
+      { $sort: { createdAt: sort } },
+      { $skip: skip },
+      { $limit: parseInt(limit) },
+      {
+        $project: {
+          name: 1,
+          language: 1,
+          level: 1,
+          numOfQuestions: 1,
+          createdAt: 1,
+        },
+      },
+    ];
+    const data = await Test.aggregate(aggregation);
+    const total: number = await Test.countDocuments(matchStage);
+
+    JsonAll(
+      res,
+      200,
+      "Deleted Tests fetched successfully",
+      data,
+      total,
+      parseInt(page),
+      parseInt(limit)
+    );
+  } catch {
+    JsonOne(res, 500, "unexpected error occurred while sign up", false);
+  }
+};
+
+export { create, getAll, softDelete, restore, edit , getDeletedAll };

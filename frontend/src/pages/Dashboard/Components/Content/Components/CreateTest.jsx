@@ -15,7 +15,6 @@ const CreateTest = () => {
   // handle sign up
   const handleCreate = async (values, { resetForm }) => {
     try {
-      console.log("API ENTERED");
       if (loading) return;
       setLoading(true);
       const response = await create(values);

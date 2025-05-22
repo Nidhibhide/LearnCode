@@ -3,23 +3,22 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
-  Button,
   useDisclosure,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { edit } from "../../../../../../../api/test";
+import { toast } from "react-toastify";
 import { Formik } from "formik";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { InputField } from "../../../../../../../components/index";
 import * as Yup from "yup";
 function EditTest() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { testId } = useParams(); // from URL
+  const { testId } = useParams();
+  const { state } = useLocation();
   const [loading, setLoading] = useState(false);
-  const { state } = useLocation(); // from navigation state
   const navigate = useNavigate();
   const test = state?.test || "Not Available";
-  console.log(test);
   useEffect(() => {
     onOpen();
   }, [onOpen]);
@@ -53,23 +52,49 @@ function EditTest() {
       .required("Level is required"),
   });
 
+  const statusMessages = {
+    201: "Test Deleted! Refresh the page to see the latest changes ",
+    404: "Test not found",
+    500: "Unexpected error occurred while update test",
+  };
+  const handleEdit = async (values, { resetForm }) => {
+    try {
+      if (loading) return;
+      setLoading(true);
+      const response = await edit(testId, values);
+
+      const message = statusMessages[response?.status];
+      if (response?.status === 201) {
+        toast.success(message);
+        setTimeout(() => navigate("/dashboard/viewTest"), 3000);
+      } else if (message) {
+        toast.error(message);
+      }
+      resetForm();
+    } catch (err) {
+      alert(err.message || "test editing failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader>Edit Test</ModalHeader>
               <ModalBody>
                 <Formik
                   initialValues={{
-                    name: "" || test?.name,
-                    level: "" || test?.level,
-                    language: "" || test?.language,
-                    numOfQuestions: "" || test?.numOfQuestions,
+                    name: test?.name || "",
+                    level: test?.level || "",
+                    language: test?.language || "",
+                    numOfQuestions: test?.numOfQuestions || "",
                   }}
                   validationSchema={validationSchema}
-                  // onSubmit={handleCreate}
+                  onSubmit={handleEdit}
                 >
                   {({ handleSubmit }) => (
                     <>
@@ -114,39 +139,18 @@ function EditTest() {
                         </div>
                       </div>
 
-                      {/* <button
+                      <button
                         onClick={handleSubmit}
                         type="button"
                         disabled={loading}
                         className="bg-black text-white w-full py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                       >
                         {loading ? "Loading..." : "Update Test"}
-                      </button> */}
+                      </button>
                     </>
                   )}
                 </Formik>
               </ModalBody>
-              <ModalFooter>
-                <Button
-                  color="danger"
-                  variant="light"
-                  onPress={() => {
-                    onClose();
-                    navigate("/dashboard/viewTest");
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    onClose();
-                    navigate("/dashboard/viewTest");
-                  }}
-                >
-                  Confirm
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>

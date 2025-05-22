@@ -8,17 +8,42 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { deleteTest } from "../../../../../../../api/test";
 
 function DeleteTest() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { testId } = useParams(); // from URL
-  const { state } = useLocation(); // from navigation state
+  const { testId } = useParams();
+  const { state } = useLocation();
   const navigate = useNavigate();
   const name = state?.name || "Not Available";
   useEffect(() => {
     onOpen();
   }, [onOpen]);
+  const statusMessages = {
+    200: "Test Deleted! Refresh the page to see the latest changes",
+    400: "Invalid test ID",
+    404: "Test not found",
+    500: "Unexpected error occurred while delete test",
+  };
+  const handleDelete = async (onClose) => {
+    try {
+      const res = await deleteTest(testId);
+
+      const message = statusMessages[res?.status];
+      if (res?.status === 200 && message) {
+        toast.success(message);
+        setTimeout(() => navigate("/dashboard/viewTest"), 3000);
+      } else if (message) {
+        toast.error(message);
+      }
+    } catch (err) {
+      alert(err.message || "test deletion failed");
+    } finally {
+      onClose();
+    }
+  };
 
   return (
     <>
@@ -44,15 +69,7 @@ function DeleteTest() {
                 >
                   Cancel
                 </Button>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    // your delete logic using testId
-                    console.log("Deleting test ID:", testId);
-                    onClose();
-                    navigate("/dashboard/viewTest");
-                  }}
-                >
+                <Button color="primary" onPress={() => handleDelete(onClose)}>
                   Confirm
                 </Button>
               </ModalFooter>

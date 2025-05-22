@@ -14,6 +14,7 @@ import {
   ViewTest,
   Setting,
   Logout,
+  RestoreTest,
 } from "./pages/Dashboard/Components/Content/index";
 import {
   EditTest,
@@ -83,6 +84,14 @@ function App() {
                 }
               />
             </Route>
+            <Route
+              path="restoreTest"
+              element={
+                <RoleAuth allowedRoles={["admin"]}>
+                  <RestoreTest />
+                </RoleAuth>
+              }
+            />
             <Route
               path="setting"
               element={

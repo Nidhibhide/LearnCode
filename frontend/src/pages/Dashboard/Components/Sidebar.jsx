@@ -46,7 +46,7 @@ const Sidebar = () => {
             </li>
             <li className="flex items-center gap-1 cursor-pointer hover:bg-[#a9a9a9] py-4 justify-center">
               <Link
-                to="/dashboard/createTest"
+                to="/dashboard/restoreTest"
                 className="flex items-center justify-center gap-2"
               >
                 <MdOutlineRestore className="text-2xl" size={28} /> Restore
