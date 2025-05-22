@@ -15,6 +15,7 @@ import {
   Setting,
   Logout,
   RestoreTest,
+  Assessments,MyScores
 } from "./pages/Dashboard/Components/Content/index";
 import {
   EditTest,
@@ -89,6 +90,22 @@ function App() {
               element={
                 <RoleAuth allowedRoles={["admin"]}>
                   <RestoreTest />
+                </RoleAuth>
+              }
+            />
+             <Route
+              path="assessments"
+              element={
+                <RoleAuth allowedRoles={["user"]}>
+                  <Assessments />
+                </RoleAuth>
+              }
+            />
+             <Route
+              path="myScores"
+              element={
+                <RoleAuth allowedRoles={["user"]}>
+                  <MyScores />
                 </RoleAuth>
               }
             />

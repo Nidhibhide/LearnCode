@@ -15,6 +15,12 @@ const UserSchmea = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    // testAttempts: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "TestAttempt",
+    //   },
+    // ],//may be no use of it 
   },
   {
     timestamps: true,
@@ -24,3 +30,4 @@ const UserSchmea = new mongoose.Schema(
 const UserModel = mongoose.model("User", UserSchmea);
 
 export default UserModel;
+

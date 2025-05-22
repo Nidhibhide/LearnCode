@@ -1,0 +1,81 @@
+import {
+  SearchFilters,
+  PaginationControls,
+  NotFoundControls,
+} from "../../../../../components/index";
+import { getAll } from "../../../../../api/test";
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+import { TestCard } from "../../../../../components/index";
+
+const Assessments = () => {
+  const [tests, setTests] = useState([]);
+
+  const [search, setSearch] = useState("");
+  const [level, setLevel] = useState("All");
+  const [sortOrder, setSortOrder] = useState("desc");
+
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(1);
+  const user = JSON.parse(localStorage.getItem("data"))?._id;
+  //api
+  const filters = {
+    search,
+    sortOrder,
+    page,
+    limit: 5,
+    level,
+    onlyUnattempted: true,
+    userId: user,
+  };
+
+  const handleViewTests = async () => {
+    try {
+      const response = await getAll(filters);
+
+      setTotal(response?.data?.total);
+      setTests(response?.data?.data);
+    } catch (err) {
+      alert(err.message || "View Tests failed");
+    }
+  };
+
+  useEffect(() => {
+    handleViewTests();
+  }, [level, sortOrder, search, page]);
+
+  return (
+    <div className="py-12 px-4">
+      <h1 className="text-2xl font-bold text-center mb-4">Assessments</h1>
+
+      {/* Search, Filter, Sort UI */}
+      <SearchFilters
+        search={search}
+        setSearch={setSearch}
+        level={level}
+        setLevel={setLevel}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+      />
+      {/* Cards */}
+      <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 gap-8 h-full">
+        {tests.map((test, index) => (
+          <TestCard key={index} test={test} />
+        ))}
+      </div>
+      {/* pagination */}
+      {total !== 0 && (
+        <PaginationControls
+          page={page}
+          setPage={setPage}
+          hasNext={tests.length === 5}
+        />
+      )}
+
+      {/* Not Found */}
+      {total === 0 && <NotFoundControls />}
+      <Outlet />
+    </div>
+  );
+};
+export default Assessments;

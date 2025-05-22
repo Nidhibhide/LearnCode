@@ -78,6 +78,7 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
 };
 const verifyUser = async (req: Request, res: Response) => {
   try {
+    console.log("API")
     const successURL = process.env.VERIFY_SUCCESS_URL;
     const failURL = process.env.VERIFY_FAILURE_URL;
     const { token } = req.params;
@@ -108,7 +109,7 @@ const verifyUser = async (req: Request, res: Response) => {
     await user.save();
 
     return res.redirect(
-      `${successURL}?status=success&message=User verification Done!!`
+      `${successURL}?status=success&message=Verification Done!!`
     );
   } catch (error) {
     console.error("Verification error:", error);

@@ -15,7 +15,7 @@ import RoleAuth from "../middlewares/RoleAuth";
 const router = express.Router();
 
 router.post("/create", IsLoggeedIn, RoleAuth("admin"), TestValidMid, create);
-router.get("/getAll", IsLoggeedIn, RoleAuth("admin"), getAll);
+router.get("/getAll", IsLoggeedIn, RoleAuth("admin", "user"), getAll); // use for get all tests and non attempted tests for a user
 router.get("/get-deleted-All", IsLoggeedIn, RoleAuth("admin"), getDeletedAll);
 router.put("/delete/:id", IsLoggeedIn, RoleAuth("admin"), softDelete);
 router.put("/edit/:id", IsLoggeedIn, RoleAuth("admin"), TestValidMid, edit);

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Test from "../models/test";
-
+import TestAttempt from "../models/testAttempt";
 import { JsonOne, JsonAll } from "../utils/responseFun";
 
 import { Request, Response } from "express";
@@ -35,12 +35,16 @@ const getAll = async (req: Request, res: Response) => {
       page = "1",
       limit = "5",
       level = "All",
+      onlyUnattempted = "false",
+      userId,
     } = req.query as {
       search?: string;
       sortOrder?: "asc" | "desc";
       page?: string;
       limit?: string;
       level?: string;
+      onlyUnattempted?: string;
+      userId?: string;
     };
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -56,6 +60,12 @@ const getAll = async (req: Request, res: Response) => {
 
     if (level && level !== "All") {
       matchStage["level"] = level;
+    }
+    // Apply unattempted test filter if required
+    if (onlyUnattempted === "true" && userId) {
+      const attempts = await TestAttempt.find({ userId }).select("testId");
+      const attemptedIds = attempts.map((a) => a.testId); 
+      matchStage["_id"] = { $nin: attemptedIds };
     }
 
     const aggregation: any[] = [
@@ -86,7 +96,7 @@ const getAll = async (req: Request, res: Response) => {
       parseInt(limit)
     );
   } catch {
-    JsonOne(res, 500, "unexpected error occurred while sign up", false);
+    JsonOne(res, 500, "unexpected error occurred while fetching tests", false);
   }
 };
 
@@ -223,4 +233,4 @@ const getDeletedAll = async (req: Request, res: Response) => {
   }
 };
 
-export { create, getAll, softDelete, restore, edit , getDeletedAll };
+export { create, getAll, softDelete, restore, edit, getDeletedAll };

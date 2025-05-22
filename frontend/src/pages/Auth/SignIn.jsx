@@ -5,7 +5,7 @@ import { Formik } from "formik";
 import { getMe, signin } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import {InputField} from "../../components/index";
+import { InputField } from "../../components/index";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const SignIn = () => {
@@ -43,7 +43,10 @@ const SignIn = () => {
           localStorage.setItem("data", JSON.stringify(response?.data?.data));
         }
 
-        setTimeout(() => navigate("/dashboard/viewTest"), 3000);
+        const role = response?.data?.data?.role;
+        const path =
+          role === "admin" ? "/dashboard/viewTest" : "/dashboard/assessments";
+        setTimeout(() => navigate(path), 3000);
       } else if (response?.status === 403) {
         toast.error(message);
         setTimeout(() => navigate("/resend-verify"), 3000);

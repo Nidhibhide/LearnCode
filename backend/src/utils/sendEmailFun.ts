@@ -12,7 +12,7 @@ const transporterFun = () => {
 };
 
 const mailOptionsForVerify = (email: string, token: string) => {
-  const verifyUrl = `http://localhost:8080/api/user/verify/${token}`;
+  const verifyUrl = `http://localhost:8080/api/auth/verify/${token}`;
 
   const mailOptions = {
     from: process.env.USER,
@@ -32,7 +32,7 @@ const mailOptionsForVerify = (email: string, token: string) => {
 };
 
 const mailOptionsForVResetPass = (email: string, token: string) => {
-  const resetUrl = `http://localhost:8080/api/user/resetPass/${token}`;
+  const resetUrl = `http://localhost:8080/api/auth/resetPass/${token}`;
 
   const mailOptions = {
     from: process.env.USER,

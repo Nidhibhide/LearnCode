@@ -84,6 +84,12 @@ const login = async (req: Request, res: Response) => {
       secure: true,
       maxAge: 60 * 60 * 1000,
     };
+    //     const cookieOptions = {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "None",
+    //   maxAge: 60 * 60 * 1000,
+    // }; this i can use for mobile & laptop both in secure way
     res.cookie("token", token, cookieOptions);
 
     return JsonOne(res, 200, "Login successful", true);

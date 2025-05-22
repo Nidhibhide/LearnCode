@@ -4,6 +4,7 @@ import { Tooltip } from "./index";
 import { useNavigate } from "react-router-dom";
 
 const TestCard = ({ test }) => {
+  const role = JSON.parse(localStorage.getItem("data"))?.role;
   const navigate = useNavigate();
   const levelColor = {
     Basic: "border-green-400 bg-green-100",
@@ -18,13 +19,13 @@ const TestCard = ({ test }) => {
   };
 
   const handleDelete = () => {
-    navigate(`/dashboard/viewTest/deleteTest/${test?._id}`,{
-      state:{name:test?.name}
+    navigate(`/dashboard/viewTest/deleteTest/${test?._id}`, {
+      state: { name: test?.name },
     });
   };
   const handleEdit = () => {
-    navigate(`/dashboard/viewTest/editTest/${test?._id}`,{
-      state:{test:test}
+    navigate(`/dashboard/viewTest/editTest/${test?._id}`, {
+      state: { test: test },
     });
   };
 
@@ -35,13 +36,14 @@ const TestCard = ({ test }) => {
       } shadow-md rounded-2xl p-5 hover:shadow-xl transition duration-300 h-[200px] w-[300px] relative`}
     >
       <h2 className="text-lg font-bold mb-2 ">{test.name}</h2>
-      <div className="flex absolute top-4 right-4 gap-2">
-        {/* Delete Icon with Tooltip */}
 
-        <Tooltip icon={MdDelete} label="Delete" onClick={handleDelete} />
-        {/* Edit Icon with Tooltip */}
-        <Tooltip icon={MdModeEditOutline} label="Edit" onClick={handleEdit} />
-      </div>
+      {role === "admin" && (
+        <div className="flex absolute top-4 right-4 gap-2">
+          <Tooltip icon={MdDelete} label="Delete" onClick={handleDelete} />
+
+          <Tooltip icon={MdModeEditOutline} label="Edit" onClick={handleEdit} />
+        </div>
+      )}
 
       <p className="text-base text-gray-600">
         <strong>Language:</strong> {test.language}
@@ -52,10 +54,16 @@ const TestCard = ({ test }) => {
       <p className="text-base text-gray-600">
         <strong>Questions:</strong> {test.numOfQuestions}
       </p>
-      <p className="text-base text-gray-500 mt-2">
-        <strong>Created: </strong>
-        {new Date(test.createdAt).toLocaleDateString()}
-      </p>
+      {role === "user" && (
+        <div className="mt-4 text-center">
+          <button
+            // onClick={handleStart}
+            className=" py-2 w-full text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Start
+          </button>
+        </div>
+      )}
     </div>
   );
 };
