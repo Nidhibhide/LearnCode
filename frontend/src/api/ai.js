@@ -1,10 +1,8 @@
 import globalaxios from "../globalaxios";
 
-export const getAllAttempts = async (filters, user) => {
+export const generateQues= async (data) => {
   try {
-    const res = await globalaxios.get(`/attempts/getAttempted/${user}`, {
-      params: filters,
-    });
+    const res = await globalaxios.post("/ai/generateQue", data);
     return res;
   } catch (err) {
     return (

@@ -15,16 +15,19 @@ import {
   Setting,
   Logout,
   RestoreTest,
-  Assessments,MyScores
+  Assessments,
+  MyScores,
 } from "./pages/Dashboard/Components/Content/index";
 import {
   EditTest,
   DeleteTest,
+  Preview,
 } from "./pages/Dashboard/Components/Content/Components/ViewTest/Components/index";
 import {
   ChangePassword,
   EditProfile,
 } from "./pages/Dashboard/Components/Content/Components/Setting/Components/index";
+import { QuestionsList } from "./pages/Dashboard/Components/Content/Components/Assessments/Components/index";
 import { Dashboard } from "./pages/dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -93,7 +96,7 @@ function App() {
                 </RoleAuth>
               }
             />
-             <Route
+            <Route
               path="assessments"
               element={
                 <RoleAuth allowedRoles={["user"]}>
@@ -101,11 +104,28 @@ function App() {
                 </RoleAuth>
               }
             />
-             <Route
+            <Route
+              path="questionsList"
+              element={
+                <RoleAuth allowedRoles={["user"]}>
+                  <QuestionsList />
+                </RoleAuth>
+              }
+            />
+            {/* </Route> */}
+            <Route
               path="myScores"
               element={
                 <RoleAuth allowedRoles={["user"]}>
                   <MyScores />
+                </RoleAuth>
+              }
+            />
+            <Route
+              path="preview"
+              element={
+                <RoleAuth allowedRoles={["admin", "user"]}>
+                  <Preview />
                 </RoleAuth>
               }
             />

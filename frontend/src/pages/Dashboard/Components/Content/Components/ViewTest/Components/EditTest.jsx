@@ -20,8 +20,16 @@ function EditTest() {
   const navigate = useNavigate();
   const test = state?.test || "Not Available";
   useEffect(() => {
-    onOpen();
-  }, [onOpen]);
+    if (test && testId) {
+      onOpen();
+    }
+  }, [onOpen, test, testId]);
+
+  const handleOpenChange = (open) => {
+    if (!open) {
+      navigate(-1); //  Go back to previous page when modal is closed
+    }
+  };
 
   //validation schema
   const validationSchema = Yup.object().shape({
@@ -53,7 +61,7 @@ function EditTest() {
   });
 
   const statusMessages = {
-    201: "Test Deleted! Refresh the page to see the latest changes ",
+    201: "Test Updated! Refresh the page to see the latest changes ",
     404: "Test not found",
     500: "Unexpected error occurred while update test",
   };
@@ -80,7 +88,7 @@ function EditTest() {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={handleOpenChange}>
         <ModalContent>
           {() => (
             <>

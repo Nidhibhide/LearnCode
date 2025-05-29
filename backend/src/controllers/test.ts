@@ -2,18 +2,20 @@ import mongoose from "mongoose";
 import Test from "../models/test";
 import TestAttempt from "../models/testAttempt";
 import { JsonOne, JsonAll } from "../utils/responseFun";
-
+import { generateQuestions } from "../utils/GenerateQuestions";
 import { Request, Response } from "express";
 
 const create = async (req: Request, res: Response) => {
   const { name, numOfQuestions, language, level } = req.body;
 
   try {
+    const questions = await generateQuestions(language, level, numOfQuestions);
     const test = await Test.create({
       name,
       numOfQuestions,
       language,
       level,
+      questions,
     });
     if (!test) {
       return JsonOne(res, 500, "Failed to create test", false);
@@ -21,12 +23,13 @@ const create = async (req: Request, res: Response) => {
 
     await test.save();
 
-    JsonOne(res, 201, `${name} test created successfully  `, true);
+    JsonOne(res, 201, `${name} created successfully  `, true);
   } catch (error) {
-    JsonOne(res, 500, "unexpected error occurred while sign up", false);
+    JsonOne(res, 500, "unexpected error occurred while create test", false);
   }
 };
 
+//get all and unattempted tests
 const getAll = async (req: Request, res: Response) => {
   try {
     const {
@@ -64,7 +67,7 @@ const getAll = async (req: Request, res: Response) => {
     // Apply unattempted test filter if required
     if (onlyUnattempted === "true" && userId) {
       const attempts = await TestAttempt.find({ userId }).select("testId");
-      const attemptedIds = attempts.map((a) => a.testId); 
+      const attemptedIds = attempts.map((a) => a.testId);
       matchStage["_id"] = { $nin: attemptedIds };
     }
 
@@ -79,6 +82,7 @@ const getAll = async (req: Request, res: Response) => {
           language: 1,
           level: 1,
           numOfQuestions: 1,
+          questions: 1,
           createdAt: 1,
         },
       },
@@ -155,12 +159,31 @@ const edit = async (req: Request, res: Response) => {
   try {
     const { name, numOfQuestions, language, level } = req.body;
     const { id } = req.params;
+    const oldTest = await Test.findById(id);
+    if (!oldTest) {
+      return JsonOne(res, 404, "Old Test not found", false);
+    }
 
-    const updatedTest = await Test.findByIdAndUpdate(
-      id,
-      { name, numOfQuestions, language, level },
-      { new: true }
-    );
+    //check required to generate que or not
+    const shouldUpdateQuestions =
+      oldTest.language !== language ||
+      oldTest.level !== level ||
+      oldTest.numOfQuestions !== numOfQuestions;
+
+    let updatedFields: any = { name, numOfQuestions, language, level };
+
+    if (shouldUpdateQuestions) {
+      const newQuestions = await generateQuestions(
+        language,
+        level,
+        numOfQuestions
+      );
+      updatedFields = { ...updatedFields, questions: newQuestions };
+    }
+
+    const updatedTest = await Test.findByIdAndUpdate(id, updatedFields, {
+      new: true,
+    });
 
     if (!updatedTest) {
       return JsonOne(res, 404, "Test not found", false);
@@ -170,6 +193,7 @@ const edit = async (req: Request, res: Response) => {
     JsonOne(res, 500, "unexpected error occurred while updating test", false);
   }
 };
+
 const getDeletedAll = async (req: Request, res: Response) => {
   try {
     const {
@@ -233,4 +257,108 @@ const getDeletedAll = async (req: Request, res: Response) => {
   }
 };
 
-export { create, getAll, softDelete, restore, edit, getDeletedAll };
+//get completed tests and on going tests
+const getOngoing = async (req: Request, res: Response) => {
+  try {
+    const { user } = req.params;
+    const userObjectId = new mongoose.Types.ObjectId(user);
+
+    const {
+      search = "",
+      sortOrder = "desc",
+      page = "1",
+      limit = "5",
+      level = "All",
+      onlyOnGoing = "false",
+    } = req.query as {
+      search?: string;
+      sortOrder?: "asc" | "desc";
+      page?: string;
+      limit?: string;
+      level?: string;
+      onlyOnGoing?: string;
+    };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const sort = sortOrder === "asc" ? 1 : -1;
+
+    const aggregation: any[] = [
+      { $match: { userId: userObjectId } },
+      {
+        $lookup: {
+          from: "tests",
+          localField: "testId",
+          foreignField: "_id",
+          as: "test",
+        },
+      },
+      { $unwind: "$test" },
+    ];
+
+    const matchStage: any = {
+      $or: [
+        { "test.name": { $regex: search, $options: "i" } },
+        { "test.language": { $regex: search, $options: "i" } },
+      ],
+    };
+
+    if (onlyOnGoing === "true") {
+      matchStage.completedAt = null;
+    } else if (onlyOnGoing === "false") {
+      matchStage.completedAt = { $ne: null };
+    }
+
+    if (level !== "All") {
+      matchStage["test.level"] = level;
+    }
+
+    if (Object.keys(matchStage).length > 0) {
+      aggregation.push({ $match: matchStage });
+    }
+
+    aggregation.push({
+      $facet: {
+        data: [
+          { $sort: { completedAt: sort } },
+          { $skip: skip },
+          { $limit: parseInt(limit) },
+          {
+            $project: {
+              testId: "$test._id",
+              name: "$test.name",
+              language: "$test.language",
+              level: "$test.level",
+              numOfQuestions: "$test.numOfQuestions",
+              questions: "$test.questions",
+              score: 1,
+              completedAt: 1,
+            },
+          },
+        ],
+        total: [{ $count: "count" }],
+      },
+    });
+
+    const result = await TestAttempt.aggregate(aggregation);
+    const data = result[0].data;
+    const total = result[0].total[0]?.count || 0;
+
+    JsonAll(
+      res,
+      200,
+      "Attempted Tests fetched successfully",
+      data,
+      total,
+      parseInt(page),
+      parseInt(limit)
+    );
+  } catch (error) {
+    JsonOne(
+      res,
+      500,
+      "Unexpected error occurred while fetching attempted tests",
+      false
+    );
+  }
+};
+export { create, getAll, softDelete, restore, edit, getDeletedAll, getOngoing };

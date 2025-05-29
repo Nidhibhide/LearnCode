@@ -1,13 +1,12 @@
-// import { getAll} from "../controllers/test";
 import express from "express";
 import IsLoggeedIn from "../middlewares/TokenAuth";
-import { getAttempted } from "../controllers/testAttempt";
+
+import {generateQuestions  } from "../controllers/ai";
 
 import RoleAuth from "../middlewares/RoleAuth";
 
 const router = express.Router();
 
-
-router.get("/getAttempted/:user", IsLoggeedIn, RoleAuth("user"), getAttempted);
+router.post("/generateQue", IsLoggeedIn, RoleAuth("user"), generateQuestions );
 
 export default router;

@@ -19,8 +19,16 @@ function DeleteTest() {
   const navigate = useNavigate();
   const name = state?.name || "Not Available";
   useEffect(() => {
-    onOpen();
-  }, [onOpen]);
+    if (testId && name) {
+      onOpen();
+    }
+  }, [onOpen, testId]);
+
+  const handleOpenChange = (open) => {
+    if (!open) {
+      navigate(-1); //  Go back to previous page when modal is closed
+    }
+  };
   const statusMessages = {
     200: "Test Deleted! Refresh the page to see the latest changes",
     400: "Invalid test ID",
@@ -47,7 +55,7 @@ function DeleteTest() {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={handleOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>

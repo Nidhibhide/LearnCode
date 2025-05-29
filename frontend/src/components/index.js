@@ -4,6 +4,7 @@ import Tooltip from "./ToolTip";
 import SearchFilters from "./SearchFilters";
 import PaginationControls from "./PaginationControls";
 import NotFoundControls from "./NotFoundControls";
+import TableComponent from "./TableComponent";
 
 export {
   InputField,
@@ -12,4 +13,5 @@ export {
   SearchFilters,
   PaginationControls,
   NotFoundControls,
+  TableComponent
 };

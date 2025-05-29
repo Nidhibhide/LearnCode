@@ -63,3 +63,16 @@ export const restore = async (id) => {
     );
   }
 };
+
+export const getAllOngoing = async (filters, user) => {
+  try {
+    const res = await globalaxios.get(`/test/getOngoing/${user}`, {
+      params: filters,
+    });
+    return res;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};

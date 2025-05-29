@@ -7,6 +7,8 @@ import {
 import { getAll } from "../../../../../../api/test";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { Preview } from "./Components/index";
 
 const index = () => {
   const [tests, setTests] = useState([]);
@@ -16,6 +18,9 @@ const index = () => {
 
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
+  const location = useLocation();
+  const preview = location.state?.preview;
+ 
 
   //api
   const filters = {
@@ -75,6 +80,7 @@ const index = () => {
       {/* Not Found */}
       {total === 0 && <NotFoundControls />}
       <Outlet />
+      {preview && <Preview />}
     </div>
   );
 };

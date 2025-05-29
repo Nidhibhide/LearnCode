@@ -1,3 +1,4 @@
 import DeleteTest from "./DeleteTest";
 import EditTest from "./EditTest";
-export {DeleteTest,EditTest}
+import Preview from "./Preview"
+export {DeleteTest,EditTest,Preview}

@@ -28,6 +28,22 @@ const TestCard = ({ test }) => {
       state: { test: test },
     });
   };
+  const handleClick = () => {
+    if (role === "admin") {
+      navigate("/dashboard/viewTest", {
+        state: { preview: true, questions: test.questions },
+      });
+    } else {
+      navigate("/dashboard/assessments", {
+        state: { preview: true, questions: test.questions },
+      });
+    }
+  };
+  const handleStart = () => {
+    navigate("/dashboard/questionsList", {
+      state: { test: test },
+    });
+  };
 
   return (
     <div
@@ -51,13 +67,17 @@ const TestCard = ({ test }) => {
       <p className={`text-base ${levelText[test.level]} `}>
         <strong>Level:</strong> {test.level}
       </p>
-      <p className="text-base text-gray-600">
-        <strong>Questions:</strong> {test.numOfQuestions}
+      <p onClick={handleClick} className="text-base text-gray-600">
+        <strong>Questions:</strong>
+        <span className="text-blue-600 hover:underline hover:font-medium cursor-pointer">
+          {" "}
+          Preview
+        </span>
       </p>
       {role === "user" && (
         <div className="mt-4 text-center">
           <button
-            // onClick={handleStart}
+            onClick={handleStart}
             className=" py-2 w-full text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             Start

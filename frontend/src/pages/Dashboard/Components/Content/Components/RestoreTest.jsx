@@ -5,27 +5,32 @@ import {
   PaginationControls,
   NotFoundControls,
 } from "../../../../../components/index";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@heroui/react";
+
 import { toast } from "react-toastify";
 import { FaArrowsRotate } from "react-icons/fa6";
-
-// Column definitions
-const columns = [
-  { key: "name", label: "TEST NAME" },
-  { key: "numOfQuestions", label: "NO. OF QUESTIONS" },
-  { key: "language", label: "LANGUAGE" },
-  { key: "level", label: "LEVEL" },
-  { key: "restore", label: "RESTORE" },
-];
+import { TableComponent } from "../../../../../components/index";
 
 function RestoreTest() {
+  // Column definitions
+  const columns = [
+    { key: "name", label: "TEST NAME" },
+    { key: "numOfQuestions", label: "NO. OF QUESTIONS" },
+    { key: "language", label: "LANGUAGE" },
+    { key: "level", label: "LEVEL" },
+
+    {
+      key: "restore",
+      label: "RESTORE",
+      render: (row) => (
+        <button
+          onClick={() => handleRestore(row)}
+          className="text-blue-600 hover:text-blue-800"
+        >
+          <FaArrowsRotate size={14} />
+        </button>
+      ),
+    },
+  ];
   const [tests, setTests] = useState([]);
   const [selectedKey, setSelectedKey] = useState(null);
 
@@ -93,47 +98,13 @@ function RestoreTest() {
       />
 
       {/* Table */}
-      <div className="mt-6">
-        <Table
-          aria-label="Table showing deleted tests with restore option"
-          selectionMode="single"
-          selectedKeys={selectedKey ? [selectedKey] : []}
-          onSelectionChange={(keys) => {
-            const keyArray = Array.from(keys);
-            setSelectedKey(keyArray[0]);
-          }}
-        >
-          <TableHeader>
-            {columns.map((col) => (
-              <TableColumn
-                key={col.key}
-                className="text-sm font-bold text-black"
-              >
-                {col.label}
-              </TableColumn>
-            ))}
-          </TableHeader>
 
-          <TableBody>
-            {tests.map((test) => (
-              <TableRow key={test._id}>
-                <TableCell>{test.name}</TableCell>
-                <TableCell>{test.numOfQuestions}</TableCell>
-                <TableCell>{test.language}</TableCell>
-                <TableCell>{test.level}</TableCell>
-                <TableCell>
-                  <button
-                    onClick={() => handleRestore(test)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <FaArrowsRotate size={14} />
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <TableComponent
+        columns={columns}
+        rows={tests}
+        selectedKey={selectedKey}
+        setSelectedKey={setSelectedKey}
+      />
 
       {/* Pagination / Not Found */}
       {total !== 0 ? (

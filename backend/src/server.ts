@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
 import testRoutes from "./routes/testRoutes";
 import authRoutes from "./routes/authRoutes";
-import testAttemptRoutes from "./routes/testAttemptRoutes";
+import aiRoutes from "./routes/aiRoutes";
 
 const corsOptions = {
   origin: "http://localhost:5173", // Frontend origin
@@ -34,7 +34,7 @@ app.use("/api/auth", authRoutes);
 //testRoutes
 app.use("/api/test", testRoutes);
 //testAttemptRoutes
-app.use("/api/attempts", testAttemptRoutes);
+app.use("/api/ai", aiRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(` Server running on port ${PORT} `));

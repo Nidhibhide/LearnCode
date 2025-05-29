@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+const QuestionSchema = new mongoose.Schema({
+  questionText: { type: String, required: true },
+  expectedOutput: { type: String, required: true },
+  sampleInput: { type: String }, // optional
+});
 
 const TestSchema = new mongoose.Schema(
   {
@@ -14,14 +19,16 @@ const TestSchema = new mongoose.Schema(
       enum: ["Basic", "Intermediate", "Advanced"],
       required: true,
     },
-    
-    isDeleted: { type: Boolean, default:false },//softdelete field
+    questions: [QuestionSchema], // embedded on creation
+    isDeleted: { type: Boolean, default: false },
   },
-  {
-    timestamps: true, // adds createdAt and updatedAt
-  }
+  { timestamps: true }
 );
-
 const TestModel = mongoose.model("Test", TestSchema);
-
 export default TestModel;
+
+export interface IQuestion {
+  questionText: string;
+  sampleInput?: string;
+  expectedOutput: string;
+}

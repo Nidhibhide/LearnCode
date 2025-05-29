@@ -5,25 +5,22 @@ import {
   PaginationControls,
   NotFoundControls,
 } from "../../../../components/index";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  user,
-} from "@heroui/react";
-import { toast } from "react-toastify";
-import { getAllAttempts } from "../../../../api/attempts";
+import { TableComponent } from "../../../../components/index";
+
+import { getAllOngoing } from "../../../../api/test";
 
 // Column definitions
 const columns = [
   { key: "name", label: "TEST NAME" },
-  { key: " score", label: "SCORE" },
+  { key: "score", label: "SCORE" },
   { key: "language", label: "LANGUAGE" },
   { key: "level", label: "LEVEL" },
-  { key: "completedAt", label: "COMPLETED AT" },
+
+  {
+    key: "completedAt",
+    label: "COMPLETED AT",
+    render: (row) => new Date(row.completedAt).toLocaleDateString("en-GB"),
+  },
 ];
 
 function MyScores() {
@@ -46,7 +43,7 @@ function MyScores() {
 
   const handleViewTests = async () => {
     try {
-      const response = await getAllAttempts(filters, user);
+      const response = await getAllOngoing(filters, user);
       setTotal(response?.data?.total || 0);
       setTests(response?.data?.data || []);
     } catch (err) {
@@ -72,43 +69,12 @@ function MyScores() {
         setSortOrder={setSortOrder}
       />
 
-      {/* Table */}
-      <div className="mt-6">
-        <Table
-          aria-label="Table showing deleted tests with restore option"
-          selectionMode="single"
-          selectedKeys={selectedKey ? [selectedKey] : []}
-          onSelectionChange={(keys) => {
-            const keyArray = Array.from(keys);
-            setSelectedKey(keyArray[0]);
-          }}
-        >
-          <TableHeader>
-            {columns.map((col) => (
-              <TableColumn
-                key={col.key}
-                className="text-sm font-bold text-black"
-              >
-                {col.label}
-              </TableColumn>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {tests.map((test) => (
-              <TableRow key={test._id}>
-                <TableCell>{test.name}</TableCell>
-                <TableCell>{test.language}</TableCell>
-                <TableCell>{test.level}</TableCell>
-                <TableCell>{test.score}</TableCell>
-                <TableCell>
-                  {new Date(test.completedAt).toLocaleDateString("en-GB")}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <TableComponent
+        columns={columns}
+        rows={tests}
+        selectedKey={selectedKey}
+        setSelectedKey={setSelectedKey}
+      />
 
       {/* Pagination / Not Found */}
       {total !== 0 ? (

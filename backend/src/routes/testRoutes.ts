@@ -5,6 +5,7 @@ import {
   restore,
   edit,
   getDeletedAll,
+  getOngoing,
 } from "../controllers/test";
 import express from "express";
 import IsLoggeedIn from "../middlewares/TokenAuth";
@@ -20,5 +21,6 @@ router.get("/get-deleted-All", IsLoggeedIn, RoleAuth("admin"), getDeletedAll);
 router.put("/delete/:id", IsLoggeedIn, RoleAuth("admin"), softDelete);
 router.put("/edit/:id", IsLoggeedIn, RoleAuth("admin"), TestValidMid, edit);
 router.put("/restore/:id", IsLoggeedIn, RoleAuth("admin"), restore);
+router.get("/getOngoing/:user", IsLoggeedIn, RoleAuth("user"), getOngoing);
 
 export default router;
