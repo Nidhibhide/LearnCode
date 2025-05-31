@@ -27,6 +27,13 @@ const Logout = () => {
       navigate("/");
     }
   };
+  const handleCancel = (onClose) => {
+    const role = JSON.parse(localStorage.getItem("data"))?.role;
+    onClose();
+    role === "admin"
+      ? navigate("/dashboard/viewTest")
+      : navigate("/dashboard/assessments");
+  };
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -42,8 +49,7 @@ const Logout = () => {
                   color="danger"
                   variant="light"
                   onPress={() => {
-                    onClose();
-                    navigate("/dashboard/viewTest");
+                    handleCancel(onClose);
                   }}
                 >
                   Cancel

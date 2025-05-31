@@ -27,7 +27,10 @@ import {
   ChangePassword,
   EditProfile,
 } from "./pages/Dashboard/Components/Content/Components/Setting/Components/index";
-import { QuestionsList } from "./pages/Dashboard/Components/Content/Components/Assessments/Components/index";
+import {
+  QuestionsList,
+  TestLayout,
+} from "./pages/Dashboard/Components/Content/Components/Assessments/Components/index";
 import { Dashboard } from "./pages/dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -109,6 +112,14 @@ function App() {
               element={
                 <RoleAuth allowedRoles={["user"]}>
                   <QuestionsList />
+                </RoleAuth>
+              }
+            />
+            <Route
+              path="TestLayout"
+              element={
+                <RoleAuth allowedRoles={["user"]}>
+                  <TestLayout />
                 </RoleAuth>
               }
             />

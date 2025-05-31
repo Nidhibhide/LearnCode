@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
+//no use still
 const generateQuestions = async (req: Request, res: Response) => {
   const { language, level, numOfQuestions } = req.body;
 

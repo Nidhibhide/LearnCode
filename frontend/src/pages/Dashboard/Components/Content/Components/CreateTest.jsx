@@ -1,4 +1,4 @@
-import InputField from "../../../../../components/InputField";
+import {InputField} from "../../../../../components/index";
 import { Formik } from "formik";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";

@@ -56,7 +56,7 @@ const Assessments = () => {
   };
   useEffect(() => {
     handleViewTests();
-  }, [level, sortOrder, search, page, selectedTab]);
+  }, [level, sortOrder, search, page, selectedTab,user]);
 
   return (
     <div className="py-12 px-4">

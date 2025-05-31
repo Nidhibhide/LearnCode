@@ -78,7 +78,7 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
 };
 const verifyUser = async (req: Request, res: Response) => {
   try {
-    console.log("API")
+ 
     const successURL = process.env.VERIFY_SUCCESS_URL;
     const failURL = process.env.VERIFY_FAILURE_URL;
     const { token } = req.params;

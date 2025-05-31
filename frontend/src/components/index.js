@@ -13,5 +13,5 @@ export {
   SearchFilters,
   PaginationControls,
   NotFoundControls,
-  TableComponent
+  TableComponent,
 };

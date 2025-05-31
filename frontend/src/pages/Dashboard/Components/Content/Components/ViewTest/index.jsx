@@ -20,7 +20,6 @@ const index = () => {
   const [total, setTotal] = useState(1);
   const location = useLocation();
   const preview = location.state?.preview;
- 
 
   //api
   const filters = {
@@ -34,7 +33,7 @@ const index = () => {
   const handleViewTests = async () => {
     try {
       const response = await getAll(filters);
-      // console.log(response?.data?.total)
+
       setTotal(response?.data?.total);
 
       setTests(response?.data?.data);

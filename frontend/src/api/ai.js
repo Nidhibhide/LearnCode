@@ -1,6 +1,7 @@
 import globalaxios from "../globalaxios";
 
-export const generateQues= async (data) => {
+//still no use
+export const generateQues = async (data) => {
   try {
     const res = await globalaxios.post("/ai/generateQue", data);
     return res;

@@ -1,7 +1,7 @@
 import googleIcon from "./google-icon.png";
 import codingImage from "./coding-image.jpg";
-import userImage from "./user.jpg";
-import adminImage from "./admin.avif";
-import NotFound from "./notFound.png"
+import userImage from "./userImage.png";
+import adminImage from "./adminImage.jpg";
+import NotFound from "./notFound.png";
 
-export { googleIcon, codingImage, userImage, adminImage,NotFound };
+export { googleIcon, codingImage, userImage, adminImage, NotFound };

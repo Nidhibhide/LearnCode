@@ -28,7 +28,7 @@ const ResetPassword = () => {
         password: values.password,
         email,
       };
-      console.log(data);
+     
       const response = await ChangePass(data);
 
       const message = statusMessages[response?.status];

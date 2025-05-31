@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { FaClipboard } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
@@ -9,13 +8,15 @@ import {
 } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
-import { adminImage } from "../../../images"; 
+import { adminImage, userImage } from "../../../images";
 
 const Sidebar = () => {
   const data = JSON.parse(localStorage.getItem("data"));
   const role = data?.role;
 
-  // Sidebar links defined inside the same file
+  // Select image based on role
+  const profileImage = role === "admin" ? adminImage : userImage;
+
   const sidebarLinks = [
     {
       to: "/dashboard/viewTest",
@@ -71,8 +72,8 @@ const Sidebar = () => {
         {/* Profile Section */}
         <div className="h-[150px] bg-blue-950 flex justify-center items-center gap-4">
           <img
-            className="object-fill rounded-full w-24 h-20"
-            src={adminImage}
+            className="object-fill w-20 h-20 rounded-full"
+            src={profileImage}
             alt="profile"
           />
           <div className="flex flex-col items-center justify-center">

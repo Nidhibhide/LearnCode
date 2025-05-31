@@ -41,7 +41,10 @@ const TestCard = ({ test }) => {
   };
   const handleStart = () => {
     navigate("/dashboard/questionsList", {
-      state: { test: test },
+      state: {
+        isAttempted: test?.completedAt === null ? true : false,
+        test: test,
+      },
     });
   };
 
@@ -80,7 +83,7 @@ const TestCard = ({ test }) => {
             onClick={handleStart}
             className=" py-2 w-full text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
           >
-            Start
+            {test?.completedAt === null ? "Resume" : "Start"}
           </button>
         </div>
       )}
