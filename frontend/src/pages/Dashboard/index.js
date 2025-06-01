@@ -1,4 +1,2 @@
-import Dashboard from "./dashboard";
-export {
-Dashboard
-};
+import DashboardPage from "./DashboardPage";
+export {DashboardPage}

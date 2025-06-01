@@ -31,7 +31,7 @@ import {
   QuestionsList,
   TestLayout,
 } from "./pages/Dashboard/Components/Content/Components/Assessments/Components/index";
-import { Dashboard } from "./pages/dashboard";
+import { DashboardPage } from "./pages/Dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -54,7 +54,7 @@ function App() {
             path="/dashboard"
             element={
               <RoleAuth allowedRoles={["admin", "user"]}>
-                <Dashboard />
+                <DashboardPage />
               </RoleAuth>
             }
           >

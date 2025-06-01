@@ -1,7 +1,7 @@
 import React from "react";
-import { Content } from "./Components/";
+import { Content } from "./Components";
 
-const dashboard = () => {
+const DashboardPage = () => {
   return (
     <>
       <div className="w-screen h-screen flex ">
@@ -11,4 +11,4 @@ const dashboard = () => {
   );
 };
 
-export default dashboard;
+export default DashboardPage;
