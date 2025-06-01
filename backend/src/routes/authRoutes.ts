@@ -18,7 +18,7 @@ import RoleAuth from "../middlewares/RoleAuth";
 
 const router = express.Router();
 
-router.get("/verify/:token", verifyUser);
+// router.get("/verify/:token", verifyUser);
 
 router.post("/reset-verify", EmailValidtorMid, resendVerificationEmail);
 
@@ -34,5 +34,6 @@ router.post(
 router.post("/forgotPassword", EmailValidtorMid, forgotPass);
 router.get("/resetPass/:token", resetPass); //not used
 router.get("/checkToken", checkToken);
+router.get("/verify/:token",verifyUser);
 
 export default router;

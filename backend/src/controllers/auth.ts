@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { JsonOne } from "../utils/responseFun";
 import expiretime from "../utils/expireTimeFun";
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import {
   mailOptionsForVResetPass,
   mailOptionsForVerify,
@@ -76,9 +76,8 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
     );
   }
 };
-const verifyUser = async (req: Request, res: Response) => {
+const verifyUser = async (req: Request, res: Response): Promise<void> => {
   try {
- 
     const successURL = process.env.VERIFY_SUCCESS_URL;
     const failURL = process.env.VERIFY_FAILURE_URL;
     const { token } = req.params;
@@ -113,39 +112,12 @@ const verifyUser = async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.error("Verification error:", error);
-    return res.status(500).json({
+    res.status(500).json({
       status: "fail",
       message: "Internal Server Error",
     });
   }
 };
-
-// const changePassword = async (req, res) => {
-//   try {
-//     const { oldPass, newPass } = req.body;
-//     const id = req.user?.id;
-
-//     if (!newPass || !oldPass) {
-//       return JsonOne(res, 400, "All fields are required");
-//     }
-
-//     const user = await UserModel.findById(id);
-//     if (!user) {
-//       return JsonOne(res, 200, "User not found", false);
-//     }
-
-//     const isMatch = await bcrypt.compare(oldPass, user.password);
-
-//     if (!isMatch) {
-//       return JsonOne(res, 400, "Old password incorrect", false);
-//     }
-
-//     const hashedPass = await bcrypt.hash(newPass, 10);
-//     user.password = hashedPass;
-
-//     return JsonOne(res, 200, "Password changed successfully", true);
-//   } catch (error) {}
-// };
 
 const forgotPass = async (req: Request, res: Response) => {
   try {

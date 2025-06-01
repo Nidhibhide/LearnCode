@@ -12,7 +12,7 @@ import aiRoutes from "./routes/aiRoutes";
 import testAttemptRoutes from "./routes/testAttempt";
 
 const corsOptions = {
-  origin: "http://localhost:5173", // Frontend origin
+  origin: ["http://localhost:5173", "https://learn-code-three.vercel.app"], // Frontend origin
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   credentials: true, // Allows cookies and headers like Authorization
