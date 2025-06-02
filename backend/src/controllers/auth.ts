@@ -59,6 +59,9 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
     if (!user) {
       return JsonOne(res, 404, "User not found", false);
     }
+    if (!user.password) {
+      return JsonOne(res, 404, "User stored password not found", false);
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
 

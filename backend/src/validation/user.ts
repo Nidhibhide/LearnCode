@@ -13,7 +13,7 @@ const userRegisterValidation = Joi.object({
 
   password: passwordValidator(),
 
-  role: selectValidator("Role", ["user", "admin"]),
+  // role: selectValidator("Role", ["user", "admin"]),
 });
 
 const LoginValidation = Joi.object({

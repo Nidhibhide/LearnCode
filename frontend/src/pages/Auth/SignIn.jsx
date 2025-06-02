@@ -12,7 +12,7 @@ const SignIn = () => {
   const statusMessages = {
     200: "Login successful",
     401: "Incorrect password",
-    404: "User not found",
+    404: "User or password not found",
     403: "User not verified",
     500: "Unexpected error occurred while sign in",
   };

@@ -4,23 +4,22 @@ const UserSchmea = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: false },
     isVerified: { type: Boolean, default: false },
     verificationToken: { type: String },
     expireTime: { type: Date, required: false },
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
+    authProvider: {
+      type: String,
+      enum: ["google", "local"],
+      default: "local",
+    },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
     },
-    // testAttempts: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "TestAttempt",
-    //   },
-    // ],//may be no use of it 
   },
   {
     timestamps: true,
@@ -30,4 +29,3 @@ const UserSchmea = new mongoose.Schema(
 const UserModel = mongoose.model("User", UserSchmea);
 
 export default UserModel;
-

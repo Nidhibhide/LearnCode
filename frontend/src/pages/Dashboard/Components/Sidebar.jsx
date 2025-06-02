@@ -8,14 +8,11 @@ import {
 } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
-import { adminImage, userImage } from "../../../images";
 
 const Sidebar = () => {
   const data = JSON.parse(localStorage.getItem("data"));
   const role = data?.role;
-
-  // Select image based on role
-  const profileImage = role === "admin" ? adminImage : userImage;
+  const name = data?.name;
 
   const sidebarLinks = [
     {
@@ -71,14 +68,15 @@ const Sidebar = () => {
       <div className="w-full h-full flex flex-col text-white">
         {/* Profile Section */}
         <div className="h-[150px] bg-blue-950 flex justify-center items-center gap-4">
-          <img
-            className="object-fill w-20 h-20 rounded-full"
-            src={profileImage}
-            alt="profile"
-          />
+          <div className="w-16 h-16 rounded-full bg-yellow-400 flex justify-center items-center">
+            <span className="text-3xl font-bold text-blue-950">
+              {name?.charAt(0).toUpperCase()}
+            </span>
+          </div>
+
           <div className="flex flex-col items-center justify-center">
-            <h1 className="text-xl font-semibold">{data?.name}</h1>
-            <p className="text-lg font-medium text-green-500">{role}</p>
+            <h1 className="text-xl font-semibold">{name[0].toUpperCase() + name.slice(1).toLowerCase()}</h1>
+            <p className="text-base font-medium text-green-500">{role.toUpperCase()}</p>
           </div>
         </div>
 

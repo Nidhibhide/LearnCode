@@ -17,15 +17,22 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const data = JSON.parse(localStorage.getItem("data"));
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
+  const { isOpen, onOpen } = useDisclosure();
+  const id = JSON.parse(localStorage.getItem("data"))?._id;
   useEffect(() => {
-    onOpen();
-  }, [onOpen]);
-
+    if (data) {
+      onOpen();
+    }
+  }, [data, onOpen]);
+  const handleOpenChange = (open) => {
+    if (!open) {
+      navigate(-1);
+    }
+  };
   const statusMessages = {
     201: "Profile updated! Refresh the page to see the latest changes.",
     404: "User not found",
+    400: "Cannot update email for Google-authenticated users",
     500: "Unexpected error occurred while update profile ",
   };
 
@@ -40,14 +47,14 @@ const EditProfile = () => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={handleOpenChange}>
         <ModalContent>
           {(onClose) => {
             const handleUpdateProfile = async (values, { resetForm }) => {
               try {
                 if (loading) return;
                 setLoading(true);
-                const res = await update(values);
+                const res = await update(values, id);
                 const message = statusMessages[res?.status];
 
                 if (res.status === 201 && message) {

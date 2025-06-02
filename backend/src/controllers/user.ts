@@ -2,6 +2,7 @@ import User from "../models/user";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { OAuth2Client } from "google-auth-library";
 import crypto from "crypto";
 import { JsonOne } from "../utils/responseFun";
 import expiretime from "../utils/expireTimeFun";
@@ -9,7 +10,7 @@ import { Request, Response } from "express";
 import { mailOptionsForVerify, transporterFun } from "../utils/sendEmailFun";
 
 const registerUser = async (req: Request, res: Response) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -20,7 +21,6 @@ const registerUser = async (req: Request, res: Response) => {
       name,
       email,
       password,
-      role,
     });
     if (!user) {
       return JsonOne(res, 500, "Failed to create user", false);
@@ -54,16 +54,80 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+const googleLogin = async (req: Request, res: Response) => {
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  const { token } = req.body;
+
+  try {
+    if (!token) {
+      return JsonOne(res, 400, "Google token is required", false);
+    }
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) return JsonOne(res, 404, "Invalid Google token", false);
+
+    const { email, name, sub } = payload;
+    if (!email || !name || !sub) {
+      return JsonOne(res, 400, "Incomplete Google user data", false);
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        password: sub,
+        isVerified: true,
+        role: "user",
+        authProvider: "google",
+      });
+
+      if (!user) {
+        return JsonOne(res, 500, "Failed to create user", false);
+      }
+      const hashedPass = await bcrypt.hash(sub, 10);
+      user.password = hashedPass;
+
+      await user.save();
+    }
+    const jwtToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET_KEY as string,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      maxAge: 60 * 60 * 1000,
+    };
+
+    res.cookie("token", jwtToken, cookieOptions);
+
+    return JsonOne(res, 200, "Login successful", true);
+  } catch (err) {
+    JsonOne(res, 500, "Google login failed", false);
+  }
+};
+
 const login = async (req: Request, res: Response) => {
   try {
     const { password, email } = req.body;
     const user = await User.findOne({ email });
-    if (!user) {
-      return JsonOne(res, 404, "User not found", false);
+    if (!user || !user.password) {
+      return JsonOne(res, 404, "User or password not found not found", false);
     }
     if (!user.isVerified) {
       return JsonOne(res, 403, "User is not verified", false);
     }
+
     //compare password
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -124,8 +188,18 @@ const logOut = async (req: Request, res: Response) => {
 const updateProfile = async (req: Request, res: Response) => {
   try {
     const { name, email } = req.body;
-    const updatedUser = await User.findOneAndUpdate(
-      { email: email },
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (user?.authProvider === "google" && email!==user?.email) {
+      return JsonOne(
+        res,
+        400,
+        "Cannot update email for Google-authenticated users",
+        false
+      );
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
       { name, email },
       { new: true }
     ).select("createdAt email isVerified name role _id");
@@ -139,4 +213,4 @@ const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
-export { registerUser, login, getMe, logOut, updateProfile };
+export { registerUser, login, getMe, logOut, updateProfile, googleLogin };

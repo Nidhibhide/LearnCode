@@ -40,7 +40,7 @@ export const passwordValidator = (
   label = "Password",
   min = 5,
   max = 10,
-  required = true
+  required = false
 ) => {
   let rule = Joi.string()
     .pattern(/^\d+$/)

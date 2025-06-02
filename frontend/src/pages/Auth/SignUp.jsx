@@ -1,21 +1,25 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { InputField } from "../../components/index";
 import { Formik } from "formik";
-import { googleIcon, codingImage } from "../../images/index";
-import { signup } from "../../api/user";
+import { codingImage } from "../../images/index";
+import { signup, signinwithGoogle, getMe } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import {InputField} from "../../components/index";
+import { GoogleLogin } from "@react-oauth/google";
 
 const SignUp = () => {
   const statusMessages = {
     409: "User already exists",
     201: "User registered successfully. Verification email has been sent to ",
-    500: "Unexpected error occurred while sign up",
+    500: "Unexpected error occurred",
+    400: "Google token is required",
+    404: "Incomplete Google user data",
+    200: "Login successful",
   };
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   // handle sign up
   const handleSignUp = async (values, { resetForm }) => {
     try {
@@ -38,7 +42,33 @@ const SignUp = () => {
     }
   };
 
-  // validation schema
+  //handle sign in with google
+  const handleGoogleLogin = async (values) => {
+    try {
+      const token = values?.credential;
+
+      const response = await signinwithGoogle(token);
+      const message = statusMessages[response?.status];
+
+      if (response?.status === 200) {
+        toast.success(message);
+        //fetch user api
+        const response = await getMe();
+        if (response?.status === 200) {
+          localStorage.setItem("data", JSON.stringify(response?.data?.data));
+        }
+        const role = response?.data?.data?.role;
+        const path =
+          role === "admin" ? "/dashboard/viewTest" : "/dashboard/assessments";
+        setTimeout(() => navigate(path), 3000);
+      } else if (message) {
+        toast.error(message);
+      }
+    } catch (err) {
+      alert(err.message || "Sign in with google failed");
+    }
+  };
+
   const validationSchema = Yup.object({
     name: Yup.string()
       .matches(/^[a-zA-Z\s]+$/, "Only alphabets and spaces are allowed")
@@ -53,9 +83,6 @@ const SignUp = () => {
       .min(5, "Password must be at least 5 characters")
       .max(10, "Password must not exceed 10 characters")
       .required("Password is required"),
-    role: Yup.string()
-      .oneOf(["user", "admin"], "Invalid role")
-      .required("Role is required"),
   });
 
   return (
@@ -68,13 +95,25 @@ const SignUp = () => {
           <p className="font-semibold text-2xl md:text-3xl mb-14">
             Welcome to LearnCode! Please sign up to start your coding journey.
           </p>
-          <button className="bg-white mb-8 rounded-lg border border-gray-300 flex justify-center items-center py-3">
-            <img className="object-contain h-7 w-7" src={googleIcon} />
-            <span className="text-base font-semibold">Sign in with Google</span>
-          </button>
 
+          <div className="mb-8 flex justify-center ">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => toast.error("Google Login Failed")}
+              theme="filled_blue"
+              size="large"
+              text="continue_with"
+              width="270"
+            />
+          </div>
+
+          <div className="flex items-center mb-6">
+            <div className=" flex-1 border-t border-gray-300"></div>
+            <span className="mx-4 text-gray-500 font-semibold">OR</span>
+            <div className=" flex-1 border-t border-gray-300"></div>
+          </div>
           <Formik
-            initialValues={{ name: "", email: "", password: "", role: "" }}
+            initialValues={{ name: "", email: "", password: "" }}
             validationSchema={validationSchema}
             onSubmit={handleSignUp}
           >
@@ -103,14 +142,6 @@ const SignUp = () => {
                       name="password"
                       type="password"
                       placeholder="Enter your password"
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1">
-                    <InputField
-                      label="Role"
-                      name="role"
-                      as="select"
-                      options={["user", "admin"]}
                     />
                   </div>
                 </div>

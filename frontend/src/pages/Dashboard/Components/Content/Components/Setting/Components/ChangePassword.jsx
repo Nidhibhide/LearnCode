@@ -7,7 +7,7 @@ import {
 } from "@heroui/react";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { Formik} from "formik";
+import { Formik } from "formik";
 import { InputField } from "../../../../../../../components/index";
 import * as Yup from "yup";
 import {
@@ -21,11 +21,18 @@ const ChangePassword = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const email = JSON.parse(localStorage.getItem("data"))?.email;
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  useEffect(() => {
-    onOpen();
-  }, [onOpen]);
+  const { isOpen, onOpen } = useDisclosure();
 
+  useEffect(() => {
+    if (email) {
+      onOpen();
+    }
+  }, [email, onOpen]);
+  const handleOpenChange = (open) => {
+    if (!open) {
+      navigate(-1);
+    }
+  };
   const statusMessages = {
     401: "Incorrect password",
     404: "User not found",
@@ -101,7 +108,7 @@ const ChangePassword = () => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={handleOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
@@ -130,7 +137,6 @@ const ChangePassword = () => {
                 >
                   {({ handleSubmit }) => (
                     <>
-               
                       <div className="flex flex-col space-y-4 mb-12">
                         <div className={step === 0 ? "" : "hidden"}>
                           <InputField
@@ -169,7 +175,6 @@ const ChangePassword = () => {
                           ? "Verify Password"
                           : "Change Password"}
                       </button>
-                 
                     </>
                   )}
                 </Formik>

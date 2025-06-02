@@ -2,6 +2,7 @@ import {
   registerUser,
   login,
   getMe,
+  googleLogin,
   logOut,
   updateProfile,
 } from "../controllers/user";
@@ -17,10 +18,10 @@ import RoleAuth from "../middlewares/RoleAuth";
 const router = express.Router();
 
 router.post("/register", userRegisterMid, registerUser);
-
+router.post("/google-login", googleLogin);
 router.post("/login", LoginValidtorMid, login);
 router.put(
-  "/updateProfile",
+  "/updateProfile/:id",
   IsLoggeedIn,
   RoleAuth("admin", "user"),
   userUpdateMid,

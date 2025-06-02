@@ -86,6 +86,18 @@ export const signin = async (data) => {
   }
 };
 
+export const signinwithGoogle = async (token) => {
+  try {
+    console.log("Token", token);
+    const res = await globalaxios.post("/user/google-login", { token });
+    return res;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};
+
 export const logout = async () => {
   try {
     const res = await globalaxios.get("/user/logout");
@@ -108,9 +120,9 @@ export const checkToken = async () => {
   }
 };
 
-export const update = async (data) => {
+export const update = async (data, id) => {
   try {
-    const res = await globalaxios.put("/user/updateProfile", data);
+    const res = await globalaxios.put(`/user/updateProfile/${id}`, data);
     return res;
   } catch (err) {
     return (
