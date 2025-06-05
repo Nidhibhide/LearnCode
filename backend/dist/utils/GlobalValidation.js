@@ -34,7 +34,7 @@ const emailValidator = (label = "Email", required = true) => {
 };
 exports.emailValidator = emailValidator;
 // 3. Password Validator (digits only)
-const passwordValidator = (label = "Password", min = 5, max = 10, required = false) => {
+const passwordValidator = (label = "Password", min = 5, max = 10, required = true) => {
     let rule = joi_1.default.string()
         .pattern(/^\d+$/)
         .min(min)

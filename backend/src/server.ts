@@ -4,8 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
 import cookieParser from "cookie-parser";
-import {socketService} from "./utils/notification"
-
+import { socketService } from "./utils/notification";
 
 //routes
 import userRoutes from "./routes/userRoutes";
@@ -47,5 +46,10 @@ app.use("/api/testAttempt", testAttemptRoutes);
 //notificationRoutes
 app.use("/api/notification", notificationRoutes);
 
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => console.log(` Server running on port ${PORT} `));
+// const PORT = process.env.PORT || 8080;
+const PORT = parseInt(process.env.PORT || "8080", 10);
+
+// server.listen(PORT, () => console.log(` Server running on port ${PORT} `));
+server.listen(PORT, "0.0.0.0", () =>
+  console.log(`✅ Server running on port ${PORT}`)
+);

@@ -10,7 +10,7 @@ const userRegisterValidation = joi_1.default.object({
     name: (0, GlobalValidation_1.stringValidator)("Name", 3, 50, true),
     email: (0, GlobalValidation_1.emailValidator)(),
     password: (0, GlobalValidation_1.passwordValidator)(),
-    // role: selectValidator("Role", ["user", "admin"]),
+    role: (0, GlobalValidation_1.selectValidator)("Role", ["user", "admin"]),
 });
 exports.userRegisterValidation = userRegisterValidation;
 const LoginValidation = joi_1.default.object({

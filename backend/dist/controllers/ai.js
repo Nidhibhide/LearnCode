@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateQuestions = void 0;
 const generative_ai_1 = require("@google/generative-ai");
 const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+//no use still
 const generateQuestions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { language, level, numOfQuestions } = req.body;
     try {
