@@ -12,17 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfile = exports.logOut = exports.getMe = exports.login = exports.registerUser = void 0;
+exports.googleLogin = exports.updateProfile = exports.logOut = exports.getMe = exports.login = exports.registerUser = void 0;
 const user_1 = __importDefault(require("../models/user"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const google_auth_library_1 = require("google-auth-library");
 const crypto_1 = __importDefault(require("crypto"));
 const responseFun_1 = require("../utils/responseFun");
 const expireTimeFun_1 = __importDefault(require("../utils/expireTimeFun"));
+const notification_1 = require("../utils/notification");
 const sendEmailFun_1 = require("../utils/sendEmailFun");
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
     try {
         const existingUser = yield user_1.default.findOne({ email });
         if (existingUser) {
@@ -32,7 +34,6 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             name,
             email,
             password,
-            role,
         });
         if (!user) {
             return (0, responseFun_1.JsonOne)(res, 500, "Failed to create user", false);
@@ -44,6 +45,8 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const token = crypto_1.default.randomBytes(32).toString("hex");
         user.verificationToken = token;
         yield user.save();
+        yield (0, notification_1.sendWelcomeMessage)(user._id.toString(), name);
+        yield (0, notification_1.notifyAdminOfNewUser)(name);
         yield nodemailer_1.default.createTestAccount();
         const transporter = (0, sendEmailFun_1.transporterFun)();
         yield transporter.sendMail((0, sendEmailFun_1.mailOptionsForVerify)(email, token));
@@ -54,12 +57,65 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.registerUser = registerUser;
+const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const { token } = req.body;
+    try {
+        if (!token) {
+            return (0, responseFun_1.JsonOne)(res, 400, "Google token is required", false);
+        }
+        const ticket = yield client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (!payload)
+            return (0, responseFun_1.JsonOne)(res, 404, "Invalid Google token", false);
+        const { email, name, sub } = payload;
+        if (!email || !name || !sub) {
+            return (0, responseFun_1.JsonOne)(res, 400, "Incomplete Google user data", false);
+        }
+        let user = yield user_1.default.findOne({ email });
+        if (!user) {
+            user = yield user_1.default.create({
+                name,
+                email,
+                password: sub,
+                isVerified: true,
+                role: "user",
+                authProvider: "google",
+            });
+            if (!user) {
+                return (0, responseFun_1.JsonOne)(res, 500, "Failed to create user", false);
+            }
+            const hashedPass = yield bcryptjs_1.default.hash(sub, 10);
+            user.password = hashedPass;
+            yield user.save();
+            yield (0, notification_1.sendWelcomeMessage)(user._id.toString(), name);
+            yield (0, notification_1.notifyAdminOfNewUser)(name);
+        }
+        const jwtToken = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+            expiresIn: "1h",
+        });
+        const cookieOptions = {
+            httpOnly: true,
+            secure: true,
+            maxAge: 60 * 60 * 1000,
+        };
+        res.cookie("token", jwtToken, cookieOptions);
+        return (0, responseFun_1.JsonOne)(res, 200, "Login successful", true);
+    }
+    catch (err) {
+        (0, responseFun_1.JsonOne)(res, 500, "Google login failed", false);
+    }
+});
+exports.googleLogin = googleLogin;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { password, email } = req.body;
         const user = yield user_1.default.findOne({ email });
-        if (!user) {
-            return (0, responseFun_1.JsonOne)(res, 404, "User not found", false);
+        if (!user || !user.password) {
+            return (0, responseFun_1.JsonOne)(res, 404, "User or password not found not found", false);
         }
         if (!user.isVerified) {
             return (0, responseFun_1.JsonOne)(res, 403, "User is not verified", false);
@@ -120,7 +176,12 @@ exports.logOut = logOut;
 const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email } = req.body;
-        const updatedUser = yield user_1.default.findOneAndUpdate({ email: email }, { name, email }, { new: true }).select("createdAt email isVerified name role _id");
+        const { id } = req.params;
+        const user = yield user_1.default.findById(id);
+        if ((user === null || user === void 0 ? void 0 : user.authProvider) === "google" && email !== (user === null || user === void 0 ? void 0 : user.email)) {
+            return (0, responseFun_1.JsonOne)(res, 400, "Cannot update email for Google-authenticated users", false);
+        }
+        const updatedUser = yield user_1.default.findByIdAndUpdate(id, { name, email }, { new: true }).select("createdAt email isVerified name role _id");
         if (!updatedUser) {
             return (0, responseFun_1.JsonOne)(res, 404, "User not found", false);
         }

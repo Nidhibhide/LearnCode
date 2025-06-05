@@ -15,9 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOngoing = exports.getDeletedAll = exports.edit = exports.restore = exports.softDelete = exports.getAll = exports.create = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const test_1 = __importDefault(require("../models/test"));
+const user_1 = __importDefault(require("../models/user"));
 const testAttempt_1 = __importDefault(require("../models/testAttempt"));
 const responseFun_1 = require("../utils/responseFun");
 const GenerateQuestions_1 = require("../utils/GenerateQuestions");
+const notification_1 = require("../utils/notification");
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, numOfQuestions, language, level } = req.body;
     try {
@@ -33,6 +35,14 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return (0, responseFun_1.JsonOne)(res, 500, "Failed to create test", false);
         }
         yield test.save();
+        const users = yield user_1.default.find({ role: "user" });
+        users.forEach((user) => {
+            (0, notification_1.sendToUser)(user._id.toString(), {
+                type: "info",
+                message: `A new test titled '${test.name}' has been created.`,
+                title: "New Test Available",
+            });
+        });
         (0, responseFun_1.JsonOne)(res, 201, `${name} created successfully  `, true);
     }
     catch (error) {
