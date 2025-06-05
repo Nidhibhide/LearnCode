@@ -5,6 +5,7 @@ import Logout from "./Components/Logout"
 import RestoreTest from "./Components/RestoreTest"
 import Assessments from "./Components/Assessments/index"
 import MyScores from "./MyScores"
+import Notification from "./Components/Notification"
 export {
-    CreateTest,ViewTest,Setting,Logout,RestoreTest,Assessments,MyScores
+    CreateTest,ViewTest,Setting,Logout,RestoreTest,Assessments,MyScores,Notification
 }

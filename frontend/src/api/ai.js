@@ -1,4 +1,4 @@
-import globalaxios from "../globalaxios";
+import {globalaxios} from "../globals";
 
 //still no use
 export const generateQues = async (data) => {

@@ -7,7 +7,7 @@ import { signup, signinwithGoogle, getMe } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
-
+import { socket } from "../../globals";
 const SignUp = () => {
   const statusMessages = {
     409: "User already exists",

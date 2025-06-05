@@ -7,6 +7,7 @@ import {
   Verification,
   ResendVerification,
 } from "./pages/Auth/index";
+import { socket } from "./globals";
 import Unauthorized from "./Unauthorized";
 import SessionExpired from "./SessionExpired";
 import {
@@ -17,6 +18,7 @@ import {
   RestoreTest,
   Assessments,
   MyScores,
+  Notification,
 } from "./pages/Dashboard/Components/Content/index";
 import {
   EditTest,
@@ -35,7 +37,11 @@ import { DashboardPage } from "./pages/Dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+
 function App() {
+
+
   return (
     <>
       <Router>
@@ -137,6 +143,14 @@ function App() {
               element={
                 <RoleAuth allowedRoles={["admin", "user"]}>
                   <Preview />
+                </RoleAuth>
+              }
+            />
+            <Route
+              path="notifications"
+              element={
+                <RoleAuth allowedRoles={["admin", "user"]}>
+                  <Notification />
                 </RoleAuth>
               }
             />

@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { FaClipboard } from "react-icons/fa";
-import { IoMdAdd } from "react-icons/io";
+import { Link } from "react-router-dom";
+import { IoMdAdd, IoMdNotifications } from "react-icons/io";
 import {
   MdOutlineRemoveRedEye,
   MdOutlineLogout,
@@ -8,12 +9,15 @@ import {
 } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
-
+import {  useSelector } from "react-redux";
 const Sidebar = () => {
   const data = JSON.parse(localStorage.getItem("data"));
   const role = data?.role;
   const name = data?.name;
 
+  const unreadCount = useSelector(
+    (state) => state.notifications.notificationCount
+  );
   const sidebarLinks = [
     {
       to: "/dashboard/viewTest",
@@ -46,6 +50,21 @@ const Sidebar = () => {
       roles: ["user"],
     },
     {
+      to: "/dashboard/notifications",
+      label: (
+        <span className="relative flex items-center gap-2">
+          Notifications
+          {unreadCount > 0 && (
+            <span className="absolute -top-3 -right-4 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
+        </span>
+      ),
+      icon: <IoMdNotifications size={28} />,
+      roles: ["user", "admin"],
+    },
+    {
       to: "/dashboard/setting",
       label: "Setting",
       icon: <IoSettingsSharp size={28} />,
@@ -68,15 +87,17 @@ const Sidebar = () => {
       <div className="w-full h-full flex flex-col text-white">
         {/* Profile Section */}
         <div className="h-[150px] bg-blue-950 flex justify-center items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-yellow-400 flex justify-center items-center">
+          <div className="w-16 h-16 rounded-full bg-yellow-400 flex justify-center items-center ">
             <span className="text-3xl font-bold text-blue-950">
               {name?.charAt(0).toUpperCase()}
             </span>
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <h1 className="text-xl font-semibold">{name[0].toUpperCase() + name.slice(1).toLowerCase()}</h1>
-            <p className="text-base font-medium text-green-500">{role.toUpperCase()}</p>
+            <h1 className="text-xl font-semibold capitalize">{name}</h1>
+            <p className="text-base font-medium text-green-500">
+              {role.toUpperCase()}
+            </p>
           </div>
         </div>
 

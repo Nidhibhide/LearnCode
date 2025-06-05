@@ -7,6 +7,10 @@ import crypto from "crypto";
 import { JsonOne } from "../utils/responseFun";
 import expiretime from "../utils/expireTimeFun";
 import { Request, Response } from "express";
+import {
+  sendWelcomeMessage,
+  notifyAdminOfNewUser,
+} from "../utils/notification";
 import { mailOptionsForVerify, transporterFun } from "../utils/sendEmailFun";
 
 const registerUser = async (req: Request, res: Response) => {
@@ -36,6 +40,9 @@ const registerUser = async (req: Request, res: Response) => {
     user.verificationToken = token;
 
     await user.save();
+
+    await sendWelcomeMessage(user._id.toString(), name);
+    await notifyAdminOfNewUser(name);
 
     await nodemailer.createTestAccount();
 
@@ -94,7 +101,11 @@ const googleLogin = async (req: Request, res: Response) => {
       user.password = hashedPass;
 
       await user.save();
+
+      await sendWelcomeMessage(user._id.toString(), name);
+      await notifyAdminOfNewUser(name);
     }
+
     const jwtToken = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET_KEY as string,
@@ -190,7 +201,7 @@ const updateProfile = async (req: Request, res: Response) => {
     const { name, email } = req.body;
     const { id } = req.params;
     const user = await User.findById(id);
-    if (user?.authProvider === "google" && email!==user?.email) {
+    if (user?.authProvider === "google" && email !== user?.email) {
       return JsonOne(
         res,
         400,

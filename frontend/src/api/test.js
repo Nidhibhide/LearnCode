@@ -1,4 +1,4 @@
-import globalaxios from "../globalaxios";
+import {globalaxios} from "../globals";
 
 export const create = async (data) => {
   try {

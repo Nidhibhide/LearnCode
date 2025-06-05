@@ -14,7 +14,7 @@ const SessionExpired = () => {
           href="/"
           className="inline-block px-6 py-2 text-white bg-black hover:bg-gray-700 rounded-full transition font-medium"
         >
-          Back to Login
+          Back to Sign Up
         </a>
       </div>
     </div>

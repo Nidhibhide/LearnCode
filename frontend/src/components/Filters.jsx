@@ -1,5 +1,6 @@
 import { MdSort, MdFilterList } from "react-icons/md";
-const SearchFilters = ({ setSearch, setLevel, setSortOrder }) => (
+import { NotFound } from "../images/index";
+export const SearchFilters = ({ setSearch, setLevel, setSortOrder }) => (
   <div className="  p-6 mb-4">
     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
       {/* 🔍 Search Bar */}
@@ -46,4 +47,41 @@ const SearchFilters = ({ setSearch, setLevel, setSortOrder }) => (
   </div>
 );
 
-export default SearchFilters;
+export const PaginationControls = ({ page, setPage, hasNext }) => (
+  <div className="mt-8 flex justify-center items-center gap-2">
+    <button
+      className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out "
+      onClick={() => setPage(page - 1)}
+      disabled={page <= 1}
+    >
+      Previous
+    </button>
+
+    <button
+      className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
+      onClick={() => setPage(page + 1)}
+      disabled={!hasNext}
+    >
+      Next
+    </button>
+  </div>
+);
+
+export const NotFoundControls = ({
+  title = "No Data Found",
+  description = "Try adjusting your search, filters, or check back later.",
+}) => {
+  return (
+    <div className="flex flex-col items-center justify-center mt-20 text-center px-4">
+      <img
+        src={NotFound}
+        alt="No data"
+        className="w-64 h-64 object-contain mb-6"
+      />
+      <h2 className="text-2xl font-semibold text-gray-700">{title}</h2>
+      <p className="text-gray-500 mt-2">{description}</p>
+    </div>
+  );
+};
+
+

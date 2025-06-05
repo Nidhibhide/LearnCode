@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
 import Test from "../models/test";
+import User from "../models/user";
 import TestAttempt from "../models/testAttempt";
 import { JsonOne, JsonAll } from "../utils/responseFun";
 import { generateQuestions } from "../utils/GenerateQuestions";
 import { Request, Response } from "express";
+import { sendToUser } from "../utils/notification";
+
 
 const create = async (req: Request, res: Response) => {
   const { name, numOfQuestions, language, level } = req.body;
@@ -22,6 +25,14 @@ const create = async (req: Request, res: Response) => {
     }
 
     await test.save();
+    const users = await User.find({ role: "user" });
+    users.forEach((user) => {
+      sendToUser(user._id.toString(), {
+        type: "info",
+        message: `A new test titled '${test.name}' has been created.`,
+        title: "New Test Available",
+      });
+    });
 
     JsonOne(res, 201, `${name} created successfully  `, true);
   } catch (error) {

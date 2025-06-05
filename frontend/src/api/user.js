@@ -1,4 +1,4 @@
-import globalaxios from "../globalaxios";
+import {globalaxios} from "../globals";
 
 //signup api
 
@@ -88,7 +88,7 @@ export const signin = async (data) => {
 
 export const signinwithGoogle = async (token) => {
   try {
-    console.log("Token", token);
+
     const res = await globalaxios.post("/user/google-login", { token });
     return res;
   } catch (err) {
