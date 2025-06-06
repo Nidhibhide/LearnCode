@@ -20,3 +20,15 @@ export const update = async (id, data) => {
     );
   }
 };
+export const getAttemptAll = async (filters) => {
+  try {
+    const res = await globalaxios.get("/testAttempt/getAll", {
+      params: filters,
+    });
+    return res;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};

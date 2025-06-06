@@ -268,7 +268,7 @@ const getDeletedAll = async (req: Request, res: Response) => {
   }
 };
 
-//get completed tests and on going tests
+//get completed test attempts and on going test attempts
 const getOngoing = async (req: Request, res: Response) => {
   try {
     const { user } = req.params;

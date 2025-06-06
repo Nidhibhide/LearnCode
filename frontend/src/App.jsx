@@ -19,6 +19,7 @@ import {
   Assessments,
   MyScores,
   Notification,
+  UserAttempts
 } from "./pages/Dashboard/Components/Content/index";
 import {
   EditTest,
@@ -37,7 +38,7 @@ import { DashboardPage } from "./pages/Dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect } from "react";
+
 
 function App() {
 
@@ -154,6 +155,14 @@ function App() {
                 </RoleAuth>
               }
             />
+              <Route
+              path="userAttempts"
+              element={
+                <RoleAuth allowedRoles={["admin"]}>
+                  <UserAttempts/>
+                </RoleAuth>
+              }
+            ></Route>
             <Route
               path="setting"
               element={

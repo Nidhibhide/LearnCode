@@ -4,26 +4,28 @@ import {
   SearchFilters,
   PaginationControls,
   NotFoundControls,
-} from "../../../../components/index";
-import { TableComponent } from "../../../../components/index";
+} from "../../../../../components/index";
+import { TableComponent } from "../../../../../components/index";
 
-import { getAllOngoing } from "../../../../api/test";
+import { getAttemptAll } from "../../../../../api/testAttempt";
 
 // Column definitions
 const columns = [
-  { key: "name", label: "TEST NAME" },
-  { key: "score", label: "SCORE" },
+  { key: "test", label: "TEST" },
+  // { key: "score", label: "SCORE" },
   { key: "language", label: "LANGUAGE" },
-  { key: "level", label: "LEVEL" },
+  // { key: "level", label: "LEVEL" },
+  { key: "name", label: "USER'S NAME" },
+  { key: "email", label: "EMAIL" },
 
   {
     key: "completedAt",
-    label: "COMPLETED AT",
-    render: (row) => new Date(row.completedAt).toLocaleDateString("en-GB"),
+    label: "STATUS",
+    render: (row) => (row.completedAt === null ? "In Progress" : "Completed"),
   },
 ];
 
-function MyScores() {
+function UserAttempts() {
   const [tests, setTests] = useState([]);
   const [selectedKey, setSelectedKey] = useState(null);
 
@@ -32,7 +34,7 @@ function MyScores() {
   const [sortOrder, setSortOrder] = useState("desc");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
-  const user = JSON.parse(localStorage.getItem("data"))?._id;
+
   const filters = {
     search,
     sortOrder,
@@ -43,7 +45,7 @@ function MyScores() {
 
   const handleViewTests = async () => {
     try {
-      const response = await getAllOngoing(filters, user);
+      const response = await getAttemptAll(filters);
       setTotal(response?.data?.total || 0);
       setTests(response?.data?.data || []);
     } catch (err) {
@@ -57,7 +59,7 @@ function MyScores() {
 
   return (
     <div className="py-12 px-5">
-      <h1 className="text-2xl font-bold text-center mb-4">My Scores</h1>
+      <h1 className="text-2xl font-bold text-center mb-4">User Attempts</h1>
 
       {/* Search, Filter, Sort UI */}
       <SearchFilters
@@ -90,4 +92,4 @@ function MyScores() {
   );
 }
 
-export default MyScores;
+export default UserAttempts;

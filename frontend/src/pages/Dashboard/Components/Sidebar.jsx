@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaClipboard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { IoMdAdd, IoMdNotifications } from "react-icons/io";
+import { IoStatsChartSharp } from "react-icons/io5";
 import {
   MdOutlineRemoveRedEye,
   MdOutlineLogout,
@@ -9,7 +10,7 @@ import {
 } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 const Sidebar = () => {
   const data = JSON.parse(localStorage.getItem("data"));
   const role = data?.role;
@@ -63,6 +64,12 @@ const Sidebar = () => {
       ),
       icon: <IoMdNotifications size={28} />,
       roles: ["user", "admin"],
+    },
+    {
+      to: "/dashboard/userAttempts",
+      label: "User Attempts",
+      icon: <IoStatsChartSharp size={28} />,
+      roles: ["admin"],
     },
     {
       to: "/dashboard/setting",

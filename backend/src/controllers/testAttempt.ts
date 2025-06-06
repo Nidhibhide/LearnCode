@@ -68,4 +68,93 @@ const update = async (req: Request, res: Response) => {
   }
 };
 
-export { create, update };
+const getAll = async (req: Request, res: Response) => {
+  try {
+    const {
+      search = "",
+      sortOrder = "desc",
+      page = "1",
+      limit = "5",
+      level = "All",
+    } = req.query as {
+      search?: string;
+      sortOrder?: "asc" | "desc";
+      page?: string;
+      limit?: string;
+      level?: string;
+    };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const sort = sortOrder === "asc" ? 1 : -1;
+
+    const aggregation: any[] = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData",
+        },
+      },
+      { $unwind: "$userData" },
+      {
+        $lookup: {
+          from: "tests",
+          localField: "testId",
+          foreignField: "_id",
+          as: "testData",
+        },
+      },
+      { $unwind: "$testData" },
+    ];
+    const matchStage: any = {
+      $or: [
+        { "testData.name": { $regex: search, $options: "i" } },
+        { "testData.language": { $regex: search, $options: "i" } },
+      ],
+    };
+    if (level !== "All") {
+      matchStage["testData.level"] = level;
+    }
+    aggregation.push({ $match: matchStage });
+    aggregation.push({
+      $facet: {
+        data: [
+          { $sort: { createdAt: sort } },
+          { $skip: skip },
+          { $limit: parseInt(limit) },
+          {
+            $project: {
+              score: 1,
+              completedAt: 1,
+              createdAt: 1,
+              name: "$userData.name",
+              email: "$userData.email",
+              test: "$testData.name",
+              language: "$testData.language",
+              level: "$testData.level",
+            },
+          },
+        ],
+        total: [{ $count: "count" }],
+      },
+    });
+
+    const result = await TestAttempt.aggregate(aggregation);
+    const data = result[0].data;
+    const total = result[0].total[0]?.count || 0;
+
+    JsonAll(
+      res,
+      200,
+      "Test Attempts fetched successfully",
+      data,
+      total,
+      parseInt(page),
+      parseInt(limit)
+    );
+  } catch {
+    JsonOne(res, 500, "unexpected error occurred while sign up", false);
+  }
+};
+export { create, update, getAll };
