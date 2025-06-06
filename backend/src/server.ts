@@ -56,6 +56,9 @@ try {
   console.error("❌ Socket service failed to initialize", err);
 }
 
+app.get("/", (req, res) => {
+  res.send("✅ LearnCode backend is running!");
+});
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
