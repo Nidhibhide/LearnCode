@@ -72,24 +72,25 @@ const verifyCurrentPassword = (req, res) => __awaiter(void 0, void 0, void 0, fu
 exports.verifyCurrentPassword = verifyCurrentPassword;
 const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const successURL = process.env.LOCAL_VERIFY_SUCCESS_URL;
-        const failURL = process.env.LOCAL_VERIFY_FAILURE_URL;
+        // const successURL = process.env.LOCAL_VERIFY_SUCCESS_URL;
+        // const failURL = process.env.LOCAL_VERIFY_FAILURE_URL;
+        const URL = process.env.PRODUCTION_SERVER;
         const { token } = req.params;
         if (!token) {
-            return res.redirect(`${failURL}?status=fail&message=Token not provided!!`);
+            return res.redirect(`${URL}/verify?status=fail&message=Token not provided!!`);
         }
         const user = yield user_1.default.findOne({ verificationToken: token });
         if (user === null || user === void 0 ? void 0 : user.isVerified) {
-            return res.redirect(`${successURL}?status=success&message=User already verified!!`);
+            return res.redirect(`${URL}/login?status=success&message=User already verified!!`);
         }
         if (!(user === null || user === void 0 ? void 0 : user.expireTime) || new Date() > user.expireTime) {
-            return res.redirect(`${failURL}?status=fail&message=Verification link expired!!`);
+            return res.redirect(`${URL}/verify?status=fail&message=Verification link expired!!`);
         }
         // Mark user as verified
         user.isVerified = true;
         // user.verificationToken = undefined;
         yield user.save();
-        return res.redirect(`${successURL}?status=success&message=Verification Done!!`);
+        return res.redirect(`${URL}/login?status=success&message=Verification Done!!`);
     }
     catch (error) {
         console.error("Verification error:", error);
@@ -125,23 +126,23 @@ const forgotPass = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.forgotPass = forgotPass;
 const resetPass = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.params;
-    const RESET_URL = process.env.LOCAL_RESET_URL;
+    const URL = process.env.PRODUCTION_SERVER;
     // const { newPass } = req.body;
     if (!token) {
-        return res.redirect(`${RESET_URL}?status=fail&message=Token not provided!!`);
+        return res.redirect(`${URL}/resetPass?status=fail&message=Token not provided!!`);
     }
     const user = yield user_1.default.findOne({
         resetPasswordToken: token,
     });
     if (!user || !user.resetPasswordExpire) {
-        return res.redirect(`${RESET_URL}?status=fail&message=User not found!!`);
+        return res.redirect(`${URL}/resetPass?status=fail&message=User not found!!`);
     }
     const expireTime = user === null || user === void 0 ? void 0 : user.resetPasswordExpire;
     const currentTime = new Date();
     if (currentTime > expireTime) {
-        return res.redirect(`${RESET_URL}?status=fail&message=Reset link expired!!`);
+        return res.redirect(`${URL}/resetPass?status=fail&message=Reset link expired!!`);
     }
-    return res.redirect(`${RESET_URL}?status=success&email=${user === null || user === void 0 ? void 0 : user.email}`);
+    return res.redirect(`${URL}/resetPass?status=success&email=${user === null || user === void 0 ? void 0 : user.email}`);
 });
 exports.resetPass = resetPass;
 const checkToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
