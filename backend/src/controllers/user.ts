@@ -14,6 +14,13 @@ import {
 } from "../utils/notification";
 import { mailOptionsForVerify, transporterFun } from "../utils/sendEmailFun";
 
+//set token in cookie
+const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 60 * 60 * 1000,
+};
 const registerUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
@@ -115,11 +122,11 @@ const googleLogin = async (req: Request, res: Response) => {
       }
     );
 
-    const cookieOptions = {
-      httpOnly: true,
-      secure: true,
-      maxAge: 60 * 60 * 1000,
-    };
+    // const cookieOptions = {
+    //   httpOnly: true,
+    //   secure: true,
+    //   maxAge: 60 * 60 * 1000,
+    // };
 
     res.cookie("token", jwtToken, cookieOptions);
 
@@ -154,13 +161,6 @@ const login = async (req: Request, res: Response) => {
       }
     );
 
-    //set token in cookie
-    const cookieOptions:CookieOptions = {
-      httpOnly: true,
-      secure: true,
-       sameSite: "none",
-      maxAge: 60 * 60 * 1000,
-    };
     //     const cookieOptions = {
     //   httpOnly: true,
     //   secure: true,
