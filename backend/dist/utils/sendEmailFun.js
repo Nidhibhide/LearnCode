@@ -9,6 +9,7 @@ const transporterFun = () => {
     return nodemailer_1.default.createTransport({
         host: process.env.HOST,
         port: Number(process.env.EMAIL_PORT),
+        secure: false,
         auth: {
             user: process.env.USER,
             pass: process.env.PASS,

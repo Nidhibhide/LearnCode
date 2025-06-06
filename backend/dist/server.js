@@ -17,7 +17,6 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const aiRoutes_1 = __importDefault(require("./routes/aiRoutes"));
 const testAttempt_1 = __importDefault(require("./routes/testAttempt"));
 const notificationRoutes_1 = __importDefault(require("./routes/notificationRoutes"));
-console.log("🟢 Starting server setup...");
 const corsOptions = {
     origin: ["http://localhost:5173", "https://learn-code-three.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -25,43 +24,33 @@ const corsOptions = {
     credentials: true,
 };
 dotenv_1.default.config();
-console.log("✅ dotenv configured");
 const app = (0, express_1.default)();
-console.log("✅ Express app initialized");
 (0, index_1.default)()
-    .then(() => console.log("✅ MongoDB connected"))
+    .then(() => console.log(" MongoDB connected"))
     .catch((err) => {
-    console.error("❌ MongoDB connection failed", err);
+    console.error(" MongoDB connection failed", err);
     process.exit(1);
 });
 app.use(express_1.default.json());
-console.log("✅ JSON parsing enabled");
 app.use((0, cors_1.default)(corsOptions));
-console.log("✅ CORS configured");
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
-console.log("✅ Middleware configured");
 const server = http_1.default.createServer(app);
-console.log("✅ HTTP server created");
 try {
     (0, notification_1.socketService)(server);
-    console.log("✅ Socket service initialized");
+    console.log("Socket service initialized");
 }
 catch (err) {
-    console.error("❌ Socket service failed to initialize", err);
+    console.error(" Socket service failed to initialize", err);
 }
-app.get("/", (req, res) => {
-    res.send("✅ LearnCode backend is running!");
-});
 app.use("/api/user", userRoutes_1.default);
 app.use("/api/auth", authRoutes_1.default);
 app.use("/api/test", testRoutes_1.default);
 app.use("/api/ai", aiRoutes_1.default);
 app.use("/api/testAttempt", testAttempt_1.default);
 app.use("/api/notification", notificationRoutes_1.default);
-console.log("✅ Routes registered");
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
+    console.log(` Server running on port ${PORT}`);
 });
 //# sourceMappingURL=server.js.map

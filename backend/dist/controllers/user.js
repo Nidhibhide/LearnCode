@@ -23,6 +23,13 @@ const responseFun_1 = require("../utils/responseFun");
 const expireTimeFun_1 = __importDefault(require("../utils/expireTimeFun"));
 const notification_1 = require("../utils/notification");
 const sendEmailFun_1 = require("../utils/sendEmailFun");
+//set token in cookie
+const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 60 * 60 * 1000,
+};
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, password } = req.body;
     try {
@@ -97,11 +104,11 @@ const googleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const jwtToken = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
             expiresIn: "1h",
         });
-        const cookieOptions = {
-            httpOnly: true,
-            secure: true,
-            maxAge: 60 * 60 * 1000,
-        };
+        // const cookieOptions = {
+        //   httpOnly: true,
+        //   secure: true,
+        //   maxAge: 60 * 60 * 1000,
+        // };
         res.cookie("token", jwtToken, cookieOptions);
         return (0, responseFun_1.JsonOne)(res, 200, "Login successful", true);
     }
@@ -128,13 +135,6 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
             expiresIn: "1h",
         });
-        //set token in cookie
-        const cookieOptions = {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 60 * 60 * 1000,
-        };
         //     const cookieOptions = {
         //   httpOnly: true,
         //   secure: true,

@@ -81,13 +81,14 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
 };
 const verifyUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const successURL = process.env.VERIFY_SUCCESS_URL;
-    const failURL = process.env.VERIFY_FAILURE_URL;
+    // const successURL = process.env.LOCAL_VERIFY_SUCCESS_URL;
+    // const failURL = process.env.LOCAL_VERIFY_FAILURE_URL;
+    const URL = process.env.PRODUCTION_SERVER;
     const { token } = req.params;
 
     if (!token) {
       return res.redirect(
-        `${failURL}?status=fail&message=Token not provided!!`
+        `${URL}/verify?status=fail&message=Token not provided!!`
       );
     }
 
@@ -95,13 +96,13 @@ const verifyUser = async (req: Request, res: Response): Promise<void> => {
 
     if (user?.isVerified) {
       return res.redirect(
-        `${successURL}?status=success&message=User already verified!!`
+        `${URL}/login?status=success&message=User already verified!!`
       );
     }
 
     if (!user?.expireTime || new Date() > user.expireTime) {
       return res.redirect(
-        `${failURL}?status=fail&message=Verification link expired!!`
+        `${URL}/verify?status=fail&message=Verification link expired!!`
       );
     }
 
@@ -111,7 +112,7 @@ const verifyUser = async (req: Request, res: Response): Promise<void> => {
     await user.save();
 
     return res.redirect(
-      `${successURL}?status=success&message=Verification Done!!`
+      `${URL}/login?status=success&message=Verification Done!!`
     );
   } catch (error) {
     console.error("Verification error:", error);
@@ -165,31 +166,33 @@ const forgotPass = async (req: Request, res: Response) => {
 
 const resetPass = async (req: Request, res: Response) => {
   const { token } = req.params;
-  const RESET_URL = process.env.RESET_URL;
+  const URL = process.env.PRODUCTION_SERVER;
 
   // const { newPass } = req.body;
 
   if (!token) {
     return res.redirect(
-      `${RESET_URL}?status=fail&message=Token not provided!!`
+      `${URL}/resetPass?status=fail&message=Token not provided!!`
     );
   }
   const user = await User.findOne({
     resetPasswordToken: token,
   });
   if (!user || !user.resetPasswordExpire) {
-    return res.redirect(`${RESET_URL}?status=fail&message=User not found!!`);
+    return res.redirect(
+      `${URL}/resetPass?status=fail&message=User not found!!`
+    );
   }
   const expireTime = user?.resetPasswordExpire;
   const currentTime = new Date();
 
   if (currentTime > expireTime) {
     return res.redirect(
-      `${RESET_URL}?status=fail&message=Reset link expired!!`
+      `${URL}/resetPass?status=fail&message=Reset link expired!!`
     );
   }
 
-  return res.redirect(`${RESET_URL}?status=success&email=${user?.email}`);
+  return res.redirect(`${URL}/resetPass?status=success&email=${user?.email}`);
 };
 
 const checkToken = async (req: Request, res: Response) => {
