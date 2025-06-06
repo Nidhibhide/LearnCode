@@ -27,8 +27,9 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "start": "tsc && node --max-old-space-size=2048 dist/server.js",
-    "build": "tsc"
-  }
+  "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+  "start": "node dist/server.js",
+  "build": "tsc"
+}
+
 }
