@@ -56,6 +56,9 @@ const verifyCurrentPassword = (req, res) => __awaiter(void 0, void 0, void 0, fu
         if (!user) {
             return (0, responseFun_1.JsonOne)(res, 404, "User not found", false);
         }
+        if (!user.password) {
+            return (0, responseFun_1.JsonOne)(res, 404, "User stored password not found", false);
+        }
         const isMatch = yield bcryptjs_1.default.compare(password, user.password);
         if (!isMatch) {
             return (0, responseFun_1.JsonOne)(res, 401, "Incorrect password", false);
