@@ -132,6 +132,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const cookieOptions = {
             httpOnly: true,
             secure: true,
+            sameSite: "none",
             maxAge: 60 * 60 * 1000,
         };
         //     const cookieOptions = {

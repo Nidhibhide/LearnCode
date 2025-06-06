@@ -1,5 +1,6 @@
 import User from "../models/user";
 import nodemailer from "nodemailer";
+import { CookieOptions } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
@@ -154,9 +155,10 @@ const login = async (req: Request, res: Response) => {
     );
 
     //set token in cookie
-    const cookieOptions = {
+    const cookieOptions:CookieOptions = {
       httpOnly: true,
       secure: true,
+       sameSite: "none",
       maxAge: 60 * 60 * 1000,
     };
     //     const cookieOptions = {
