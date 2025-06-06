@@ -14,40 +14,58 @@ import aiRoutes from "./routes/aiRoutes";
 import testAttemptRoutes from "./routes/testAttempt";
 import notificationRoutes from "./routes/notificationRoutes";
 
+console.log("🟢 Starting server setup...");
+
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://learn-code-three.vercel.app"], // Frontend origin
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-  credentials: true, // Allows cookies and headers like Authorization
+  origin: ["http://localhost:5173", "https://learn-code-three.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 dotenv.config();
+console.log("✅ dotenv configured");
+
 const app = express();
-DBConnect();
+console.log("✅ Express app initialized");
+
+DBConnect()
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection failed", err);
+    process.exit(1);
+  });
 
 app.use(express.json());
+console.log("✅ JSON parsing enabled");
+
 app.use(cors(corsOptions));
+console.log("✅ CORS configured");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-const server = http.createServer(app);
-socketService(server);
+console.log("✅ Middleware configured");
 
-//userRoutes
+const server = http.createServer(app);
+console.log("✅ HTTP server created");
+
+try {
+  socketService(server);
+  console.log("✅ Socket service initialized");
+} catch (err) {
+  console.error("❌ Socket service failed to initialize", err);
+}
+
 app.use("/api/user", userRoutes);
-//authRoutes
 app.use("/api/auth", authRoutes);
-//testRoutes
 app.use("/api/test", testRoutes);
-//aiRoutes
 app.use("/api/ai", aiRoutes);
-//testAttemptRoutes
 app.use("/api/testAttempt", testAttemptRoutes);
-//notificationRoutes
 app.use("/api/notification", notificationRoutes);
+console.log("✅ Routes registered");
 
 const PORT = process.env.PORT || 8080;
 
-
-server.listen(PORT, () => console.log(` Server running on port ${PORT} `));
-
+server.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
