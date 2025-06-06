@@ -3,8 +3,8 @@ import { SERVER } from "../config";
 import { io } from "socket.io-client";
 
 export const globalaxios = axios.create({
-  baseURL: `${SERVER}/api`,
-  // baseURL: "https://learncode-65ec.onrender.com/api",
+  // baseURL: `${SERVER}/api`,
+  baseURL: "https://learncode-65ec.onrender.com",
   withCredentials: true,
 });
 
