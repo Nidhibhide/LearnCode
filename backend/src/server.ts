@@ -46,10 +46,8 @@ app.use("/api/testAttempt", testAttemptRoutes);
 //notificationRoutes
 app.use("/api/notification", notificationRoutes);
 
-// const PORT = process.env.PORT || 8080;
-const PORT = parseInt(process.env.PORT || "8080", 10);
+const PORT = process.env.PORT || 8080;
 
-// server.listen(PORT, () => console.log(` Server running on port ${PORT} `));
-server.listen(PORT, "0.0.0.0", () =>
-  console.log(`✅ Server running on port ${PORT}`)
-);
+
+server.listen(PORT, () => console.log(` Server running on port ${PORT} `));
+
