@@ -32,10 +32,10 @@ router.post(
 );
 
 router.post("/forgotPassword", EmailValidtorMid, forgotPass);
-// router.get("/resetPass/:token", resetPass);
+router.get("/reset/:token", resetPass);
 router.get("/checkToken", checkToken);
-// router.get("/verify/:token",verifyUser);
-router.get("/verify", verifyUser);
-router.get("/resetPass", resetPass);
+router.get("/verify/:token",verifyUser);
+// router.get("/verify", verifyUser);
+// router.get("/resetPass", resetPass);
 
 export default router;

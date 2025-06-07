@@ -82,8 +82,8 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
 const verifyUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const URL = process.env.PRODUCTION_CLIENT;
-    // const { token } = req.params;
-    const token = req.query.token as string;
+    const { token } = req.params;
+    // const token = req.query.token as string;
 
     if (!token) {
       return res.redirect(
@@ -132,7 +132,7 @@ const forgotPass = async (req: Request, res: Response) => {
       return JsonOne(res, 400, "User not found", false);
     }
 
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = crypto.randomBytes(12).toString("hex");
 
     user.resetPasswordToken = token;
     user.resetPasswordExpire = expireTime();
@@ -164,8 +164,8 @@ const forgotPass = async (req: Request, res: Response) => {
 };
 
 const resetPass = async (req: Request, res: Response) => {
-  // const { token } = req.params;
-  const token = req.query.token as string;
+  const { token } = req.params;
+  // const token = req.query.token as string;
   const URL = process.env.PRODUCTION_CLIENT;
 
   // const { newPass } = req.body;

@@ -44,7 +44,7 @@ const registerUser = async (req: Request, res: Response) => {
     const time = expiretime();
     user.expireTime = time;
 
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = crypto.randomBytes(12).toString("hex");
     user.verificationToken = token;
 
     await user.save();
