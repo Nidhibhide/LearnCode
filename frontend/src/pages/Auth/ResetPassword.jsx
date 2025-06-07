@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { ChangePass } from "../../api/user";
+import { ChangePass, resetPassword } from "../../api/user";
 import { toast } from "react-toastify";
 import { InputField } from "../../components/index";
 import { codingImage } from "../../images/index";
@@ -12,13 +12,41 @@ const ResetPassword = () => {
     200: "Password reset successfully",
     404: "User not found",
     500: "Unexpected error occurred",
+    400: "Something went wrong",
   };
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const status = searchParams.get("status");
-  const response_msg = searchParams.get("message");
-  const email = searchParams.get("email");
+
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState(
+    " Please enter and confirm your new password to reset your account."
+  );
+
+  const token = searchParams.get("token");
+  let email;
+
+  const reset = async () => {
+    try {
+      const response = await resetPassword(token);
+      const message = statusMessages[response?.status];
+      if (response.status === 201) {
+        email = response?.data?.data?.email;
+        setStatus("pass");
+      } else {
+        toast.error(message);
+        setStatus("fail");
+        setMessage("Reset Link Expired or Invalid");
+      }
+    } catch (e) {
+      console.error("resetPassword error", e);
+      toast.error("Something went wrong!");
+    }
+  };
+
+  useEffect(() => {
+    reset();
+  }, [token, navigate]);
 
   const handleResetPassword = async (values, { resetForm }) => {
     try {
@@ -28,7 +56,7 @@ const ResetPassword = () => {
         password: values.password,
         email,
       };
-     
+
       const response = await ChangePass(data);
 
       const message = statusMessages[response?.status];
@@ -65,15 +93,10 @@ const ResetPassword = () => {
           <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-8">
             LearnCode
           </p>
-          <p className="font-semibold text-2xl md:text-3xl mb-14">
-            Please enter and confirm your new password to reset your account.
-          </p>
+          <p className="font-semibold text-2xl md:text-3xl mb-14">{message}</p>
 
           {status === "fail" ? (
             <>
-              <p className="text-2xl text-red-600 font-semibold mb-4">
-                {response_msg}
-              </p>
               <button
                 type="button"
                 className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
@@ -83,37 +106,39 @@ const ResetPassword = () => {
               </button>
             </>
           ) : (
-            <Formik
-              initialValues={{ password: "", confirmPassword: "" }}
-              validationSchema={validationSchema}
-              onSubmit={handleResetPassword}
-            >
-              {({ handleSubmit }) => (
-                <>
-                  <div className="flex flex-col space-y-4 mb-12">
-                    <InputField
-                      label="New Password"
-                      name="password"
-                      type="password"
-                      placeholder="Enter new password"
-                    />
-                    <InputField
-                      label="Confirm Password"
-                      name="confirmPassword"
-                      type="password"
-                      placeholder="Confirm new password"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
-                  >
-                    {loading ? "Loading..." : "Reset Password"}
-                  </button>
-                </>
-              )}
-            </Formik>
+            <>
+              <Formik
+                initialValues={{ password: "", confirmPassword: "" }}
+                validationSchema={validationSchema}
+                onSubmit={handleResetPassword}
+              >
+                {({ handleSubmit }) => (
+                  <>
+                    <div className="flex flex-col space-y-4 mb-12">
+                      <InputField
+                        label="New Password"
+                        name="password"
+                        type="password"
+                        placeholder="Enter new password"
+                      />
+                      <InputField
+                        label="Confirm Password"
+                        name="confirmPassword"
+                        type="password"
+                        placeholder="Confirm new password"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+                    >
+                      {loading ? "Loading..." : "Reset Password"}
+                    </button>
+                  </>
+                )}
+              </Formik>
+            </>
           )}
         </div>
       </div>

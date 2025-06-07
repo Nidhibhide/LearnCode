@@ -35,9 +35,17 @@ export const VerifyCurrentPassword = async (data) => {
 
 export const verify = async (token) => {
   try {
-    const res = await globalaxios.get(`/auth/verify`, {
-      params: { token },
-    });
+    const res = await globalaxios.get(`/auth/verify/${token}`);
+    return res;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};
+export const resetPassword = async (token) => {
+  try {
+    const res = await globalaxios.get(`/auth/reset/${token}`);
     return res;
   } catch (err) {
     return (

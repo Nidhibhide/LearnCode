@@ -18,11 +18,9 @@ import RoleAuth from "../middlewares/RoleAuth";
 
 const router = express.Router();
 
-// router.get("/verify/:token", verifyUser);
-
 router.post("/reset-verify", EmailValidtorMid, resendVerificationEmail);
 
-router.put("/changePassword", LoginValidtorMid, changePassword); //will be use
+router.put("/changePassword", LoginValidtorMid, changePassword);
 router.post(
   "/verifyCurrentPassword",
   IsLoggeedIn,
@@ -34,8 +32,6 @@ router.post(
 router.post("/forgotPassword", EmailValidtorMid, forgotPass);
 router.get("/reset/:token", resetPass);
 router.get("/checkToken", checkToken);
-router.get("/verify/:token",verifyUser);
-// router.get("/verify", verifyUser);
-// router.get("/resetPass", resetPass);
+router.get("/verify/:token", verifyUser);
 
 export default router;

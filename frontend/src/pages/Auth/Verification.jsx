@@ -1,20 +1,44 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { codingImage } from "../../images/index";
 import { toast } from "react-toastify";
+import { verify } from "../../api/user";
 
 const Verification = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [status, setStatus] = useState(
+    "Email Verified. Redirecting to Login..."
+  );
+  const statusMessages = {
+    201: "Verification Done",
+    400: "Something went wrong",
+    200: "User already verified",
+    500: "Unexpected error occurred while verification",
+  };
+  const token = searchParams.get("token");
 
-  const status = searchParams.get("status");
-  const message = searchParams.get("message");
+  const verifyUser = async () => {
+    try {
+      const response = await verify(token);
+
+      const message = statusMessages[response?.status];
+      if (response.status === 201 || response.status === 200) {
+        toast.success(message);
+        setTimeout(() => navigate("/login"), 3000);
+      } else {
+        toast.error(message);
+        setStatus("Resend Verification Link");
+      }
+    } catch (e) {
+      console.error("Verification error", e);
+      toast.error("Something went wrong!");
+    }
+  };
 
   useEffect(() => {
-    if (status === "fail") {
-      toast.error(message || "Verification failed");
-    }
-  }, [status, message, navigate]);
+    verifyUser();
+  }, [token, navigate]);
 
   return (
     <div className="h-screen flex bg-slate-200">
@@ -23,13 +47,8 @@ const Verification = () => {
           <p className="font-extrabold text-3xl md:text-4xl md:mb-6 mb-4">
             LearnCode
           </p>
-          <p className="font-semibold text-2xl md:text-3xl mb-14">
-            We’ve sent a message to your email. Please check your inbox.
-          </p>
-
-          <p className="text-2xl text-red-600 font-semibold mb-4">{message}</p>
-
-          {status === "fail" && (
+          <p className="font-semibold text-2xl md:text-3xl mb-14">{status}</p>
+          {status !== "Email Verified. Redirecting to Login..." && (
             <button
               type="button"
               className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"

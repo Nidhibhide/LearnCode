@@ -81,28 +81,19 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
 };
 const verifyUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const URL = process.env.PRODUCTION_CLIENT;
     const { token } = req.params;
-    // const token = req.query.token as string;
 
     if (!token) {
-      return res.redirect(
-        `${URL}/verify?status=fail&message=Token not provided!!`
-      );
+      return JsonOne(res, 400, "Token not provided!!", false);
     }
-
     const user = await User.findOne({ verificationToken: token });
 
     if (user?.isVerified) {
-      return res.redirect(
-        `${URL}/login?status=success&message=User already verified!!`
-      );
+      return JsonOne(res, 200, "User already verified!!", true);
     }
 
     if (!user?.expireTime || new Date() > user.expireTime) {
-      return res.redirect(
-        `${URL}/verify?status=fail&message=Verification link expired!!`
-      );
+      return JsonOne(res, 400, "Verification link expired!!", false);
     }
 
     // Mark user as verified
@@ -110,15 +101,9 @@ const verifyUser = async (req: Request, res: Response): Promise<void> => {
     // user.verificationToken = undefined;
     await user.save();
 
-    return res.redirect(
-      `${URL}/login?status=success&message=Verification Done!!`
-    );
+    return JsonOne(res, 201, "Verification Done!!", true);
   } catch (error) {
-    console.error("Verification error:", error);
-    res.status(500).json({
-      status: "fail",
-      message: "Internal Server Error",
-    });
+    return JsonOne(res, 500, "Verification Failed", false);
   }
 };
 
@@ -164,35 +149,32 @@ const forgotPass = async (req: Request, res: Response) => {
 };
 
 const resetPass = async (req: Request, res: Response) => {
-  const { token } = req.params;
-  // const token = req.query.token as string;
-  const URL = process.env.PRODUCTION_CLIENT;
+  try {
+    const { token } = req.params;
 
-  // const { newPass } = req.body;
+    if (!token) {
+      return JsonOne(res, 400, "Token not provided!!", false);
+    }
 
-  if (!token) {
-    return res.redirect(
-      `${URL}/resetPass?status=fail&message=Token not provided!!`
+    const user = await User.findOne(
+      { resetPasswordToken: token },
+      { resetPasswordExpire: 1, email: 1 }
     );
-  }
-  const user = await User.findOne({
-    resetPasswordToken: token,
-  });
-  if (!user || !user.resetPasswordExpire) {
-    return res.redirect(
-      `${URL}/resetPass?status=fail&message=User not found!!`
-    );
-  }
-  const expireTime = user?.resetPasswordExpire;
-  const currentTime = new Date();
 
-  if (currentTime > expireTime) {
-    return res.redirect(
-      `${URL}/resetPass?status=fail&message=Reset link expired!!`
-    );
-  }
+    if (!user || !user.resetPasswordExpire) {
+      return JsonOne(res, 404, "User not found!!", false);
+    }
+    const expireTime = user?.resetPasswordExpire;
+    const currentTime = new Date();
 
-  return res.redirect(`${URL}/resetPass?status=success&email=${user?.email}`);
+    if (currentTime > expireTime) {
+      return JsonOne(res, 400, "Verification link expired!!", false);
+    }
+
+    return JsonOne(res, 201, "success!!", true, user);
+  } catch (error) {
+    return JsonOne(res, 500, "reset password Failed", false);
+  }
 };
 
 const checkToken = async (req: Request, res: Response) => {
