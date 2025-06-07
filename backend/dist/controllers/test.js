@@ -202,7 +202,7 @@ const getDeletedAll = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.getDeletedAll = getDeletedAll;
-//get completed tests and on going tests
+//get completed test attempts and on going test attempts
 const getOngoing = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {

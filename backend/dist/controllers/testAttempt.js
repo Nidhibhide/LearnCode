@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update = exports.create = void 0;
+exports.getAll = exports.update = exports.create = void 0;
 //create test attempt
 const testAttempt_1 = __importDefault(require("../models/testAttempt"));
 const responseFun_1 = require("../utils/responseFun");
@@ -66,4 +66,72 @@ const update = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.update = update;
+const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { search = "", sortOrder = "desc", page = "1", limit = "5", level = "All", } = req.query;
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const sort = sortOrder === "asc" ? 1 : -1;
+        const aggregation = [
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userData",
+                },
+            },
+            { $unwind: "$userData" },
+            {
+                $lookup: {
+                    from: "tests",
+                    localField: "testId",
+                    foreignField: "_id",
+                    as: "testData",
+                },
+            },
+            { $unwind: "$testData" },
+        ];
+        const matchStage = {
+            $or: [
+                { "testData.name": { $regex: search, $options: "i" } },
+                { "testData.language": { $regex: search, $options: "i" } },
+            ],
+        };
+        if (level !== "All") {
+            matchStage["testData.level"] = level;
+        }
+        aggregation.push({ $match: matchStage });
+        aggregation.push({
+            $facet: {
+                data: [
+                    { $sort: { createdAt: sort } },
+                    { $skip: skip },
+                    { $limit: parseInt(limit) },
+                    {
+                        $project: {
+                            score: 1,
+                            completedAt: 1,
+                            createdAt: 1,
+                            name: "$userData.name",
+                            email: "$userData.email",
+                            test: "$testData.name",
+                            language: "$testData.language",
+                            level: "$testData.level",
+                        },
+                    },
+                ],
+                total: [{ $count: "count" }],
+            },
+        });
+        const result = yield testAttempt_1.default.aggregate(aggregation);
+        const data = result[0].data;
+        const total = ((_a = result[0].total[0]) === null || _a === void 0 ? void 0 : _a.count) || 0;
+        (0, responseFun_1.JsonAll)(res, 200, "Test Attempts fetched successfully", data, total, parseInt(page), parseInt(limit));
+    }
+    catch (_b) {
+        (0, responseFun_1.JsonOne)(res, 500, "unexpected error occurred while sign up", false);
+    }
+});
+exports.getAll = getAll;
 //# sourceMappingURL=testAttempt.js.map

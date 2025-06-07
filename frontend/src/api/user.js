@@ -1,4 +1,4 @@
-import {globalaxios} from "../globals";
+import { globalaxios } from "../globals";
 
 //signup api
 
@@ -32,9 +32,12 @@ export const VerifyCurrentPassword = async (data) => {
     );
   }
 };
+
 export const verify = async (token) => {
   try {
-    const res = await globalaxios.get(`/auth/verify/${token}`);
+    const res = await globalaxios.get(`/auth/verify`, {
+      params: { token },
+    });
     return res;
   } catch (err) {
     return (
@@ -88,7 +91,6 @@ export const signin = async (data) => {
 
 export const signinwithGoogle = async (token) => {
   try {
-
     const res = await globalaxios.post("/user/google-login", { token });
     return res;
   } catch (err) {

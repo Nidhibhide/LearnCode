@@ -18,8 +18,8 @@ const transporterFun = () => {
 };
 exports.transporterFun = transporterFun;
 const mailOptionsForVerify = (email, token) => {
-    const CLIENT = process.env.PRODUCTION_CLIENT;
-    const verifyUrl = `${CLIENT}/api/auth/verify/${token}`;
+    const SERVER = process.env.PRODUCTION_SERVER;
+    const verifyUrl = `${SERVER}/api/auth/verify/${token}`;
     const mailOptions = {
         from: process.env.USER,
         to: email,
@@ -45,8 +45,8 @@ This link expires in 5 minutes. If you didn't sign up, ignore this email.`,
 };
 exports.mailOptionsForVerify = mailOptionsForVerify;
 const mailOptionsForVResetPass = (email, token) => {
-    const CLIENT = process.env.PRODUCTION_CLIENT;
-    const resetUrl = `${CLIENT}/api/auth/resetPass/${token}`;
+    const SERVER = process.env.PRODUCTION_SERVER;
+    const resetUrl = `${SERVER}/api/auth/resetPass/${token}`;
     const mailOptions = {
         from: process.env.USER,
         to: email,

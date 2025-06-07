@@ -72,9 +72,7 @@ const verifyCurrentPassword = (req, res) => __awaiter(void 0, void 0, void 0, fu
 exports.verifyCurrentPassword = verifyCurrentPassword;
 const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const successURL = process.env.LOCAL_VERIFY_SUCCESS_URL;
-        // const failURL = process.env.LOCAL_VERIFY_FAILURE_URL;
-        const URL = process.env.PRODUCTION_SERVER;
+        const URL = process.env.PRODUCTION_CLIENT;
         const { token } = req.params;
         if (!token) {
             return res.redirect(`${URL}/verify?status=fail&message=Token not provided!!`);
@@ -126,7 +124,7 @@ const forgotPass = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.forgotPass = forgotPass;
 const resetPass = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.params;
-    const URL = process.env.PRODUCTION_SERVER;
+    const URL = process.env.PRODUCTION_CLIENT;
     // const { newPass } = req.body;
     if (!token) {
         return res.redirect(`${URL}/resetPass?status=fail&message=Token not provided!!`);

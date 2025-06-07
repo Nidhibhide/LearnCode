@@ -81,10 +81,9 @@ const verifyCurrentPassword = async (req: Request, res: Response) => {
 };
 const verifyUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    // const successURL = process.env.LOCAL_VERIFY_SUCCESS_URL;
-    // const failURL = process.env.LOCAL_VERIFY_FAILURE_URL;
-    const URL = process.env.PRODUCTION_SERVER;
-    const { token } = req.params;
+    const URL = process.env.PRODUCTION_CLIENT;
+    // const { token } = req.params;
+    const token = req.query.token as string;
 
     if (!token) {
       return res.redirect(
@@ -165,8 +164,9 @@ const forgotPass = async (req: Request, res: Response) => {
 };
 
 const resetPass = async (req: Request, res: Response) => {
-  const { token } = req.params;
-  const URL = process.env.PRODUCTION_SERVER;
+  // const { token } = req.params;
+  const token = req.query.token as string;
+  const URL = process.env.PRODUCTION_CLIENT;
 
   // const { newPass } = req.body;
 

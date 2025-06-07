@@ -14,6 +14,8 @@ const TestLayout = () => {
   const [output, setOutput] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [hasRunCode, setHasRunCode] = useState(false);
+  const [score, setScore] = useState(null);
   const { state } = useLocation();
   const test = state?.test;
 
@@ -60,7 +62,7 @@ const TestLayout = () => {
         );
 
         result = response.data;
-        
+
         if (result.status.id <= 2) {
           await new Promise((resolve) => setTimeout(resolve, 1000));
         } else {
@@ -75,6 +77,9 @@ const TestLayout = () => {
       } else {
         setOutput(result.compile_output || "Unknown error");
       }
+      if (result.stdout || result.stderr || result.compile_output) {
+        setHasRunCode(true);
+      }
     } catch (error) {
       setOutput(error.message);
     } finally {
@@ -83,13 +88,16 @@ const TestLayout = () => {
   };
   const submitCode = async () => {
     try {
-      const flag = output.trim() === question?.expectedOutput.trim();
+      const isCorrect = output.trim() === question?.expectedOutput.trim();
       const values = {
         questionId: question?._id,
-        flag,
+        flag: isCorrect,
       };
       const response = await update(test?._id, values);
-     
+      console.log(response);
+      if (response?.status === 201) {
+        setScore(isCorrect ? 10 : 0);
+      }
       setTimeout(() => navigate("/dashboard/assessments"), 3000);
     } catch (err) {
       alert(err?.message || "Test attempt update failed");
@@ -118,7 +126,6 @@ const TestLayout = () => {
           </div>
         </div>
       </div>
-
       {/* Code Editor */}
       <div className=" mt-4">
         <h2 className="text-sm font-semibold mb-2">Code Editor</h2>
@@ -136,7 +143,6 @@ const TestLayout = () => {
           />
         </div>
       </div>
-
       {/* Action Buttons */}
       <div className="flex gap-4 mt-5 justify-end">
         <button
@@ -149,11 +155,11 @@ const TestLayout = () => {
         <button
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
           onClick={submitCode}
+          disabled={!hasRunCode}
         >
           Submit Output
         </button>
       </div>
-
       {/* Output Display */}
       <div className=" mt-5">
         <h2 className="text-sm font-semibold mb-3">Output</h2>
@@ -161,6 +167,13 @@ const TestLayout = () => {
           {output ? output : "No output generated yet..."}
         </pre>
       </div>
+      {/* Score Display */}
+      {score !== null && (
+        <div className="mt-4 text-base font-medium">
+          Result: {score === 10 ? "✅ Correct" : "❌ Incorrect"} | Score:{" "}
+          {score}
+        </div>
+      )}
     </div>
   );
 };

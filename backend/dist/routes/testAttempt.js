@@ -10,5 +10,6 @@ const RoleAuth_1 = __importDefault(require("../middlewares/RoleAuth"));
 const router = express_1.default.Router();
 router.post("/create", TokenAuth_1.default, (0, RoleAuth_1.default)("user"), testAttempt_1.create);
 router.put("/update/:id", TokenAuth_1.default, (0, RoleAuth_1.default)("user"), testAttempt_1.update);
+router.get("/getAll", TokenAuth_1.default, (0, RoleAuth_1.default)("admin"), testAttempt_1.getAll);
 exports.default = router;
 //# sourceMappingURL=testAttempt.js.map
