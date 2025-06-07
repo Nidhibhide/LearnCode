@@ -1,3 +1,4 @@
 import QuestionsList from "./QuestionsList";
 import TestLayout from "./TestLayout";
-export {QuestionsList,TestLayout}
+import Rules from "./Rules";
+export {QuestionsList,TestLayout,Rules}

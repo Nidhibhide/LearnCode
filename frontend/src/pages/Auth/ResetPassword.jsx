@@ -17,6 +17,7 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
 
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState(
@@ -24,14 +25,13 @@ const ResetPassword = () => {
   );
 
   const token = searchParams.get("token");
-  let email;
 
   const reset = async () => {
     try {
       const response = await resetPassword(token);
       const message = statusMessages[response?.status];
       if (response.status === 201) {
-        email = response?.data?.data?.email;
+        setEmail(response?.data?.data?.email);
         setStatus("pass");
       } else {
         toast.error(message);
@@ -53,8 +53,8 @@ const ResetPassword = () => {
       if (loading) return;
       setLoading(true);
       const data = {
+        email: email,
         password: values.password,
-        email,
       };
 
       const response = await ChangePass(data);

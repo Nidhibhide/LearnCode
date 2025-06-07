@@ -7,7 +7,6 @@ import {
   Verification,
   ResendVerification,
 } from "./pages/Auth/index";
-import { socket } from "./globals";
 import Unauthorized from "./Unauthorized";
 import SessionExpired from "./SessionExpired";
 import {
@@ -19,7 +18,7 @@ import {
   Assessments,
   MyScores,
   Notification,
-  UserAttempts
+  UserAttempts,
 } from "./pages/Dashboard/Components/Content/index";
 import {
   EditTest,
@@ -33,16 +32,14 @@ import {
 import {
   QuestionsList,
   TestLayout,
+  Rules,
 } from "./pages/Dashboard/Components/Content/Components/Assessments/Components/index";
 import { DashboardPage } from "./pages/Dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 function App() {
-
-
   return (
     <>
       <Router>
@@ -123,6 +120,14 @@ function App() {
               }
             />
             <Route
+              path="rules"
+              element={
+                <RoleAuth allowedRoles={["user"]}>
+                  <Rules />
+                </RoleAuth>
+              }
+            />
+            <Route
               path="TestLayout"
               element={
                 <RoleAuth allowedRoles={["user"]}>
@@ -155,11 +160,11 @@ function App() {
                 </RoleAuth>
               }
             />
-              <Route
+            <Route
               path="userAttempts"
               element={
                 <RoleAuth allowedRoles={["admin"]}>
-                  <UserAttempts/>
+                  <UserAttempts />
                 </RoleAuth>
               }
             ></Route>
