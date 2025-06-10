@@ -1,71 +1,80 @@
 
+
 # 🚀 LearnCode - Coding Platform
 
-LearnCode is an coding assessment platform built with the **MERN stack**, designed to simulate real-world coding tests. With AI-powered dynamic question generation, multi-language support, real-time updates, and role-based access, LearnCode aims to streamline technical evaluations and learning experiences for both users and administrators.
+**LearnCode** is a coding assessment platform built with the **MERN stack**, designed to simulate real-world coding evaluations. It features AI-powered dynamic question generation, real-time collaboration, multi-language support, and role-based access to create an intelligent, efficient, and secure learning environment.
+
+🌐 **Live Demo**:
+[https://learn-code-three.vercel.app/](https://learn-code-three.vercel.app/)
 
 
 ## 🔧 Tech Stack
 
-- **Frontend**: React.js, Tailwind CSS, Hero UI  
-- **Backend**: Node.js, Express.js, MongoDB  
-- **Authentication**: JWT, Cookie-based Sessions  
-- **AI Integration**: Gemini API for dynamic question generation  
-- **Compiler API**: Judge0 API (supports 5 languages)  
-- **Email Services**: Gmail SMTP  
-- **Real-time Communication**: Socket.io  
-
+* **Frontend**: React.js, Tailwind CSS, Hero UI
+* **Backend**: Node.js, Express.js, MongoDB
+* **Authentication**: JWT, Cookie-based Sessions
+* **AI Integration**: Gemini API (dynamic question generation)
+* **Compiler API**: Judge0 (multi-language support)
+* **Email Services**: Gmail SMTP
+* **Real-time Communication**: Socket.io
 
 ## ✨ Features
 
 ### 👥 Role-Based Access
-- **Admin Dashboard**:  
-  - Full CRUD operations on tests  
-  - Manage and restore deleted tests  
-  - Manage users and view their test scores  
 
-- **User Panel**:  
-  - Register/login with email verification  
-  - Take coding tests and view scores  
-  - Real-time alerts and test status updates  
+* **Admin Dashboard**
+
+  * Create, update, delete, and restore coding tests
+  * Manage users and monitor test scores
+
+* **User Panel**
+
+  * Secure registration and email verification
+  * Take real-time coding assessments
+  * View test results and receive notifications
 
 ### 🔐 Authentication & Security
-- JWT tokens for secure session management  
-- Role-based access control  
-- Cookie-based sessions with refresh token handling  
+
+* Secure login with JWT-based token handling
+* Refresh tokens with cookie-based sessions
+* Strict access control based on roles
 
 ### ⚙️ Intelligent & Interactive
-- Gemini AI integration for dynamic question creation  
-- Real-time test notifications using Socket.io  
-- Secure and responsive UI/UX  
+
+* AI-generated questions using Gemini API
+* Real-time test status updates with Socket.io
+* Clean and responsive UI/UX across devices
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js & npm  
-- MongoDB  
-- Gmail account for SMTP
+* Node.js & npm
+* MongoDB
+* Gmail account (for SMTP service)
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/Nidhibhide/LearnCode.git
    cd learncode
-````
+   ```
 
-2. Run backend:
+2. **Run Backend**:
 
+   ```bash
    cd server
    npm install
    npm run dev
    ```
 
-3. Run frontend:
+3. **Run Frontend**:
 
+   ```bash
    cd client
    npm install
    npm run dev
    ```
-
 
