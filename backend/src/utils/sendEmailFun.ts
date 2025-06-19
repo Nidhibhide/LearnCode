@@ -13,7 +13,7 @@ const transporterFun = () => {
 };
 
 const mailOptionsForVerify = (email: string, token: string) => {
-  const CLIENT = process.env.PRODUCTION_CLIENT;
+  const CLIENT = process.env.CLIENT;
   const verifyUrl = `${CLIENT}/verify?token=${token}`;
 
   const mailOptions = {
@@ -42,7 +42,7 @@ This link expires in 5 minutes. If you didn't sign up, ignore this email.`,
 };
 
 const mailOptionsForVResetPass = (email: string, token: string) => {
-  const CLIENT = process.env.PRODUCTION_CLIENT;
+  const CLIENT = process.env.CLIENT;
   const resetUrl = `${CLIENT}/resetPass?token=${token}`;
 
   const mailOptions = {
