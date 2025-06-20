@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import { TestCard } from "../../../../../../components/index";
 import { Tabs, Tab } from "@heroui/react";
 import { Preview } from "../ViewTest/Components/index";
+import { toast } from "react-toastify";
 const Assessments = () => {
   const [tests, setTests] = useState([]);
 
@@ -48,10 +49,10 @@ const Assessments = () => {
           ? await getAll(filtersNew)
           : await getAllOngoing(filtersOnGoing, user);
 
-      setTotal(response?.data?.total);
-      setTests(response?.data?.data);
+      setTotal(response?.total);
+      setTests(response?.data);
     } catch (err) {
-      alert(err.message || "View Unattempted Tests failed");
+      toast.error(err.message || "View Unattempted Tests failed");
     }
   };
   useEffect(() => {

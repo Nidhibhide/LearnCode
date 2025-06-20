@@ -9,13 +9,6 @@ import { InputField } from "../../components/index";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const SignIn = () => {
-  const statusMessages = {
-    200: "Login successful",
-    401: "Incorrect password",
-    404: "User or password not found",
-    403: "User not verified",
-    500: "Unexpected error occurred while sign in",
-  };
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -31,31 +24,31 @@ const SignIn = () => {
     try {
       if (loading) return;
       setLoading(true);
-      const response = await signin(values);
+      const signinRes = await signin(values);
+      const { message: signinMsg, statusCode: signinStatus } = signinRes;
 
-      const message = statusMessages[response?.status];
-
-      if (response?.status === 200) {
-        toast.success(message);
+      if (signinStatus === 200) {
+        toast.success(signinMsg);
         //fetch user api
-        const response = await getMe();
-        if (response?.status === 200) {
-          localStorage.setItem("data", JSON.stringify(response?.data?.data));
+        const userRes = await getMe();
+        const {  statusCode: getMeStatus, data } = userRes;
+        if (getMeStatus === 200) {
+          localStorage.setItem("data", JSON.stringify(data));
         }
 
-        const role = response?.data?.data?.role;
+        const role = data?.role;
         const path =
           role === "admin" ? "/dashboard/viewTest" : "/dashboard/assessments";
         setTimeout(() => navigate(path), 3000);
-      } else if (response?.status === 403) {
-        toast.error(message);
+      } else if (signinStatus === 400) {
+        toast.error(signinMsg);
         setTimeout(() => navigate("/resend-verify"), 3000);
-      } else if (message) {
-        toast.error(message);
+      } else if (signinMsg) {
+        toast.error(signinMsg);
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "Login failed");
+      toast.error(err.message || "Login failed");
     } finally {
       setLoading(false);
     }

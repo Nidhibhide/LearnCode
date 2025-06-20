@@ -1,4 +1,4 @@
-import {InputField} from "../../../../../components/index";
+import { InputField } from "../../../../../components/index";
 import { Formik } from "formik";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -7,10 +7,6 @@ import * as Yup from "yup";
 
 const CreateTest = () => {
   const [loading, setLoading] = useState(false);
-  const statusMessages = {
-    201: "Test created successfully ",
-    500: "Unexpected error occurred while create test",
-  };
 
   // handle sign up
   const handleCreate = async (values, { resetForm }) => {
@@ -19,16 +15,16 @@ const CreateTest = () => {
       setLoading(true);
       const response = await create(values);
 
-      const message = statusMessages[response?.status];
+      const { message, statusCode } = response;
 
-      if (response?.status === 201) {
+      if (statusCode === 201) {
         toast.success(message);
       } else if (message) {
         toast.error(message);
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "test creationg failed");
+      toast.error(err.message || "test creationg failed");
     } finally {
       setLoading(false);
     }

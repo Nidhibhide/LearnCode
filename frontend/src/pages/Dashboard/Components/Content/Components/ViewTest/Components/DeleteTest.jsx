@@ -29,25 +29,20 @@ function DeleteTest() {
       navigate(-1); //  Go back to previous page when modal is closed
     }
   };
-  const statusMessages = {
-    200: "Test Deleted! Refresh the page to see the latest changes",
-    400: "Invalid test ID",
-    404: "Test not found",
-    500: "Unexpected error occurred while delete test",
-  };
+
   const handleDelete = async (onClose) => {
     try {
       const res = await deleteTest(testId);
 
-      const message = statusMessages[res?.status];
-      if (res?.status === 200 && message) {
+      const { message, statusCode } = response;
+      if (statusCode === 200 && message) {
         toast.success(message);
         setTimeout(() => navigate("/dashboard/viewTest"), 3000);
       } else if (message) {
         toast.error(message);
       }
     } catch (err) {
-      alert(err.message || "test deletion failed");
+      toast.error(err.message || "test deletion failed");
     } finally {
       onClose();
     }

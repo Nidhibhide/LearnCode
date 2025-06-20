@@ -5,7 +5,7 @@ export const getAllByUser = async (filters, user) => {
     const res = await globalaxios.get(`/notification/getAll/${user}`, {
       params: filters,
     });
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }
@@ -15,7 +15,7 @@ export const getAllByUser = async (filters, user) => {
 export const markAsread = async (id) => {
   try {
     const res = await globalaxios.put(`/notification/update/${id}`);
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }

@@ -47,17 +47,12 @@ function RestoreTest() {
     limit: 5,
     level,
   };
-  const statusMessages = {
-    200: "Test Restored! Refresh the page to see the latest changes",
-    400: "Invalid test ID",
-    404: "Test not found",
-    500: "Unexpected error occurred while restore test",
-  };
+
   const handleViewTests = async () => {
     try {
       const response = await GetDeletedAll(filters);
-      setTotal(response?.data?.total || 0);
-      setTests(response?.data?.data || []);
+      setTotal(response?.total || 0);
+      setTests(response?.data || []);
     } catch (err) {
       alert(err.message || "View deleted tests failed");
     }
@@ -67,15 +62,15 @@ function RestoreTest() {
     try {
       const res = await restore(test?._id);
 
-      const message = statusMessages[res?.status];
-      if (res?.status === 200 && message) {
+      const { message, statusCode } = res;
+      if (statusCode === 200 && message) {
         toast.success(message);
         setTimeout(() => navigate("/dashboard/restoreTest"), 3000);
       } else if (message) {
         toast.error(message);
       }
     } catch (err) {
-      alert(err.message || "test restore failed");
+      toast.error(err.message || "test restore failed");
     }
   };
 

@@ -160,7 +160,7 @@ const restore = async (req: Request, res: Response) => {
 
     return JsonOne(res, 200, "Test restored successfully", true);
   } catch (error) {
-    console.error("Soft delete error:", error);
+    console.error("Soft restore error:", error);
 
     JsonOne(res, 500, "unexpected error occurred while restore test", false);
   }
@@ -199,7 +199,7 @@ const edit = async (req: Request, res: Response) => {
     if (!updatedTest) {
       return JsonOne(res, 404, "Test not found", false);
     }
-    JsonOne(res, 201, "test updated successfully", true);
+    JsonOne(res, 200, "test updated successfully", true);
   } catch (err) {
     JsonOne(res, 500, "unexpected error occurred while updating test", false);
   }

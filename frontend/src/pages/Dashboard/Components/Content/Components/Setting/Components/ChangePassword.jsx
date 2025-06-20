@@ -33,11 +33,7 @@ const ChangePassword = () => {
       navigate(-1);
     }
   };
-  const statusMessages = {
-    401: "Incorrect password",
-    404: "User not found",
-    500: "Unexpected error occurred while update password ",
-  };
+
   const currentPasswordSchema = Yup.object({
     currentPassword: Yup.string()
       .matches(/^\d+$/, "Password must contain digits only")
@@ -67,15 +63,15 @@ const ChangePassword = () => {
       if (loading) return;
       setLoading(true);
       const res = await VerifyCurrentPassword(data);
-      const message = statusMessages[res?.status];
+      const { message, statusCode } = res;
 
-      if (res.status === 200) {
+      if (statusCode === 200) {
         setStep(1);
       } else if (message) {
         toast.error(message);
       }
     } catch (err) {
-      alert(err.message || "Verify Current Password failed");
+      toast.error(err.message || "Verify Current Password failed");
     } finally {
       setLoading(false);
     }
@@ -90,9 +86,9 @@ const ChangePassword = () => {
       if (loading) return;
       setLoading(true);
       const res = await ChangePass(data);
-      const message = statusMessages[res?.status];
+      const { message, statusCode } = res;
 
-      if (res.status === 200) {
+      if (statusCode === 200) {
         toast.success("Password updated successfully");
         setTimeout(() => navigate("/dashboard/setting"), 3000);
       } else if (message) {
@@ -100,7 +96,7 @@ const ChangePassword = () => {
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "Change Password failed");
+      toast.error(err.message || "Change Password failed");
     } finally {
       setLoading(false);
     }

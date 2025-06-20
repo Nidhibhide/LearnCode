@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { TableComponent } from "../../../../../../../components/index";
 import { create } from "../../../../../../../api/testAttempt";
 import { Rules } from "./index";
+import { toast } from "react-toastify";
 const QuestionsList = () => {
   const { state } = useLocation();
   const test = state?.test;
@@ -35,7 +36,7 @@ const QuestionsList = () => {
       };
       const response = await create(values);
     } catch (err) {
-      alert(err.message || "testAttempt creation failed");
+      toast.error(err.message || "testAttempt creation failed");
     }
   };
 

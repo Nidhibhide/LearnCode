@@ -9,15 +9,6 @@ import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 import { socket } from "../../globals";
 const SignUp = () => {
-  const statusMessages = {
-    409: "User already exists",
-    201: "User registered successfully. Verification email has been sent to ",
-    500: "Unexpected error occurred",
-    400: "Google token is required",
-    404: "Incomplete Google user data",
-    200: "Login successful",
-  };
-
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   // handle sign up
@@ -26,17 +17,16 @@ const SignUp = () => {
       if (loading) return;
       setLoading(true);
       const response = await signup(values);
+      const { message, statusCode } = response;
 
-      const message = statusMessages[response?.status];
-
-      if (response?.status === 201) {
-        toast.success(message + values?.email);
+      if (statusCode === 200) {
+        toast.success(message);
       } else if (message) {
         toast.error(message);
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "Registration failed");
+      toast.error(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -47,25 +37,26 @@ const SignUp = () => {
     try {
       const token = values?.credential;
 
-      const response = await signinwithGoogle(token);
-      const message = statusMessages[response?.status];
+      const res = await signinwithGoogle(token);
+      const { message: signinMsg, statusCode: signinStatus } = res;
 
-      if (response?.status === 200) {
-        toast.success(message);
+      if (signinStatus === 200) {
+        toast.success(signinMsg);
         //fetch user api
-        const response = await getMe();
-        if (response?.status === 200) {
-          localStorage.setItem("data", JSON.stringify(response?.data?.data));
+        const userRes = await getMe();
+        const { statusCode: getMeStatus, data } = userRes;
+        if (getMeStatus === 200) {
+          localStorage.setItem("data", JSON.stringify(data));
         }
-        const role = response?.data?.data?.role;
+        const role = data?.role;
         const path =
           role === "admin" ? "/dashboard/viewTest" : "/dashboard/assessments";
         setTimeout(() => navigate(path), 3000);
-      } else if (message) {
-        toast.error(message);
+      } else if (signinMsg) {
+        toast.error(signinMsg);
       }
     } catch (err) {
-      alert(err.message || "Sign in with google failed");
+      toast.error(err.message || "Sign in with google failed");
     }
   };
 

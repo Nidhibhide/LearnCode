@@ -33,10 +33,9 @@ const index = () => {
   const handleViewTests = async () => {
     try {
       const response = await getAll(filters);
+      setTotal(response?.total);
 
-      setTotal(response?.data?.total);
-
-      setTests(response?.data?.data);
+      setTests(response?.data);
     } catch (err) {
       alert(err.message || "View Tests failed");
     }

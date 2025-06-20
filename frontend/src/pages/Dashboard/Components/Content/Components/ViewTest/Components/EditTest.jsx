@@ -60,19 +60,14 @@ function EditTest() {
       .required("Level is required"),
   });
 
-  const statusMessages = {
-    201: "Test Updated! Refresh the page to see the latest changes ",
-    404: "Test not found",
-    500: "Unexpected error occurred while update test",
-  };
   const handleEdit = async (values, { resetForm }) => {
     try {
       if (loading) return;
       setLoading(true);
       const response = await edit(testId, values);
 
-      const message = statusMessages[response?.status];
-      if (response?.status === 201) {
+      const { message, statusCode } = response;
+      if (statusCode === 200) {
         toast.success(message);
         setTimeout(() => navigate("/dashboard/viewTest"), 3000);
       } else if (message) {
@@ -80,7 +75,7 @@ function EditTest() {
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "test editing failed");
+      toast.error(err.message || "test editing failed");
     } finally {
       setLoading(false);
     }

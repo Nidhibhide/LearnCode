@@ -9,8 +9,8 @@ const RoleAuth = ({ allowedRoles, children }) => {
     const validateToken = async () => {
       try {
         const res = await checkToken();
-
-        if (res?.status === 200) {
+        const { statusCode } = res;
+        if (statusCode === 200) {
           const role = JSON.parse(localStorage.getItem("data"))?.role;
           if (!role || !allowedRoles.includes(role)) {
             setStatus("unauthorized");

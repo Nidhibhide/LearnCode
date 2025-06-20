@@ -21,7 +21,8 @@ const Logout = () => {
 
   const handleConfirm = async (onClose) => {
     const res = await logout();
-    if (res?.status === 200) {
+    const { message, statusCode } = res;
+    if (statusCode === 200) {
       localStorage.removeItem("data");
       onClose();
       navigate("/");

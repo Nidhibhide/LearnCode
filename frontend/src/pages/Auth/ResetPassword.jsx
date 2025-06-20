@@ -8,12 +8,6 @@ import { InputField } from "../../components/index";
 import { codingImage } from "../../images/index";
 
 const ResetPassword = () => {
-  const statusMessages = {
-    200: "Password reset successfully",
-    404: "User not found",
-    500: "Unexpected error occurred",
-    400: "Something went wrong",
-  };
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -29,9 +23,9 @@ const ResetPassword = () => {
   const reset = async () => {
     try {
       const response = await resetPassword(token);
-      const message = statusMessages[response?.status];
-      if (response.status === 201) {
-        setEmail(response?.data?.data?.email);
+      const { message, statusCode } = response;
+      if (statusCode === 200) {
+        setEmail(response?.data?.email);
         setStatus("pass");
       } else {
         toast.error(message);
@@ -59,9 +53,9 @@ const ResetPassword = () => {
 
       const response = await ChangePass(data);
 
-      const message = statusMessages[response?.status];
+      const { message, statusCode } = response;
 
-      if (response?.status === 200) {
+      if (statusCode === 200) {
         toast.success(message);
         setTimeout(() => navigate("/login"), 3000);
       } else if (message) {
@@ -69,7 +63,9 @@ const ResetPassword = () => {
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "Something went wrong. Please try again later.");
+      toast.error(
+        err.message || "Something went wrong. Please try again later."
+      );
     } finally {
       setLoading(false);
     }

@@ -29,12 +29,6 @@ const EditProfile = () => {
       navigate(-1);
     }
   };
-  const statusMessages = {
-    201: "Profile updated! Refresh the page to see the latest changes.",
-    404: "User not found",
-    400: "Cannot update email for Google-authenticated users",
-    500: "Unexpected error occurred while update profile ",
-  };
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -55,10 +49,10 @@ const EditProfile = () => {
                 if (loading) return;
                 setLoading(true);
                 const res = await update(values, id);
-                const message = statusMessages[res?.status];
+                const { message, statusCode } = res;
 
-                if (res.status === 201 && message) {
-                  localStorage.setItem("data", JSON.stringify(res?.data?.data));
+                if (statusCode === 200 && message) {
+                  localStorage.setItem("data", JSON.stringify(res?.data));
                   toast.success(message);
                   setTimeout(() => navigate("/dashboard/setting"), 3000);
                 } else if (message) {
@@ -67,7 +61,7 @@ const EditProfile = () => {
 
                 resetForm();
               } catch (err) {
-                alert(err.message || "Update Profile failed");
+                toast.error(err.message || "Update Profile failed");
               } finally {
                 onClose();
                 setLoading(false);

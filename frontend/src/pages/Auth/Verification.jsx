@@ -10,20 +10,15 @@ const Verification = () => {
   const [status, setStatus] = useState(
     "Email Verified. Redirecting to Login..."
   );
-  const statusMessages = {
-    201: "Verification Done",
-    400: "Something went wrong",
-    200: "User already verified",
-    500: "Unexpected error occurred while verification",
-  };
+
   const token = searchParams.get("token");
 
   const verifyUser = async () => {
     try {
       const response = await verify(token);
+      const { message, statusCode } = response;
 
-      const message = statusMessages[response?.status];
-      if (response.status === 201 || response.status === 200) {
+      if (statusCode === 201 || statusCode === 200) {
         toast.success(message);
         setTimeout(() => navigate("/login"), 3000);
       } else {

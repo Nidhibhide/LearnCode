@@ -75,7 +75,7 @@ const googleLogin = async (req: Request, res: Response) => {
 
   try {
     if (!token) {
-      return JsonOne(res, 400, "Google token is required", false);
+      return JsonOne(res, 404, "Google token not found", false);
     }
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -83,7 +83,7 @@ const googleLogin = async (req: Request, res: Response) => {
     });
 
     const payload = ticket.getPayload();
-    if (!payload) return JsonOne(res, 404, "Invalid Google token", false);
+    if (!payload) return JsonOne(res, 401, "Invalid Google token", false);
 
     const { email, name, sub } = payload;
     if (!email || !name || !sub) {
@@ -144,7 +144,7 @@ const login = async (req: Request, res: Response) => {
       return JsonOne(res, 404, "User or password not found not found", false);
     }
     if (!user.isVerified) {
-      return JsonOne(res, 403, "User is not verified", false);
+      return JsonOne(res, 400, "User is not verified", false);
     }
 
     //compare password
@@ -180,7 +180,7 @@ const getMe = async (req: Request, res: Response) => {
     const user = req.user;
 
     if (!user) {
-      return JsonOne(res, 400, "Profile not found", false);
+      return JsonOne(res, 404, "Profile not found", false);
     }
     return JsonOne(res, 200, "User Found", true, user);
   } catch (error) {

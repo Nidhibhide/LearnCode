@@ -5,13 +5,9 @@ import { Formik } from "formik";
 import { forgotPass } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import {InputField} from "../../components/index";
+import { InputField } from "../../components/index";
 
 const ForgotPassword = () => {
-  const statusMessages = {
-    400: "User not found",
-    500: "Unexpected error occurred while sign in",
-  };
   const [loading, setLoading] = useState(false);
   // handle forgot Password
   const handleForgotPass = async (values, { resetForm }) => {
@@ -20,18 +16,18 @@ const ForgotPassword = () => {
       setLoading(true);
       const response = await forgotPass(values);
 
-      const message = statusMessages[response?.status];
+      const { message, statusCode } = response;
 
-      if (response?.status === 200) {
-        toast.success(
-          `Verification link sent to ${values?.email}  Click it to reset your password`
-        );
+      if (statusCode === 200) {
+        toast.success(message);
       } else if (message) {
         toast.error(message);
       }
       resetForm();
     } catch (err) {
-      alert(err.message || "Something went wrong. Please try again later.");
+      toast.error(
+        err.message || "Something went wrong. Please try again later."
+      );
     } finally {
       setLoading(false);
     }

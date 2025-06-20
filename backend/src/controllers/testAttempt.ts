@@ -57,7 +57,7 @@ const update = async (req: Request, res: Response) => {
       attempt.completedAt = new Date();
     }
     await attempt.save();
-    JsonOne(res, 201, "Attempt updated successfully", true);
+    JsonOne(res, 200, "Attempt updated successfully", true);
   } catch (err) {
     JsonOne(
       res,

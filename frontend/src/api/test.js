@@ -3,7 +3,7 @@ import {globalaxios} from "../globals";
 export const create = async (data) => {
   try {
     const res = await globalaxios.post("/test/create", data);
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }
@@ -13,7 +13,7 @@ export const create = async (data) => {
 export const getAll = async (filters) => {
   try {
     const res = await globalaxios.get("/test/getAll", { params: filters });
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }
@@ -25,7 +25,7 @@ export const GetDeletedAll = async (filters) => {
     const res = await globalaxios.get("/test/get-deleted-All", {
       params: filters,
     });
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }
@@ -35,7 +35,7 @@ export const GetDeletedAll = async (filters) => {
 export const deleteTest = async (id) => {
   try {
     const res = await globalaxios.put(`/test/delete/${id}`);
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }
@@ -46,7 +46,7 @@ export const deleteTest = async (id) => {
 export const edit = async (id, data) => {
   try {
     const res = await globalaxios.put(`/test/edit/${id}`, data);
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }
@@ -56,7 +56,7 @@ export const edit = async (id, data) => {
 export const restore = async (id) => {
   try {
     const res = await globalaxios.put(`/test/restore/${id}`);
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }
@@ -69,7 +69,7 @@ export const getAllOngoing = async (filters, user) => {
     const res = await globalaxios.get(`/test/getOngoing/${user}`, {
       params: filters,
     });
-    return res;
+    return res.data;
   } catch (err) {
     return (
       err.response || { message: "Unexpected error occurred", status: 500 }

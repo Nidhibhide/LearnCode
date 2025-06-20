@@ -3,19 +3,13 @@ import { codingImage } from "../../images/index";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import { toast } from "react-toastify";
-import {InputField} from "../../components/index";
+import { InputField } from "../../components/index";
 import { resendVerify } from "../../api/user";
 import { useNavigate } from "react-router-dom";
 
 const ResendVerification = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const statusMessages = {
-    200: "Verification email has been resent to ",
-    400: "User already verified",
-    404: "User not found",
-    500: "Unexpected error occurred while sign in",
-  };
 
   const handleResendVerification = async (values, { resetForm }) => {
     try {
@@ -23,8 +17,8 @@ const ResendVerification = () => {
       setLoading(true);
       const response = await resendVerify(values);
 
-      const message = statusMessages[response?.status];
-      if (response?.status === 200) {
+      const { message, statusCode } = response;
+      if (statusCode === 200) {
         toast.success(message + values?.email);
       } else if (response?.status === 400) {
         toast.error(message);

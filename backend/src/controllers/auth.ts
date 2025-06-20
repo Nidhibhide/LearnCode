@@ -84,12 +84,12 @@ const verifyUser = async (req: Request, res: Response): Promise<void> => {
     const { token } = req.params;
 
     if (!token) {
-      return JsonOne(res, 400, "Token not provided!!", false);
+      return JsonOne(res, 401, "Token not provided!!", false);
     }
     const user = await User.findOne({ verificationToken: token });
 
     if (user?.isVerified) {
-      return JsonOne(res, 200, "User already verified!!", true);
+      return JsonOne(res, 400, "User already verified!!", true);
     }
 
     if (!user?.expireTime || new Date() > user.expireTime) {
@@ -101,7 +101,7 @@ const verifyUser = async (req: Request, res: Response): Promise<void> => {
     // user.verificationToken = undefined;
     await user.save();
 
-    return JsonOne(res, 201, "Verification Done!!", true);
+    return JsonOne(res, 200, "Verification Done!!", true);
   } catch (error) {
     return JsonOne(res, 500, "Verification Failed", false);
   }
@@ -114,7 +114,7 @@ const forgotPass = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return JsonOne(res, 400, "User not found", false);
+      return JsonOne(res, 404, "User not found", false);
     }
 
     const token = crypto.randomBytes(12).toString("hex");
@@ -153,7 +153,7 @@ const resetPass = async (req: Request, res: Response) => {
     const { token } = req.params;
 
     if (!token) {
-      return JsonOne(res, 400, "Token not provided!!", false);
+      return JsonOne(res, 401, "Token not provided!!", false);
     }
 
     const user = await User.findOne(
@@ -171,7 +171,7 @@ const resetPass = async (req: Request, res: Response) => {
       return JsonOne(res, 400, "Verification link expired!!", false);
     }
 
-    return JsonOne(res, 201, "success!!", true, user);
+    return JsonOne(res, 200, "success!!", true, user);
   } catch (error) {
     return JsonOne(res, 500, "reset password Failed", false);
   }
@@ -181,7 +181,7 @@ const checkToken = async (req: Request, res: Response) => {
   const token = req.cookies.token;
 
   if (!token) {
-    return JsonOne(res, 401, "Token not found", false);
+    return JsonOne(res, 404, "Token not found", false);
   }
 
   try {

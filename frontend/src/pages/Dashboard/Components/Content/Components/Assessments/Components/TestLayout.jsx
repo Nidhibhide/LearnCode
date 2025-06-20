@@ -94,8 +94,8 @@ const TestLayout = () => {
         flag: isCorrect,
       };
       const response = await update(test?._id, values);
-      console.log(response);
-      if (response?.status === 201) {
+      const { statusCode } = response;
+      if (statusCode === 200) {
         setScore(isCorrect ? 10 : 0);
       }
       setTimeout(() => navigate("/dashboard/assessments"), 3000);

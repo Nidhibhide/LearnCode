@@ -8,6 +8,7 @@ import {
 import { TableComponent } from "../../../../../components/index";
 
 import { getAllOngoing } from "../../../../../api/test";
+import { toast } from "react-toastify";
 
 // Column definitions
 const columns = [
@@ -44,10 +45,10 @@ function MyScores() {
   const handleViewTests = async () => {
     try {
       const response = await getAllOngoing(filters, user);
-      setTotal(response?.data?.total || 0);
-      setTests(response?.data?.data || []);
+      setTotal(response?.total || 0);
+      setTests(response?.data || []);
     } catch (err) {
-      alert(err.message || "View attempted tests failed");
+      toast.error(err.message || "View attempted tests failed");
     }
   };
 
