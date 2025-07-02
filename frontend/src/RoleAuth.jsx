@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { checkToken } from "./api/user";
+import { checkToken, refreshToken } from "./api/user";
 
 const RoleAuth = ({ allowedRoles, children }) => {
   const [status, setStatus] = useState("loading");
@@ -18,7 +18,13 @@ const RoleAuth = ({ allowedRoles, children }) => {
             setStatus("authorized");
           }
         } else {
-          setStatus("expired");
+          const res = await refreshToken();
+          const { statusCode } = res;
+          if (statusCode === 200) {
+            await validateToken();
+          } else {
+            setStatus("expired");
+          }
         }
       } catch (err) {
         setStatus("expired");

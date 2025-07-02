@@ -6,6 +6,7 @@ import {
   resendVerificationEmail,
   resetPass,
   verifyCurrentPassword,
+  refreshToken,
 } from "../controllers/auth";
 import express from "express";
 
@@ -32,6 +33,7 @@ router.post(
 router.post("/forgotPassword", EmailValidtorMid, forgotPass);
 router.get("/reset/:token", resetPass);
 router.get("/checkToken", checkToken);
+router.get("/refreshToken", refreshToken);
 router.get("/verify/:token", verifyUser);
 
 export default router;

@@ -130,6 +130,17 @@ export const checkToken = async () => {
   }
 };
 
+export const refreshToken = async () => {
+  try {
+    const res = await globalaxios.get("/auth/refreshToken");
+    return res.data;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};
+
 export const update = async (data, id) => {
   try {
     const res = await globalaxios.put(`/user/updateProfile/${id}`, data);

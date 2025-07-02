@@ -35,7 +35,7 @@ const Content = () => {
 
           {/* Transparent overlay to close sidebar when clicked outside */}
           <div
-            className="flex-1 bg-black bg-opacity-40"
+            className="flex-1 bg-black bg-opacity-40 "
             onClick={() => setShowSidebar(false)}
           />
         </div>

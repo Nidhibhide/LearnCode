@@ -5,13 +5,14 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { JsonOne } from "../utils/responseFun";
 import expiretime from "../utils/expireTimeFun";
-import { Request, RequestHandler, Response } from "express";
+import {  Request, RequestHandler, Response } from "express";
 import {
   mailOptionsForVResetPass,
   mailOptionsForVerify,
   transporterFun,
 } from "../utils/sendEmailFun";
 import expireTime from "../utils/expireTimeFun";
+import { accessTokenOptions } from "../utils/cookieOptions";
 
 const resendVerificationEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
@@ -178,7 +179,7 @@ const resetPass = async (req: Request, res: Response) => {
 };
 
 const checkToken = async (req: Request, res: Response) => {
-  const token = req.cookies.token;
+  const token = req.cookies.access_token;
 
   if (!token) {
     return JsonOne(res, 404, "Token not found", false);
@@ -187,12 +188,40 @@ const checkToken = async (req: Request, res: Response) => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET_KEY as string
+      process.env.JWT_ACCESS_TOKEN as string
     ) as JwtPayload;
 
     return JsonOne(res, 200, "Token valid", true);
   } catch (err) {
     return JsonOne(res, 500, "Token expired or invalid", false);
+  }
+};
+const refreshToken = async (req: Request, res: Response) => {
+  const token = req.cookies.refresh_token;
+
+  if (!token) {
+    return JsonOne(res, 404, "Token not found", false);
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.REFRESH_TOKEN as string
+    ) as JwtPayload;
+
+    const jwtToken = jwt.sign(
+      { id: decoded.id },
+      process.env.ACCESS_TOKEN as string,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    res.cookie("access_token", jwtToken,accessTokenOptions);
+
+    return JsonOne(res, 200, "Token refreshed successfully", true);
+  } catch (err) {
+    return JsonOne(res, 500, "Refresh Token expired or invalid", false);
   }
 };
 
@@ -224,4 +253,5 @@ export {
   resetPass,
   checkToken,
   verifyCurrentPassword,
+  refreshToken
 };

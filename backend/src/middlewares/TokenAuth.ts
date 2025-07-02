@@ -15,15 +15,15 @@ declare global {
 }
 const IsLoggeedIn = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies?.token;
+    const access_token = req.cookies?.access_token;
 
-    if (!token) {
+    if (!access_token) {
       return JsonOne(res, 400, "Token not found", false);
     }
 
     const decode = jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY as string
+      access_token,
+      process.env.ACCESS_TOKEN as string
     ) as JwtPayload;
     const userID = decode.id;
     const user = await User.findById(userID).select(
@@ -37,7 +37,7 @@ const IsLoggeedIn = async (req: Request, res: Response, next: NextFunction) => {
 
     next();
   } catch (error) {
-    return JsonOne(res, 400, "Invalid or expired Token", false);
+    return JsonOne(res, 400, "Invalid or expired  Access Token", false);
   }
 };
 

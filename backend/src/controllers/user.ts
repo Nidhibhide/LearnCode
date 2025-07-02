@@ -1,6 +1,5 @@
 import User from "../models/user";
 import nodemailer from "nodemailer";
-import { CookieOptions } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
@@ -13,14 +12,12 @@ import {
   notifyAdminOfNewUser,
 } from "../utils/notification";
 import { mailOptionsForVerify, transporterFun } from "../utils/sendEmailFun";
+import {
+  refreshTokenOptions,
+  accessTokenOptions,
+} from "../utils/cookieOptions";
+import { clearCookies } from "../utils/cookieOptions";
 
-//set token in cookie
-const cookieOptions: CookieOptions = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-  maxAge: 60 * 60 * 1000,
-};
 const registerUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
@@ -114,21 +111,24 @@ const googleLogin = async (req: Request, res: Response) => {
       await notifyAdminOfNewUser(name);
     }
 
-    const jwtToken = jwt.sign(
+    const access_token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET_KEY as string,
+      process.env.ACCESS_TOKEN as string,
       {
         expiresIn: "1h",
       }
     );
 
-    // const cookieOptions = {
-    //   httpOnly: true,
-    //   secure: true,
-    //   maxAge: 60 * 60 * 1000,
-    // };
+    res.cookie("access_token", access_token, accessTokenOptions);
+    const refresh_token = jwt.sign(
+      { id: user._id },
+      process.env.REFRESH_TOKEN as string,
+      {
+        expiresIn: "7d",
+      }
+    );
 
-    res.cookie("token", jwtToken, cookieOptions);
+    res.cookie("refresh_token", refresh_token, refreshTokenOptions);
 
     return JsonOne(res, 200, "Login successful", true);
   } catch (err) {
@@ -153,21 +153,24 @@ const login = async (req: Request, res: Response) => {
     if (!isMatch) {
       return JsonOne(res, 401, "Incorrect password", false);
     }
-    const token = jwt.sign(
+    const access_token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET_KEY as string,
+      process.env.ACCESS_TOKEN as string,
       {
         expiresIn: "1h",
       }
     );
 
-    //     const cookieOptions = {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: "None",
-    //   maxAge: 60 * 60 * 1000,
-    // }; this i can use for mobile & laptop both in secure way
-    res.cookie("token", token, cookieOptions);
+    res.cookie("access_token", access_token, accessTokenOptions);
+    const refresh_token = jwt.sign(
+      { id: user._id },
+      process.env.REFRESH_TOKEN as string,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.cookie("refresh_token", refresh_token, refreshTokenOptions);
 
     return JsonOne(res, 200, "Login successful", true);
   } catch (error) {
@@ -188,10 +191,12 @@ const getMe = async (req: Request, res: Response) => {
   }
 };
 
+//find out
 const logOut = async (req: Request, res: Response) => {
   try {
-    res.cookie("token", "", {});
-    const token = req.cookies?.token;
+    res.clearCookie("access_token", clearCookies);
+
+    res.clearCookie("refresh_token", clearCookies);
 
     return JsonOne(res, 200, "Logout successfully", true);
   } catch (error) {
