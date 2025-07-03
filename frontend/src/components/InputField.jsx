@@ -11,7 +11,7 @@ const InputField = ({
 }) => {
   return (
     <div className="flex flex-col space-y-1">
-      <p className="md:text-lg text-base font-medium">{label}</p>
+      <p className="md:text-lg text-sm font-medium">{label}</p>
       {as === "select" ? (
         <Field
           as="select"

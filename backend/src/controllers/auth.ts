@@ -188,7 +188,7 @@ const checkToken = async (req: Request, res: Response) => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_ACCESS_TOKEN as string
+      process.env.ACCESS_TOKEN as string
     ) as JwtPayload;
 
     return JsonOne(res, 200, "Token valid", true);
