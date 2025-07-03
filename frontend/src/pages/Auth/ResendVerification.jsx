@@ -71,7 +71,7 @@ const ResendVerification = () => {
                 <button
                   onClick={handleSubmit}
                   type="button"
-                  className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+                  className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base  font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
                   {loading ? "Loading..." : "Send Email"}
                 </button>

@@ -31,7 +31,7 @@ const SignIn = () => {
         toast.success(signinMsg);
         //fetch user api
         const userRes = await getMe();
-        const {  statusCode: getMeStatus, data } = userRes;
+        const { statusCode: getMeStatus, data } = userRes;
         if (getMeStatus === 200) {
           localStorage.setItem("data", JSON.stringify(data));
         }
@@ -108,11 +108,11 @@ const SignIn = () => {
                   onClick={handleSubmit}
                   type="button"
                   disabled={loading}
-                  className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+                  className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
                   {loading ? "Loading..." : "Sign In"}
                 </button>
-                <p className="md:text-lg text-base ">
+                <p className="md:text-lg text-sm ">
                   Forgot Password?{" "}
                   <Link
                     to="/forgotPass"

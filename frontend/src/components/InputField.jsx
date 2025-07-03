@@ -11,7 +11,7 @@ const InputField = ({
 }) => {
   return (
     <div className="flex flex-col space-y-1">
-      <p className="md:text-base text-sm font-medium">{label}</p>
+      <p className="md:text-lg text-base font-medium">{label}</p>
       {as === "select" ? (
         <Field
           as="select"
@@ -33,7 +33,7 @@ const InputField = ({
           name={name}
           type={type}
           placeholder={placeholder}
-          className="md:py-3 md:px-4 py-2 px-2 rounded-lg border border-gray-300"
+          className="md:py-3 md:px-4 py-2 px-2 rounded-lg border border-gray-300 placeholder:text-sm placeholder:md:text-base"
         />
       )}
       <ErrorMessage

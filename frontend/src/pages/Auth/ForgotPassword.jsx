@@ -41,10 +41,10 @@ const ForgotPassword = () => {
     <div className="h-screen flex  bg-slate-200">
       <div className=" lg:w-[50%] w-full rounded-tl-2xl rounded-bl-2xl px-4  md:px-12 bg-white ">
         <div className=" h-full flex flex-col justify-center">
-          <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-8">
+          <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-4">
             LearnCode
           </p>
-          <p className="font-semibold text-2xl md:text-3xl mb-14">
+          <p className="font-semibold text-xl md:text-3xl mb-14">
             Forgot your password? Enter your email to receive reset
             instructions.
           </p>
@@ -72,7 +72,7 @@ const ForgotPassword = () => {
                 <button
                   onClick={handleSubmit}
                   type="button"
-                  className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+                  className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
                   {loading ? "Loading..." : "Send reset Link"}
                 </button>

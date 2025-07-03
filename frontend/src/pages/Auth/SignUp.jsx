@@ -140,7 +140,7 @@ const SignUp = () => {
                   type="button"
                   disabled={loading}
                   onClick={handleSubmit}
-                  className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2   hover:bg-gray-700 hover:shadow-md transition duration-500"
+                  className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2   hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
                   {loading ? "Loading..." : "Create Account"}
                 </button>
@@ -148,7 +148,7 @@ const SignUp = () => {
             )}
           </Formik>
 
-          <p className="md:text-lg text-base">
+          <p className="md:text-lg text-sm">
             Already have an account?{" "}
             <Link
               to="/login"
