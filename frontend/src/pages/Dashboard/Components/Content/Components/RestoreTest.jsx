@@ -80,7 +80,7 @@ function RestoreTest() {
 
   return (
     <div className="md:py-12 py-4 px-4 md:w-full w-screen">
-      <h1 className="md:text-2xl text-xl font-bold text-center mb-4">Restore Test</h1>
+      <h1 className="md:text-2xl text-xl font-bold text-center">Restore Test</h1>
 
       {/* Search, Filter, Sort UI */}
       <SearchFilters

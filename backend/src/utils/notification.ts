@@ -19,7 +19,7 @@ export const socketService = (server: http.Server) => {
     });
 
     io.on("connection", (socket) => {
-      console.log("User connected", socket?.id);
+      console.log("User connected", socket?.id); //due to this user is online
 
       socket.on("register", async (payload: { userId: string }) => {
         const { userId } = payload;
@@ -58,12 +58,16 @@ export async function sendToUser(
 ) {
   try {
     // 1) Save to DB
-    await Notification.create({
+    const savedNotification = await Notification.create({
       userId,
       title: payload.title,
       message: payload.message,
       type: payload.type || "info",
     });
+    //live notifications
+    io.to(userId).emit("demo", [savedNotification]);
+    const unread = await Notification.find({ userId, read: false }).lean();
+    io.to(userId).emit("notificationCount", { count: unread?.length });
   } catch (err) {
     console.error("sendToUser error:", err);
   }

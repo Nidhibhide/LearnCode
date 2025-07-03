@@ -50,7 +50,7 @@ function UserAttempts() {
       setTotal(response?.total || 0);
       setTests(response?.data || []);
     } catch (err) {
-    toast.error(err.message || "View attempted tests failed");
+      toast.error(err.message || "View attempted tests failed");
     }
   };
 
@@ -60,7 +60,9 @@ function UserAttempts() {
 
   return (
     <div className="md:py-12 py-4 px-4 w-screen md:w-full">
-      <h1 className="md:text-2xl text-xl font-bold text-center mb-4">User Attempts</h1>
+      <h1 className="md:text-2xl text-xl font-bold text-center ">
+        User Attempts
+      </h1>
 
       {/* Search, Filter, Sort UI */}
       <SearchFilters

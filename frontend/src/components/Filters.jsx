@@ -1,8 +1,8 @@
 import { MdSort, MdFilterList } from "react-icons/md";
 import { NotFound } from "../images/index";
 export const SearchFilters = ({ setSearch, setLevel, setSortOrder }) => (
-  <div className="  p-6 mb-4">
-    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+  <div className="  md:p-6 p-4 md:mb-4">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between md:gap-4 gap-2">
       {/* 🔍 Search Bar */}
       <input
         type="text"
@@ -13,7 +13,7 @@ export const SearchFilters = ({ setSearch, setLevel, setSortOrder }) => (
       />
 
       {/* Sort + Filter - Right Side */}
-      <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+      <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full md:w-auto">
         {/* 🧠 Filter by Level */}
         <div className="relative w-full">
           <MdFilterList className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -50,7 +50,7 @@ export const SearchFilters = ({ setSearch, setLevel, setSortOrder }) => (
 export const PaginationControls = ({ page, setPage, hasNext }) => (
   <div className="md:mt-8 mt-3 flex justify-center items-center gap-2">
     <button
-      className="md:px-4 py-2  font-medium px-2  text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out "
+      className="md:px-4 py-2  font-medium px-2 text-sm  md:text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out "
       onClick={() => setPage(page - 1)}
       disabled={page <= 1}
     >
@@ -58,7 +58,7 @@ export const PaginationControls = ({ page, setPage, hasNext }) => (
     </button>
 
     <button
-      className="md:px-4 py-2  font-medium px-2  text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
+      className="md:px-4 py-2  font-medium px-2 text-sm md:text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
       onClick={() => setPage(page + 1)}
       disabled={!hasNext}
     >
