@@ -101,7 +101,7 @@ function EditTest() {
                 >
                   {({ handleSubmit }) => (
                     <>
-                      <div className="flex flex-col space-y-4 mb-12">
+                      <div className="flex flex-col space-y-4 md:mb-12 mb-6">
                         <div className="flex flex-col space-y-1">
                           <InputField
                             label="Name of Test"
@@ -146,7 +146,7 @@ function EditTest() {
                         onClick={handleSubmit}
                         type="button"
                         disabled={loading}
-                        className="bg-black text-white w-full py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+                        className="bg-black text-white w-full md:py-3  py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                       >
                         {loading ? "Loading..." : "Update Test"}
                       </button>

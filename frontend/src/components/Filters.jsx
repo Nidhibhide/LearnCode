@@ -50,7 +50,7 @@ export const SearchFilters = ({ setSearch, setLevel, setSortOrder }) => (
 export const PaginationControls = ({ page, setPage, hasNext }) => (
   <div className="mt-8 flex justify-center items-center gap-2">
     <button
-      className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out "
+      className="md:px-4 py-2  font-medium px-2  text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out "
       onClick={() => setPage(page - 1)}
       disabled={page <= 1}
     >
@@ -58,7 +58,7 @@ export const PaginationControls = ({ page, setPage, hasNext }) => (
     </button>
 
     <button
-      className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
+      className="md:px-4 py-2  font-medium px-2  text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
       onClick={() => setPage(page + 1)}
       disabled={!hasNext}
     >
@@ -76,12 +76,10 @@ export const NotFoundControls = ({
       <img
         src={NotFound}
         alt="No data"
-        className="w-64 h-64 object-contain mb-6"
+        className="md:w-64 md:h-64 w-56 h-52 object-contain mb-6"
       />
-      <h2 className="text-2xl font-semibold text-gray-700">{title}</h2>
+      <h2 className="md:text-2xl text-xl  font-semibold text-gray-700">{title}</h2>
       <p className="text-gray-500 mt-2">{description}</p>
     </div>
   );
 };
-
-

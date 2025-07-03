@@ -13,11 +13,11 @@ function TableComponent({
   rows = [],
   selectedKey = null,
   setSelectedKey = () => {},
-  selectionMode = "single", 
+  selectionMode = "single",
   ariaLabel = "Data Table",
 }) {
   return (
-    <div className="mt-6">
+    <div className="mt-6 w-full overflow-auto ">
       <Table
         aria-label={ariaLabel}
         selectionMode={selectionMode}
@@ -31,7 +31,7 @@ function TableComponent({
           {columns.map((col) => (
             <TableColumn
               key={col.key}
-              className="text-sm font-bold text-black"
+              className="text-xs md:text-sm font-bold text-black"
             >
               {col.label}
             </TableColumn>
@@ -42,7 +42,10 @@ function TableComponent({
           {rows.map((row) => (
             <TableRow key={row._id}>
               {columns.map((col) => (
-                <TableCell key={col.key}>
+                <TableCell
+                  key={col.key}
+                  className="text-xs md:text-sm  text-black"
+                >
                   {col.render ? col.render(row) : row[col.key]}
                 </TableCell>
               ))}
@@ -54,4 +57,4 @@ function TableComponent({
   );
 }
 
-export default TableComponent
+export default TableComponent;

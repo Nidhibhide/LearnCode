@@ -59,7 +59,7 @@ function UserAttempts() {
   }, [level, sortOrder, search, page]);
 
   return (
-    <div className="py-12 px-5">
+    <div className="py-12 px-5 w-screen md:w-full">
       <h1 className="text-2xl font-bold text-center mb-4">User Attempts</h1>
 
       {/* Search, Filter, Sort UI */}

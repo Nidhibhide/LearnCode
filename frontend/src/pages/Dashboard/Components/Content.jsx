@@ -30,7 +30,7 @@ const Content = () => {
             className="absolute top-4 right-4 text-white z-50"
             onClick={() => setShowSidebar(false)}
           >
-            <IoCloseSharp size={32} />
+            <IoCloseSharp size={28} />
           </button>
 
           {/* Transparent overlay to close sidebar when clicked outside */}

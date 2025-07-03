@@ -101,7 +101,7 @@ const Sidebar = () => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <h1 className="text-xl font-semibold capitalize">{name}</h1>
+            <h1 className="md:text-3xl text-2xl font-semibold capitalize">{name}</h1>
             <p className="text-base font-medium text-green-500">
               {role.toUpperCase()}
             </p>
@@ -109,14 +109,14 @@ const Sidebar = () => {
         </div>
 
         {/* Sidebar Navigation */}
-        <div className="h-full bg-black py-6">
+        <div className="h-full bg-black md:py-6 py-3 ">
           <ul className="flex flex-col text-xl font-medium">
             {filteredLinks.map((link) => (
               <li
                 key={link.to}
-                className="flex items-center gap-2 cursor-pointer hover:bg-[#a9a9a9] py-4 justify-center"
+                className="flex items-center gap-2 cursor-pointer hover:bg-[#a9a9a9] md:py-3 py-2  justify-center"
               >
-                <Link to={link.to} className="flex items-center gap-2">
+                <Link to={link.to} className="flex items-center gap-2 text-lg md:text-2xl">
                   {link.icon}
                   {link.label}
                 </Link>

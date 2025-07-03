@@ -97,11 +97,11 @@ const QuestionsList = () => {
   ];
 
   return (
-    <div className="py-12 px-4">
-      <h2 className="text-2xl font-bold text-center mb-4">{title}</h2>
+    <div className="py-12 px-4 md:w-full w-screen">
+      <h2 className="text-2xl font-bold text-center md:mb-4 mb-2">{title}</h2>
       {/* 🔽 Rules link below title */}
       <div
-        className="text-lg text-red-600 font-semibold mb-5 text-center cursor-pointer hover:text-red-700"
+        className="md:text-lg text-base text-red-600 font-semibold mb-5 text-center cursor-pointer hover:text-red-700"
         onClick={() => setRules(true)}
       >
         🔍 Please click to view test rules

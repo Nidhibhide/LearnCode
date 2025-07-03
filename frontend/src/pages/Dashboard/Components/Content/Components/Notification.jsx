@@ -53,14 +53,14 @@ const Notification = () => {
                     />
                   )}
                   <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="text-lg font-semibold">{note.title}</h3>
-                      <span className="text-sm text-gray-500">
+                    <div className="flex justify-between items-center md:mb-1">
+                      <h3 className="md:text-lg text-base font-semibold">{note.title}</h3>
+                      <span className="md:text-sm text-xs text-gray-500">
                         {getDaysAgo(note?.createdAt)}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <p className="text-base">{note.message}</p>
+                      <p className="md:text-base text-sm">{note.message}</p>
                       <button
                         className="text-sm self-start text-blue-600 underline hover:text-blue-800 transition"
                         onClick={() => handleClick(note._id)}
