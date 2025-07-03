@@ -83,7 +83,7 @@ const SignUp = () => {
           <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-4">
             LearnCode
           </p>
-          <p className="font-semibold text-xl md:text-3xl md:mb-14 mb-12">
+          <p className="font-semibold text-xl md:text-3xl md:mb-14 mb-8">
             Welcome to LearnCode! Please sign up to start your coding journey.
           </p>
 

@@ -82,6 +82,7 @@ const TestLayout = () => {
       }
     } catch (error) {
       setOutput(error.message);
+      console.log("output is fuck")
     } finally {
       setLoading(false);
     }

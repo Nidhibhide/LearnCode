@@ -62,11 +62,7 @@ const index = () => {
       />
 
       {/* Cards */}
-      {/* <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 gap-8 h-[800px]  overflow-y-auto">
-        {tests.map((test, index) => (
-          <TestCard key={index} test={test} />
-        ))}
-      </div> */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto max-h-[55vh]">
   {tests.map((test, index) => (
     <TestCard key={index} test={test} />

@@ -2,7 +2,7 @@ const SessionExpired = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold text-red-500 mb-4">
+        <h1 className=" text-2xl md:text-3xl font-bold text-red-500 mb-4">
           Session Expired
         </h1>
         <h2 className="text-xl font-semibold mb-2">Please log in again</h2>

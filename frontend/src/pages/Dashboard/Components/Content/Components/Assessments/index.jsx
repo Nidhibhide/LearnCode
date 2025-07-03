@@ -57,11 +57,13 @@ const Assessments = () => {
   };
   useEffect(() => {
     handleViewTests();
-  }, [level, sortOrder, search, page, selectedTab,user]);
+  }, [level, sortOrder, search, page, selectedTab, user]);
 
   return (
     <div className="md:py-12 py-4 px-4 h-full">
-      <h1 className=" text-xl md:text-2xl font-bold text-center mb-4">Assessments</h1>
+      <h1 className=" text-xl md:text-2xl font-bold text-center mb-4">
+        Assessments
+      </h1>
 
       <div className="flex w-full flex-col">
         <Tabs
@@ -100,7 +102,7 @@ const Assessments = () => {
               sortOrder={sortOrder}
               setSortOrder={setSortOrder}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto max-h-[60vh]">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto max-h-[55vh]">
               {tests.map((test, index) => (
                 <TestCard key={index} test={test} />
               ))}
