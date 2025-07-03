@@ -60,8 +60,8 @@ const CreateTest = () => {
   });
 
   return (
-    <div className=" h-full w-full py-12 lg:px-12 px-5 ">
-      <h1 className="text-2xl font-bold text-center mb-8">Create Test</h1>
+    <div className=" h-full w-full md:py-12 py-4 px-4 ">
+      <h1 className="md:text-2xl text-xl font-bold text-center mb-6">Create Test</h1>
       <div className=" w-full">
         <Formik
           initialValues={{

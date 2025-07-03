@@ -60,8 +60,8 @@ const Assessments = () => {
   }, [level, sortOrder, search, page, selectedTab,user]);
 
   return (
-    <div className="py-12 px-4">
-      <h1 className="text-2xl font-bold text-center mb-4">Assessments</h1>
+    <div className="md:py-12 py-4 px-4 h-full">
+      <h1 className=" text-xl md:text-2xl font-bold text-center mb-4">Assessments</h1>
 
       <div className="flex w-full flex-col">
         <Tabs
@@ -84,7 +84,7 @@ const Assessments = () => {
               sortOrder={sortOrder}
               setSortOrder={setSortOrder}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto max-h-[60vh]">
               {tests.map((test, index) => (
                 <TestCard key={index} test={test} />
               ))}
@@ -100,7 +100,7 @@ const Assessments = () => {
               sortOrder={sortOrder}
               setSortOrder={setSortOrder}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto max-h-[60vh]">
               {tests.map((test, index) => (
                 <TestCard key={index} test={test} />
               ))}

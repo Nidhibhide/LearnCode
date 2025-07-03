@@ -46,8 +46,10 @@ const index = () => {
   }, [level, sortOrder, search, page]);
 
   return (
-    <div className="py-12 px-4">
-      <h1 className="text-2xl font-bold text-center mb-4">View Tests</h1>
+    <div className="md:py-12 py-4 px-4  h-full">
+      <h1 className="md:text-2xl text-xl font-bold text-center md:mb-4">
+        View Tests
+      </h1>
 
       {/* Search, Filter, Sort UI */}
       <SearchFilters
@@ -60,11 +62,17 @@ const index = () => {
       />
 
       {/* Cards */}
-      <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 gap-8 h-full">
+      {/* <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 gap-8 h-[800px]  overflow-y-auto">
         {tests.map((test, index) => (
           <TestCard key={index} test={test} />
         ))}
-      </div>
+      </div> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto max-h-[60vh]">
+  {tests.map((test, index) => (
+    <TestCard key={index} test={test} />
+  ))}
+</div>
+
 
       {/* pagination */}
       {total !== 0 && (

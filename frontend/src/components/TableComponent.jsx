@@ -17,7 +17,7 @@ function TableComponent({
   ariaLabel = "Data Table",
 }) {
   return (
-    <div className="mt-6 w-full overflow-auto ">
+    <div className="md:mt-6 w-full overflow-auto ">
       <Table
         aria-label={ariaLabel}
         selectionMode={selectionMode}

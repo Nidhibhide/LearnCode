@@ -57,8 +57,8 @@ function MyScores() {
   }, [level, sortOrder, search, page]);
 
   return (
-    <div className="py-12 px-5 w-screen md:w-full">
-      <h1 className="text-2xl font-bold text-center mb-4">My Scores</h1>
+    <div className="md:py-12 py-4 px-4 w-screen md:w-full">
+      <h1 className="md:text-2xl text-xl font-bold text-center mb-4">My Scores</h1>
 
       {/* Search, Filter, Sort UI */}
       <SearchFilters

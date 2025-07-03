@@ -13,7 +13,7 @@ const Content = () => {
 
       <div className="lg:hidden absolute top-4 left-4 z-50">
         <button onClick={() => setShowSidebar(true)}>
-          <IoMenu size={28} />
+          <IoMenu size={24} />
         </button>
       </div>
 

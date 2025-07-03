@@ -79,8 +79,8 @@ function RestoreTest() {
   }, [level, sortOrder, search, page]);
 
   return (
-    <div className="py-12 px-5 md:w-full w-screen">
-      <h1 className="text-2xl font-bold text-center mb-4">Restore Test</h1>
+    <div className="md:py-12 py-4 px-4 md:w-full w-screen">
+      <h1 className="md:text-2xl text-xl font-bold text-center mb-4">Restore Test</h1>
 
       {/* Search, Filter, Sort UI */}
       <SearchFilters
