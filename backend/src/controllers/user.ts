@@ -141,7 +141,7 @@ const login = async (req: Request, res: Response) => {
     const { password, email } = req.body;
     const user = await User.findOne({ email });
     if (!user || !user.password) {
-      return JsonOne(res, 404, "User or password not found not found", false);
+      return JsonOne(res, 404, "User or password not found", false);
     }
     if (!user.isVerified) {
       return JsonOne(res, 400, "User is not verified", false);
