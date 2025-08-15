@@ -50,6 +50,11 @@ try {
 }
 // Add Morgan logging
 app.use(morgan("combined"));
+app.use((req, res, next) => {
+  console.log(`API Hit → Method: ${req.method}, URL: ${req.originalUrl}`);
+  next();
+});
+
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
