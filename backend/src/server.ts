@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
+import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { socketService } from "./utils/notification";
 
@@ -47,7 +48,8 @@ try {
 } catch (err) {
   console.error(" Socket service failed to initialize", err);
 }
-
+// Add Morgan logging
+app.use(morgan("combined"));
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
