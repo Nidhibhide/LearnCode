@@ -62,13 +62,12 @@ const index = () => {
       />
 
       {/* Cards */}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto max-h-[55vh]">
-  {tests.map((test, index) => (
-    <TestCard key={index} test={test} />
-  ))}
-</div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 overflow-y-auto max-h-[55vh]">
+        {tests.map((test, index) => (
+          <TestCard key={index} test={test} />
+        ))}
+      </div>
 
       {/* pagination */}
       {total !== 0 && (

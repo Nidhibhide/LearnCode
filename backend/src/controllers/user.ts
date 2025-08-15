@@ -66,49 +66,122 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+// const googleLogin = async (req: Request, res: Response) => {
+//   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+//   const { token } = req.body;
+
+//   try {
+//     if (!token) {
+//       return JsonOne(res, 404, "Google token not found", false);
+//     }
+//     const ticket = await client.verifyIdToken({
+//       idToken: token,
+//       audience: process.env.GOOGLE_CLIENT_ID,
+//     });
+
+//     const payload = ticket.getPayload();
+//     if (!payload) return JsonOne(res, 401, "Invalid Google token", false);
+
+//     const { email, name, sub } = payload;
+//     if (!email || !name || !sub) {
+//       return JsonOne(res, 400, "Incomplete Google user data", false);
+//     }
+
+//     let user = await User.findOne({ email });
+
+//     if (!user) {
+//       user = await User.create({
+//         name,
+//         email,
+//         password: sub,
+//         isVerified: true,
+//         role: "user",
+//         authProvider: "google",
+//       });
+
+//       if (!user) {
+//         return JsonOne(res, 500, "Failed to create user", false);
+//       }
+//       const hashedPass = await bcrypt.hash(sub, 10);
+//       user.password = hashedPass;
+
+//       await user.save();
+
+//       await sendWelcomeMessage(user._id.toString(), name);
+//       await notifyAdminOfNewUser(name);
+//     }
+
+//     const access_token = jwt.sign(
+//       { id: user._id },
+//       process.env.ACCESS_TOKEN as string,
+//       {
+//         expiresIn: "1h",
+//       }
+//     );
+
+//     res.cookie("access_token", access_token, accessTokenOptions);
+//     const refresh_token = jwt.sign(
+//       { id: user._id },
+//       process.env.REFRESH_TOKEN as string,
+//       {
+//         expiresIn: "7d",
+//       }
+//     );
+
+//     res.cookie("refresh_token", refresh_token, refreshTokenOptions);
+
+//     return JsonOne(res, 200, "Login successful", true);
+//   } catch (err) {
+//     JsonOne(res, 500, "Google login failed", false);
+//   }
+// };
+
 const googleLogin = async (req: Request, res: Response) => {
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const { token } = req.body;
 
   try {
+    console.log("🔐 Incoming Google token:", token?.slice(0, 15));
+    console.log("🌐 CLIENT_ID in backend:", process.env.GOOGLE_CLIENT_ID);
+
     if (!token) {
+      console.log("❌ Token missing in request body.");
       return JsonOne(res, 404, "Google token not found", false);
     }
+
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
+    console.log("✅ Google token verified. Payload:", payload);
+
     if (!payload) return JsonOne(res, 401, "Invalid Google token", false);
 
     const { email, name, sub } = payload;
+
     if (!email || !name || !sub) {
+      console.log("❌ Missing user details in Google payload.");
       return JsonOne(res, 400, "Incomplete Google user data", false);
     }
 
     let user = await User.findOne({ email });
+    console.log("📄 Existing user:", user ? "Found" : "Not found");
 
     if (!user) {
+      const hashedPass = await bcrypt.hash(sub, 10);
+
       user = await User.create({
         name,
         email,
-        password: sub,
+        password: hashedPass,
         isVerified: true,
         role: "user",
         authProvider: "google",
       });
 
-      if (!user) {
-        return JsonOne(res, 500, "Failed to create user", false);
-      }
-      const hashedPass = await bcrypt.hash(sub, 10);
-      user.password = hashedPass;
-
-      await user.save();
-
-      await sendWelcomeMessage(user._id.toString(), name);
-      await notifyAdminOfNewUser(name);
+      console.log("👤 Created new user:", user);
     }
 
     const access_token = jwt.sign(
@@ -118,7 +191,6 @@ const googleLogin = async (req: Request, res: Response) => {
         expiresIn: "1h",
       }
     );
-
     res.cookie("access_token", access_token, accessTokenOptions);
     const refresh_token = jwt.sign(
       { id: user._id },
@@ -127,12 +199,13 @@ const googleLogin = async (req: Request, res: Response) => {
         expiresIn: "7d",
       }
     );
-
     res.cookie("refresh_token", refresh_token, refreshTokenOptions);
 
+    console.log("✅ Google login complete. Sending tokens.");
     return JsonOne(res, 200, "Login successful", true);
-  } catch (err) {
-    JsonOne(res, 500, "Google login failed", false);
+  } catch (err: any) {
+    console.error("❌ Google login failed in catch block:", err.message || err);
+    return JsonOne(res, 500, "Google login failed", false);
   }
 };
 

@@ -7,7 +7,6 @@ import { signup, signinwithGoogle, getMe } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
-import { socket } from "../../globals";
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -21,6 +20,7 @@ const SignUp = () => {
 
       if (statusCode === 200) {
         toast.success(message);
+        setTimeout(() => navigate("/login"), 3000);
       } else if (message) {
         toast.error(message);
       }

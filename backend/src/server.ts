@@ -55,6 +55,12 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/testAttempt", testAttemptRoutes);
 app.use("/api/notification", notificationRoutes);
 
+// Root route
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running!");
+});
+
+
 const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
