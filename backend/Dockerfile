@@ -6,6 +6,8 @@ RUN npm install
 COPY . .
 COPY .env .env
 RUN npm run build
+# Expose the port your app runs on
+EXPOSE 8080
 CMD ["node","dist/server.js"]
 
 
