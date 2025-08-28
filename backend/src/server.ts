@@ -63,7 +63,7 @@ app.use("/api/testAttempt", testAttemptRoutes);
 app.use("/api/notification", notificationRoutes);
 
 // Root route
-app.get("/", (req, res) => {
+app.get("/health", (req, res) => {
   res.send("🚀 Backend is running!");
 });
 
