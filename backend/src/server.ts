@@ -6,14 +6,15 @@ import http from "http";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { socketService } from "./utils/notification";
+import allroutes from "./routes/index";
 
 //routes
-import userRoutes from "./routes/userRoutes";
-import testRoutes from "./routes/testRoutes";
-import authRoutes from "./routes/authRoutes";
-import aiRoutes from "./routes/aiRoutes";
-import testAttemptRoutes from "./routes/testAttempt";
-import notificationRoutes from "./routes/notificationRoutes";
+// import userRoutes from "./routes/userRoutes";
+// import testRoutes from "./routes/testRoutes";
+// import authRoutes from "./routes/authRoutes";
+// import aiRoutes from "./routes/aiRoutes";
+// import testAttemptRoutes from "./routes/testAttempt";
+// import notificationRoutes from "./routes/notificationRoutes";
 
 const corsOptions = {
   origin: ["http://localhost:5173", "https://learn-code-three.vercel.app"],
@@ -55,19 +56,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/user", userRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/test", testRoutes);
-app.use("/api/ai", aiRoutes);
-app.use("/api/testAttempt", testAttemptRoutes);
-app.use("/api/notification", notificationRoutes);
-
-// Root route
-app.get("/health", (req, res) => {
-  res.send("🚀 Backend is running!");
-});
-
-
+// ✅ Mount router correctly
+app.use("/api", allroutes); // pass router object directly
 const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
