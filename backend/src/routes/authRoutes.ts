@@ -7,15 +7,14 @@ import {
   resetPass,
   verifyCurrentPassword,
   refreshToken,
-} from "../controllers/auth";
+} from "../controllers";
 import express from "express";
 
 import {
   LoginValidtorMid,
   EmailValidtorMid,
-} from "../middlewares/validationMid/user";
-import IsLoggeedIn from "../middlewares/TokenAuth";
-import RoleAuth from "../middlewares/RoleAuth";
+} from "../middlewares/validationMid";
+import { TokenAuth, RoleAuth } from "../middlewares";
 
 const router = express.Router();
 
@@ -24,7 +23,7 @@ router.post("/reset-verify", EmailValidtorMid, resendVerificationEmail);
 router.put("/changePassword", LoginValidtorMid, changePassword);
 router.post(
   "/verifyCurrentPassword",
-  IsLoggeedIn,
+  TokenAuth,
   RoleAuth("admin", "user"),
   LoginValidtorMid,
   verifyCurrentPassword

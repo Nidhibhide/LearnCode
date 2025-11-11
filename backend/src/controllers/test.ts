@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
-import Test from "../models/test";
-import User from "../models/user";
-import TestAttempt from "../models/testAttempt";
-import { JsonOne, JsonAll } from "../utils/responseFun";
-import { generateQuestions } from "../utils/GenerateQuestions";
+import { Test, User, TestAttempt } from "../models";
+import { JsonOne, JsonAll, generateQuestions, sendToUser, getPaginationParams, buildAggregationPipeline, handleError } from "../utils";
 import { Request, Response } from "express";
-import { sendToUser } from "../utils/notification";
 
 
 const create = async (req: Request, res: Response) => {
@@ -20,11 +16,11 @@ const create = async (req: Request, res: Response) => {
       level,
       questions,
     });
+
     if (!test) {
       return JsonOne(res, 500, "Failed to create test", false);
     }
 
-    await test.save();
     const users = await User.find({ role: "user" });
     users.forEach((user) => {
       sendToUser(user._id.toString(), {
@@ -36,7 +32,7 @@ const create = async (req: Request, res: Response) => {
 
     JsonOne(res, 201, `${name} created successfully  `, true);
   } catch (error) {
-    JsonOne(res, 500, "unexpected error occurred while create test", false);
+    return handleError(res, "unexpected error occurred while create test");
   }
 };
 
@@ -45,24 +41,17 @@ const getAll = async (req: Request, res: Response) => {
   try {
     const {
       search = "",
-      sortOrder = "desc",
-      page = "1",
-      limit = "5",
       level = "All",
       onlyUnattempted = "false",
       userId,
     } = req.query as {
       search?: string;
-      sortOrder?: "asc" | "desc";
-      page?: string;
-      limit?: string;
       level?: string;
       onlyUnattempted?: string;
       userId?: string;
     };
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const sort = sortOrder === "asc" ? 1 : -1;
+    const { skip, sort, page, limit } = getPaginationParams(req);
 
     const matchStage: any = {
       isDeleted: false,
@@ -82,22 +71,14 @@ const getAll = async (req: Request, res: Response) => {
       matchStage["_id"] = { $nin: attemptedIds };
     }
 
-    const aggregation: any[] = [
-      { $match: matchStage },
-      { $sort: { createdAt: sort } },
-      { $skip: skip },
-      { $limit: parseInt(limit) },
-      {
-        $project: {
-          name: 1,
-          language: 1,
-          level: 1,
-          numOfQuestions: 1,
-          questions: 1,
-          createdAt: 1,
-        },
-      },
-    ];
+    const aggregation = buildAggregationPipeline(matchStage, sort, skip, limit, {
+      name: 1,
+      language: 1,
+      level: 1,
+      numOfQuestions: 1,
+      questions: 1,
+      createdAt: 1,
+    });
     const data = await Test.aggregate(aggregation);
     const total: number = await Test.countDocuments(matchStage);
 
@@ -107,11 +88,11 @@ const getAll = async (req: Request, res: Response) => {
       "Tests fetched successfully",
       data,
       total,
-      parseInt(page),
-      parseInt(limit)
+      page,
+      limit
     );
   } catch {
-    JsonOne(res, 500, "unexpected error occurred while fetching tests", false);
+    return handleError(res, "unexpected error occurred while fetching tests");
   }
 };
 
@@ -136,8 +117,7 @@ const softDelete = async (req: Request, res: Response) => {
     return JsonOne(res, 200, "Test deleted successfully", true);
   } catch (error) {
     console.error("Soft delete error:", error);
-
-    JsonOne(res, 500, "unexpected error occurred while delete test", false);
+    return handleError(res, "unexpected error occurred while delete test");
   }
 };
 const restore = async (req: Request, res: Response) => {
@@ -161,8 +141,7 @@ const restore = async (req: Request, res: Response) => {
     return JsonOne(res, 200, "Test restored successfully", true);
   } catch (error) {
     console.error("Soft restore error:", error);
-
-    JsonOne(res, 500, "unexpected error occurred while restore test", false);
+    return handleError(res, "unexpected error occurred while restore test");
   }
 };
 
@@ -175,13 +154,12 @@ const edit = async (req: Request, res: Response) => {
       return JsonOne(res, 404, "Old Test not found", false);
     }
 
-    //check required to generate que or not
     const shouldUpdateQuestions =
       oldTest.language !== language ||
       oldTest.level !== level ||
       oldTest.numOfQuestions !== numOfQuestions;
 
-    let updatedFields: any = { name, numOfQuestions, language, level };
+    const updatedFields: any = { name, numOfQuestions, language, level };
 
     if (shouldUpdateQuestions) {
       const newQuestions = await generateQuestions(
@@ -189,7 +167,7 @@ const edit = async (req: Request, res: Response) => {
         level,
         numOfQuestions
       );
-      updatedFields = { ...updatedFields, questions: newQuestions };
+      updatedFields.questions = newQuestions;
     }
 
     const updatedTest = await Test.findByIdAndUpdate(id, updatedFields, {
@@ -199,9 +177,10 @@ const edit = async (req: Request, res: Response) => {
     if (!updatedTest) {
       return JsonOne(res, 404, "Test not found", false);
     }
+
     JsonOne(res, 200, "test updated successfully", true);
   } catch (err) {
-    JsonOne(res, 500, "unexpected error occurred while updating test", false);
+    return handleError(res, "unexpected error occurred while updating test");
   }
 };
 
@@ -209,20 +188,13 @@ const getDeletedAll = async (req: Request, res: Response) => {
   try {
     const {
       search = "",
-      sortOrder = "desc",
-      page = "1",
-      limit = "5",
       level = "All",
     } = req.query as {
       search?: string;
-      sortOrder?: "asc" | "desc";
-      page?: string;
-      limit?: string;
       level?: string;
     };
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const sort = sortOrder === "asc" ? 1 : -1;
+    const { skip, sort, page, limit } = getPaginationParams(req);
 
     const matchStage: any = {
       isDeleted: true,
@@ -236,21 +208,13 @@ const getDeletedAll = async (req: Request, res: Response) => {
       matchStage["level"] = level;
     }
 
-    const aggregation: any[] = [
-      { $match: matchStage },
-      { $sort: { createdAt: sort } },
-      { $skip: skip },
-      { $limit: parseInt(limit) },
-      {
-        $project: {
-          name: 1,
-          language: 1,
-          level: 1,
-          numOfQuestions: 1,
-          createdAt: 1,
-        },
-      },
-    ];
+    const aggregation = buildAggregationPipeline(matchStage, sort, skip, limit, {
+      name: 1,
+      language: 1,
+      level: 1,
+      numOfQuestions: 1,
+      createdAt: 1,
+    });
     const data = await Test.aggregate(aggregation);
     const total: number = await Test.countDocuments(matchStage);
 
@@ -260,11 +224,11 @@ const getDeletedAll = async (req: Request, res: Response) => {
       "Deleted Tests fetched successfully",
       data,
       total,
-      parseInt(page),
-      parseInt(limit)
+      page,
+      limit
     );
   } catch {
-    JsonOne(res, 500, "unexpected error occurred while sign up", false);
+    return handleError(res, "unexpected error occurred while fetching deleted tests");
   }
 };
 
@@ -276,22 +240,15 @@ const getOngoing = async (req: Request, res: Response) => {
 
     const {
       search = "",
-      sortOrder = "desc",
-      page = "1",
-      limit = "5",
       level = "All",
       onlyOnGoing = "false",
     } = req.query as {
       search?: string;
-      sortOrder?: "asc" | "desc";
-      page?: string;
-      limit?: string;
       level?: string;
       onlyOnGoing?: string;
     };
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const sort = sortOrder === "asc" ? 1 : -1;
+    const { skip, sort, page, limit } = getPaginationParams(req);
 
     const aggregation: any[] = [
       { $match: { userId: userObjectId } },
@@ -332,7 +289,7 @@ const getOngoing = async (req: Request, res: Response) => {
         data: [
           { $sort: { completedAt: sort } },
           { $skip: skip },
-          { $limit: parseInt(limit) },
+          { $limit: limit },
           {
             $project: {
               testId: "$test._id",
@@ -363,16 +320,11 @@ const getOngoing = async (req: Request, res: Response) => {
       "Attempted Tests fetched successfully",
       data,
       total,
-      parseInt(page),
-      parseInt(limit)
+      page,
+      limit
     );
   } catch (error) {
-    JsonOne(
-      res,
-      500,
-      "Unexpected error occurred while fetching attempted tests",
-      false
-    );
+    return handleError(res, "Unexpected error occurred while fetching attempted tests");
   }
 };
 export { create, getAll, softDelete, restore, edit, getDeletedAll, getOngoing };

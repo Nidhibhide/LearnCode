@@ -14,7 +14,6 @@ const notificationSlice = createSlice({
     setNotifications: (state, action) => {
       state.notifications = action.payload;
     },
-
     setMarkasRead: (state, action) => {
       state.notifications = state.notifications.filter(
         (notification) => notification._id !== action.payload

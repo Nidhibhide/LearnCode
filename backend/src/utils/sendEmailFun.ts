@@ -16,7 +16,7 @@ const mailOptionsForVerify = (email: string, token: string) => {
   const CLIENT = process.env.CLIENT;
   const verifyUrl = `${CLIENT}/verify?token=${token}`;
 
-  const mailOptions = {
+  return {
     from: process.env.USER,
     to: email,
     subject: "Learncode - Email Verification",
@@ -37,15 +37,13 @@ This link expires in 5 minutes. If you didn't sign up, ignore this email.`,
     </div>
   `,
   };
-
-  return mailOptions;
 };
 
 const mailOptionsForVResetPass = (email: string, token: string) => {
   const CLIENT = process.env.CLIENT;
   const resetUrl = `${CLIENT}/resetPass?token=${token}`;
 
-  const mailOptions = {
+  return {
     from: process.env.USER,
     to: email,
     subject: "Reset Your Password",
@@ -64,8 +62,6 @@ This link will expire in 5 minutes. If you didn't request this, you can ignore i
     </div>
   `,
   };
-
-  return mailOptions;
 };
 
 export { transporterFun, mailOptionsForVResetPass, mailOptionsForVerify };

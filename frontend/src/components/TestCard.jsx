@@ -1,10 +1,11 @@
 import { MdDelete } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
-import { Tooltip } from "./index";
+import { Tooltip, Button } from "./index";
 import { useNavigate } from "react-router-dom";
+import { getUserRole } from "../utils";
 
 const TestCard = ({ test }) => {
-  const role = JSON.parse(localStorage.getItem("data"))?.role;
+  const role = getUserRole();
   const navigate = useNavigate();
   const levelColor = {
     Basic: "border-green-400 bg-green-100",
@@ -50,11 +51,11 @@ const TestCard = ({ test }) => {
 
   return (
     <div
-      className={`max-w-sm w-full mx-auto ${
+      className={`w-full mx-auto ${
         levelColor[test.level]
-      } shadow-md rounded-2xl p-5 hover:shadow-xl transition duration-300 h-[200px] w-[300px] relative`}
+      } shadow-md rounded-2xl p-3 sm:p-4 hover:shadow-xl transition duration-300 min-h-[160px] sm:min-h-[180px] md:min-h-[200px] relative`}
     >
-      <h2 className="text-lg font-bold mb-2 ">{test.name}</h2>
+      <h2 className="text-sm sm:text-base font-bold mb-2 truncate leading-tight">{test.name}</h2>
 
       {role === "admin" && (
         <div className="flex absolute top-4 right-4 gap-2">
@@ -64,13 +65,13 @@ const TestCard = ({ test }) => {
         </div>
       )}
 
-      <p className="text-base text-gray-600">
+      <p className="text-xs sm:text-sm text-gray-600">
         <strong>Language:</strong> {test.language}
       </p>
-      <p className={`text-base ${levelText[test.level]} `}>
+      <p className={`text-xs sm:text-sm ${levelText[test.level]} `}>
         <strong>Level:</strong> {test.level}
       </p>
-      <p onClick={handleClick} className="text-base text-gray-600">
+      <p onClick={handleClick} className="text-xs sm:text-sm text-gray-600">
         <strong>Questions:</strong>
         <span className="text-blue-600 hover:underline hover:font-medium cursor-pointer">
           {" "}
@@ -79,12 +80,11 @@ const TestCard = ({ test }) => {
       </p>
       {role === "user" && (
         <div className="mt-4 text-center">
-          <button
+          <Button
             onClick={handleStart}
-            className=" py-2 w-full text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             {test?.completedAt === null ? "Resume" : "Start"}
-          </button>
+          </Button>
         </div>
       )}
     </div>

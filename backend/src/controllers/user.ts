@@ -1,58 +1,42 @@
-import User from "../models/user";
+import { User } from "../models";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
 import crypto from "crypto";
-import { JsonOne } from "../utils/responseFun";
-import expiretime from "../utils/expireTimeFun";
+import { JsonOne, expireTime, sendWelcomeMessage, notifyAdminOfNewUser, mailOptionsForVerify, transporterFun, refreshTokenOptions, accessTokenOptions, clearCookies, findUserByEmail, handleError } from "../utils";
 import { Request, Response } from "express";
-import {
-  sendWelcomeMessage,
-  notifyAdminOfNewUser,
-} from "../utils/notification";
-import { mailOptionsForVerify, transporterFun } from "../utils/sendEmailFun";
-import {
-  refreshTokenOptions,
-  accessTokenOptions,
-} from "../utils/cookieOptions";
-import { clearCookies } from "../utils/cookieOptions";
 
 const registerUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await findUserByEmail(email);
     if (existingUser) {
       return JsonOne(res, 409, "User already exists ", false);
     }
+
+    const hashedPass = await bcrypt.hash(password, 10);
+    const time = expireTime();
+    const token = crypto.randomBytes(12).toString("hex");
+
     const user = await User.create({
       name,
       email,
-      password,
+      password: hashedPass,
+      expireTime: time,
+      verificationToken: token,
     });
+
     if (!user) {
       return JsonOne(res, 500, "Failed to create user", false);
     }
-
-    const hashedPass = await bcrypt.hash(password, 10);
-    user.password = hashedPass;
-
-    const time = expiretime();
-    user.expireTime = time;
-
-    const token = crypto.randomBytes(12).toString("hex");
-    user.verificationToken = token;
-
-    await user.save();
 
     await sendWelcomeMessage(user._id.toString(), name);
     await notifyAdminOfNewUser(name);
 
     await nodemailer.createTestAccount();
-
     const transporter = transporterFun();
-
     await transporter.sendMail(mailOptionsForVerify(email, token));
 
     JsonOne(
@@ -62,7 +46,7 @@ const registerUser = async (req: Request, res: Response) => {
       true
     );
   } catch (error) {
-    JsonOne(res, 500, "unexpected error occurred while sign up", false);
+    return handleError(res, "unexpected error occurred while sign up");
   }
 };
 
@@ -141,11 +125,7 @@ const googleLogin = async (req: Request, res: Response) => {
   const { token } = req.body;
 
   try {
-    console.log("🔐 Incoming Google token:", token?.slice(0, 15));
-    console.log("🌐 CLIENT_ID in backend:", process.env.GOOGLE_CLIENT_ID);
-
     if (!token) {
-      console.log("❌ Token missing in request body.");
       return JsonOne(res, 404, "Google token not found", false);
     }
 
@@ -155,23 +135,17 @@ const googleLogin = async (req: Request, res: Response) => {
     });
 
     const payload = ticket.getPayload();
-    console.log("✅ Google token verified. Payload:", payload);
-
     if (!payload) return JsonOne(res, 401, "Invalid Google token", false);
 
     const { email, name, sub } = payload;
-
     if (!email || !name || !sub) {
-      console.log("❌ Missing user details in Google payload.");
       return JsonOne(res, 400, "Incomplete Google user data", false);
     }
 
     let user = await User.findOne({ email });
-    console.log("📄 Existing user:", user ? "Found" : "Not found");
 
     if (!user) {
       const hashedPass = await bcrypt.hash(sub, 10);
-
       user = await User.create({
         name,
         email,
@@ -180,31 +154,25 @@ const googleLogin = async (req: Request, res: Response) => {
         role: "user",
         authProvider: "google",
       });
-
-      console.log("👤 Created new user:", user);
     }
 
     const access_token = jwt.sign(
       { id: user._id },
       process.env.ACCESS_TOKEN as string,
-      {
-        expiresIn: "1h",
-      }
+      { expiresIn: "1h" }
     );
     res.cookie("access_token", access_token, accessTokenOptions);
+
     const refresh_token = jwt.sign(
       { id: user._id },
       process.env.REFRESH_TOKEN as string,
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
     res.cookie("refresh_token", refresh_token, refreshTokenOptions);
 
-    console.log("✅ Google login complete. Sending tokens.");
     return JsonOne(res, 200, "Login successful", true);
   } catch (err: any) {
-    console.error("❌ Google login failed in catch block:", err.message || err);
+    console.error("Google login failed:", err.message || err);
     return JsonOne(res, 500, "Google login failed", false);
   }
 };
@@ -212,7 +180,7 @@ const googleLogin = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   try {
     const { password, email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await findUserByEmail(email);
     if (!user || !user.password) {
       return JsonOne(res, 404, "User or password not found", false);
     }
@@ -220,34 +188,28 @@ const login = async (req: Request, res: Response) => {
       return JsonOne(res, 400, "User is not verified", false);
     }
 
-    //compare password
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return JsonOne(res, 401, "Incorrect password", false);
     }
+
     const access_token = jwt.sign(
       { id: user._id },
       process.env.ACCESS_TOKEN as string,
-      {
-        expiresIn: "1h",
-      }
+      { expiresIn: "1h" }
     );
-
     res.cookie("access_token", access_token, accessTokenOptions);
+
     const refresh_token = jwt.sign(
       { id: user._id },
       process.env.REFRESH_TOKEN as string,
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
-
     res.cookie("refresh_token", refresh_token, refreshTokenOptions);
 
     return JsonOne(res, 200, "Login successful", true);
   } catch (error) {
-    JsonOne(res, 500, "unexpected error occurred while sign in", false);
+    return handleError(res, "unexpected error occurred while sign in");
   }
 };
 
@@ -260,20 +222,17 @@ const getMe = async (req: Request, res: Response) => {
     }
     return JsonOne(res, 200, "User Found", true, user);
   } catch (error) {
-    JsonOne(res, 500, "unexpected error occurred while fetching user", false);
+    return handleError(res, "unexpected error occurred while fetching user");
   }
 };
 
-//find out
 const logOut = async (req: Request, res: Response) => {
   try {
     res.clearCookie("access_token", clearCookies);
-
     res.clearCookie("refresh_token", clearCookies);
-
     return JsonOne(res, 200, "Logout successfully", true);
   } catch (error) {
-    JsonOne(res, 500, "unexpected error occurred while logging out ", false);
+    return handleError(res, "unexpected error occurred while logging out");
   }
 };
 const updateProfile = async (req: Request, res: Response) => {
@@ -289,6 +248,7 @@ const updateProfile = async (req: Request, res: Response) => {
         false
       );
     }
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { name, email },
@@ -298,9 +258,10 @@ const updateProfile = async (req: Request, res: Response) => {
     if (!updatedUser) {
       return JsonOne(res, 404, "User not found", false);
     }
-    JsonOne(res, 201, "Profile updated successfully", true, updatedUser);
+
+    JsonOne(res, 200, "Profile updated successfully", true, updatedUser);
   } catch (err) {
-    JsonOne(res, 500, "unexpected error occurred while updating user", false);
+    return handleError(res, "unexpected error occurred while updating user");
   }
 };
 

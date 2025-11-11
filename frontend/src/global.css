@@ -1,0 +1,10 @@
+/* ====== Global Color Variables ====== */
+:root {
+  --white: #ffffff;             /* Main background and sidebar text */
+  --dark-gray: #1a1a1a;           /* Primary text */
+  --medium-gray: #555555; /* Secondary text */
+  --black: #000000;     /* Sidebar background */
+  --light-gray-border: #e0e0e0;         /* Border */
+  --light-gray-hover: #f5f5f5;          /* Hover background */
+  --dark-gray-hover: #333333;   /* Button hover */
+}

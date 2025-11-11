@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { codingImage } from "../../images/index";
 import { toast } from "react-toastify";
 import { verify } from "../../api/user";
+import { Button, AuthImage } from "../../components/index";
+import { handleApiResponse, handleApiError } from "../../utils";
 
 const Verification = () => {
   const [searchParams] = useSearchParams();
@@ -16,18 +17,16 @@ const Verification = () => {
   const verifyUser = async () => {
     try {
       const response = await verify(token);
-      const { message, statusCode } = response;
+      const { status, message } = handleApiResponse(response);
 
-      if (statusCode === 201 || statusCode === 200) {
-        toast.success(message);
+      if (status === 201 || status === 200) {
         setTimeout(() => navigate("/login"), 3000);
       } else {
-        toast.error(message);
         setStatus("Resend Verification Link");
       }
     } catch (e) {
       console.error("Verification error", e);
-      toast.error("Something went wrong!");
+      handleApiError(e, "Something went wrong!");
     }
   };
 
@@ -44,24 +43,16 @@ const Verification = () => {
           </p>
           <p className="font-semibold text-2xl md:text-3xl mb-14">{status}</p>
           {status !== "Email Verified. Redirecting to Login..." && (
-            <button
-              type="button"
-              className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+            <Button
               onClick={() => navigate("/resend-verify")}
             >
               Resend Verification Email
-            </button>
+            </Button>
           )}
         </div>
       </div>
 
-      <div className="w-[50%] lg:block hidden">
-        <img
-          src={codingImage}
-          className="h-full w-full object-fill rounded-tr-2xl rounded-br-2xl"
-          alt="Coding"
-        />
-      </div>
+      <AuthImage />
     </div>
   );
 };

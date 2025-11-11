@@ -1,26 +1,25 @@
 import {
-  create,
-  getAll,
+  createTest,
+  getAllTests,
   softDelete,
   restore,
   edit,
   getDeletedAll,
   getOngoing,
-} from "../controllers/test";
+} from "../controllers";
 import express from "express";
-import IsLoggeedIn from "../middlewares/TokenAuth";
+import { TokenAuth, RoleAuth } from "../middlewares";
 
-import { TestValidMid } from "../middlewares/validationMid/test";
-import RoleAuth from "../middlewares/RoleAuth";
+import { TestValidMid } from "../middlewares/validationMid";
 
 const router = express.Router();
 
-router.post("/create", IsLoggeedIn, RoleAuth("admin"), TestValidMid, create);
-router.get("/getAll", IsLoggeedIn, RoleAuth("admin", "user"), getAll); // use for get all tests and non attempted tests for a user
-router.get("/get-deleted-All", IsLoggeedIn, RoleAuth("admin"), getDeletedAll);
-router.put("/delete/:id", IsLoggeedIn, RoleAuth("admin"), softDelete);
-router.put("/edit/:id", IsLoggeedIn, RoleAuth("admin"), TestValidMid, edit);
-router.put("/restore/:id", IsLoggeedIn, RoleAuth("admin"), restore);
-router.get("/getOngoing/:user", IsLoggeedIn, RoleAuth("user"), getOngoing);
+router.post("/create", TokenAuth, RoleAuth("admin"), TestValidMid, createTest);
+router.get("/getAll", TokenAuth, RoleAuth("admin", "user"), getAllTests); // use for get all tests and non attempted tests for a user
+router.get("/get-deleted-All", TokenAuth, RoleAuth("admin"), getDeletedAll);
+router.put("/delete/:id", TokenAuth, RoleAuth("admin"), softDelete);
+router.put("/edit/:id", TokenAuth, RoleAuth("admin"), TestValidMid, edit);
+router.put("/restore/:id", TokenAuth, RoleAuth("admin"), restore);
+router.get("/getOngoing/:user", TokenAuth, RoleAuth("user"), getOngoing);
 
 export default router;

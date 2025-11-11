@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Content } from "./Components";
+import { Content } from "./Shared";
 import { SocketConnection } from "../../components/index";
 import { socket } from "../../globals";
 import {

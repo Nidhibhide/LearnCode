@@ -5,6 +5,7 @@ import testRoutes from "./testRoutes";
 import aiRoutes from "./aiRoutes";
 import testAttemptRoutes from "./testAttempt";
 import notificationRoutes from "./notificationRoutes";
+import { handleError } from "../utils";
 
 const router = express.Router();
 

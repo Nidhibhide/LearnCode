@@ -26,9 +26,3 @@ const TestSchema = new mongoose.Schema(
 );
 const TestModel = mongoose.model("Test", TestSchema);
 export default TestModel;
-
-export interface IQuestion {
-  questionText: string;
-  sampleInput?: string;
-  expectedOutput: string;
-}

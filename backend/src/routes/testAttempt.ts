@@ -1,12 +1,11 @@
-import { create, update, getAll } from "../controllers/testAttempt";
+import { createTestAttempt, updateTestAttempt, getAllTestAttempts } from "../controllers";
 import express from "express";
-import IsLoggeedIn from "../middlewares/TokenAuth";
-import RoleAuth from "../middlewares/RoleAuth";
+import { TokenAuth, RoleAuth } from "../middlewares";
 
 const router = express.Router();
 
-router.post("/create", IsLoggeedIn, RoleAuth("user"), create);
-router.put("/update/:id", IsLoggeedIn, RoleAuth("user"), update);
-router.get("/getAll", IsLoggeedIn, RoleAuth("admin"), getAll);
+router.post("/create", TokenAuth, RoleAuth("user"), createTestAttempt);
+router.put("/update/:id", TokenAuth, RoleAuth("user"), updateTestAttempt);
+router.get("/getAll", TokenAuth, RoleAuth("admin"), getAllTestAttempts);
 
 export default router;

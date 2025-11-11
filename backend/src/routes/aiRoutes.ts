@@ -1,12 +1,10 @@
 import express from "express";
-import IsLoggeedIn from "../middlewares/TokenAuth";
+import { TokenAuth, RoleAuth } from "../middlewares";
 
-import {generateQuestions  } from "../controllers/ai";
-
-import RoleAuth from "../middlewares/RoleAuth";
+import { generateQuestions } from "../controllers";
 
 const router = express.Router();
 
-router.post("/generateQue", IsLoggeedIn, RoleAuth("user"), generateQuestions );
+router.post("/generateQue", TokenAuth, RoleAuth("user"), generateQuestions );
 
 export default router;

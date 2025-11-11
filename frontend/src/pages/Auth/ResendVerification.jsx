@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { codingImage } from "../../images/index";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import { toast } from "react-toastify";
-import { InputField } from "../../components/index";
+import { InputField, Button, AuthImage } from "../../components/index";
 import { resendVerify } from "../../api/user";
 import { useNavigate } from "react-router-dom";
+import { handleApiResponse, handleApiError } from "../../utils";
 
 const ResendVerification = () => {
   const [loading, setLoading] = useState(false);
@@ -16,19 +16,17 @@ const ResendVerification = () => {
       if (loading) return;
       setLoading(true);
       const response = await resendVerify(values);
+      const { status, message } = handleApiResponse(response, { showSuccessToast: false });
 
-      const { message, statusCode } = response;
-      if (statusCode === 200) {
+      if (status === 200) {
         toast.success(message + values?.email);
-      } else if (response?.status === 400) {
-        toast.error(message);
+      } else if (status === 400) {
         setTimeout(() => navigate("/login"), 3000);
-      } else if (message) {
-        toast.error(message);
       }
       resetForm();
     } catch (err) {
       console.log(err.message || "Error while resending verification email");
+      handleApiError(err);
     } finally {
       setLoading(false);
     }
@@ -68,26 +66,19 @@ const ResendVerification = () => {
                   </div>
                 </div>
 
-                <button
+                <Button
+                  loading={loading}
                   onClick={handleSubmit}
-                  type="button"
-                  className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base  font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
-                  {loading ? "Loading..." : "Send Email"}
-                </button>
+                  Send Email
+                </Button>
               </>
             )}
           </Formik>
         </div>
       </div>
 
-      <div className="w-[50%] lg:block hidden">
-        <img
-          src={codingImage}
-          className="h-full w-full object-fill rounded-tr-2xl rounded-br-2xl"
-          alt="Coding"
-        />
-      </div>
+      <AuthImage />
     </div>
   );
 };

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { InputField } from "../../components/index";
+import { InputField, Button, AuthImage } from "../../components/index";
 import { Formik } from "formik";
-import { codingImage } from "../../images/index";
 import { signup, signinwithGoogle, getMe } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
+import { handleApiResponse, handleApiError } from "../../utils";
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -16,17 +16,14 @@ const SignUp = () => {
       if (loading) return;
       setLoading(true);
       const response = await signup(values);
-      const { message, statusCode } = response;
+      const { status, message } = handleApiResponse(response);
 
-      if (statusCode === 200) {
-        toast.success(message);
+      if (status === 200) {
         setTimeout(() => navigate("/login"), 3000);
-      } else if (message) {
-        toast.error(message);
       }
       resetForm();
     } catch (err) {
-      toast.error(err.message || "Registration failed");
+      handleApiError(err, "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -38,10 +35,9 @@ const SignUp = () => {
       const token = values?.credential;
 
       const res = await signinwithGoogle(token);
-      const { message: signinMsg, statusCode: signinStatus } = res;
+      const { status: signinStatus } = handleApiResponse(res);
 
       if (signinStatus === 200) {
-        toast.success(signinMsg);
         //fetch user api
         const userRes = await getMe();
         const { statusCode: getMeStatus, data } = userRes;
@@ -52,11 +48,9 @@ const SignUp = () => {
         const path =
           role === "admin" ? "/dashboard/viewTest" : "/dashboard/assessments";
         setTimeout(() => navigate(path), 3000);
-      } else if (signinMsg) {
-        toast.error(signinMsg);
       }
     } catch (err) {
-      toast.error(err.message || "Sign in with google failed");
+      handleApiError(err, "Sign in with google failed");
     }
   };
 
@@ -77,17 +71,17 @@ const SignUp = () => {
   });
 
   return (
-    <div className="h-screen flex bg-slate-200">
+    <div className="h-screen flex bg-white">
       <div className="lg:w-[50%] w-full rounded-tl-2xl rounded-bl-2xl px-4 md:px-12 bg-white">
         <div className="h-full flex flex-col justify-center">
           <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-4">
             LearnCode
           </p>
-          <p className="font-semibold text-xl md:text-3xl md:mb-14 mb-8">
+          <p className="font-semibold text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl md:mb-12 lg:mb-14 mb-6 sm:mb-8 px-4 md:px-0">
             Welcome to LearnCode! Please sign up to start your coding journey.
           </p>
 
-          <div className="mb-8 flex justify-center ">
+          <div className="mb-8 flex justify-center px-4">
             <GoogleLogin
               onSuccess={handleGoogleLogin}
               onError={() => toast.error("Google Login Failed")}
@@ -99,9 +93,9 @@ const SignUp = () => {
           </div>
 
           <div className="flex items-center mb-6">
-            <div className=" flex-1 border-t border-gray-300"></div>
-            <span className="mx-4 text-gray-500 font-semibold">OR</span>
-            <div className=" flex-1 border-t border-gray-300"></div>
+            <div className=" flex-1 border-t border-light-gray-border"></div>
+            <span className="mx-4 text-medium-gray font-semibold">OR</span>
+            <div className=" flex-1 border-t border-light-gray-border"></div>
           </div>
           <Formik
             initialValues={{ name: "", email: "", password: "" }}
@@ -136,23 +130,21 @@ const SignUp = () => {
                     />
                   </div>
                 </div>
-                <button
-                  type="button"
-                  disabled={loading}
+                <Button
+                  loading={loading}
                   onClick={handleSubmit}
-                  className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2   hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
-                  {loading ? "Loading..." : "Create Account"}
-                </button>
+                  Create Account
+                </Button>
               </>
             )}
           </Formik>
 
-          <p className="md:text-lg text-sm">
+          <p className="md:text-lg text-sm text-center md:text-left">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-semibold text-blue-600 hover:underline"
+              className="font-semibold text-blue hover:underline"
             >
               Login Here
             </Link>
@@ -160,12 +152,7 @@ const SignUp = () => {
         </div>
       </div>
 
-      <div className="w-[50%] lg:block hidden">
-        <img
-          src={codingImage}
-          className="h-full w-full object-fill rounded-tr-2xl rounded-br-2xl"
-        />
-      </div>
+      <AuthImage />
     </div>
   );
 };

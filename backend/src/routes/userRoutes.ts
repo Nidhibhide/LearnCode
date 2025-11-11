@@ -5,15 +5,15 @@ import {
   googleLogin,
   logOut,
   updateProfile,
-} from "../controllers/user";
+} from "../controllers";
 import express from "express";
-import IsLoggeedIn from "../middlewares/TokenAuth";
+import { TokenAuth } from "../middlewares";
 import {
   userRegisterMid,
   LoginValidtorMid,
   userUpdateMid,
-} from "../middlewares/validationMid/user";
-import RoleAuth from "../middlewares/RoleAuth";
+} from "../middlewares/validationMid";
+import { RoleAuth } from "../middlewares";
 
 const router = express.Router();
 
@@ -22,13 +22,13 @@ router.post("/google-login", googleLogin);
 router.post("/login", LoginValidtorMid, login);
 router.put(
   "/updateProfile/:id",
-  IsLoggeedIn,
+  TokenAuth,
   RoleAuth("admin", "user"),
   userUpdateMid,
   updateProfile
 );
 
-router.get("/getMe", IsLoggeedIn, RoleAuth("admin", "user"), getMe);
-router.get("/logout", IsLoggeedIn, RoleAuth("admin", "user"), logOut);
+router.get("/getMe", TokenAuth, RoleAuth("admin", "user"), getMe);
+router.get("/logout", TokenAuth, RoleAuth("admin", "user"), logOut);
 
 export default router;

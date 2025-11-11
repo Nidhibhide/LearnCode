@@ -1,6 +1,6 @@
 //create test attempt
-import TestAttempt from "../models/testAttempt";
-import { JsonOne, JsonAll } from "../utils/responseFun";
+import { TestAttempt } from "../models";
+import { JsonOne, JsonAll, getPaginationParams, buildAggregationPipeline, handleError } from "../utils";
 import { Request, Response } from "express";
 const create = async (req: Request, res: Response) => {
   const { userId, testId, remainingQuestionIds } = req.body;
@@ -11,30 +11,23 @@ const create = async (req: Request, res: Response) => {
       testId,
       remainingQuestionIds,
     });
+
     if (!test) {
       return JsonOne(res, 500, "Failed to create test Attempt", false);
     }
 
-    await test.save();
-
     JsonOne(res, 201, "Test attempt created successfully", true);
   } catch (error) {
-    JsonOne(
-      res,
-      500,
-      "unexpected error occurred while create test Attempt",
-      false
-    );
+    return handleError(res, "unexpected error occurred while create test Attempt");
   }
 };
 
 const update = async (req: Request, res: Response) => {
   try {
     const { questionId, flag } = req.body;
-    const { id } = req.params; //attempt id
+    const { id } = req.params;
 
     const attempt = await TestAttempt.findById(id);
-
     if (!attempt) {
       return JsonOne(res, 404, "Test Attempt not found", false);
     }
@@ -53,18 +46,15 @@ const update = async (req: Request, res: Response) => {
         attempt.wrongQuestionIds.push(questionId);
       }
     }
-    if (attempt?.remainingQuestionIds.length === 0) {
+
+    if (attempt.remainingQuestionIds.length === 0) {
       attempt.completedAt = new Date();
     }
+
     await attempt.save();
     JsonOne(res, 200, "Attempt updated successfully", true);
   } catch (err) {
-    JsonOne(
-      res,
-      500,
-      "unexpected error occurred while updating test Attempt",
-      false
-    );
+    return handleError(res, "unexpected error occurred while updating test Attempt");
   }
 };
 
@@ -72,20 +62,13 @@ const getAll = async (req: Request, res: Response) => {
   try {
     const {
       search = "",
-      sortOrder = "desc",
-      page = "1",
-      limit = "5",
       level = "All",
     } = req.query as {
       search?: string;
-      sortOrder?: "asc" | "desc";
-      page?: string;
-      limit?: string;
       level?: string;
     };
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const sort = sortOrder === "asc" ? 1 : -1;
+    const { skip, sort, page, limit } = getPaginationParams(req);
 
     const aggregation: any[] = [
       {
@@ -122,7 +105,7 @@ const getAll = async (req: Request, res: Response) => {
         data: [
           { $sort: { createdAt: sort } },
           { $skip: skip },
-          { $limit: parseInt(limit) },
+          { $limit: limit },
           {
             $project: {
               score: 1,
@@ -150,11 +133,11 @@ const getAll = async (req: Request, res: Response) => {
       "Test Attempts fetched successfully",
       data,
       total,
-      parseInt(page),
-      parseInt(limit)
+      page,
+      limit
     );
   } catch {
-    JsonOne(res, 500, "unexpected error occurred while sign up", false);
+    return handleError(res, "unexpected error occurred while fetching test attempts");
   }
 };
 export { create, update, getAll };

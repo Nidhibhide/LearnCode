@@ -19,21 +19,21 @@ import {
   MyScores,
   Notification,
   UserAttempts,
-} from "./pages/Dashboard/Components/Content/index";
+} from "./pages/Dashboard/index";
 import {
   EditTest,
   DeleteTest,
   Preview,
-} from "./pages/Dashboard/Components/Content/Components/ViewTest/Components/index";
+} from "./pages/Dashboard/ViewTest/index";
 import {
   ChangePassword,
   EditProfile,
-} from "./pages/Dashboard/Components/Content/Components/Setting/Components/index";
+} from "./pages/Dashboard/Setting/index";
 import {
   QuestionsList,
   TestLayout,
   Rules,
-} from "./pages/Dashboard/Components/Content/Components/Assessments/Components/index";
+} from "./pages/Dashboard/Assessments/index";
 import { DashboardPage } from "./pages/Dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";

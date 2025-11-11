@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { handleError } from "../utils";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
@@ -26,16 +27,14 @@ Respond with exactly ${numOfQuestions} lines.
     const text = textResponse
       .split("\n")
       .map((line) => line.trim())
-      .filter((line) => line.length > 0);
+      .filter((line) => line.length > 0)
+      .slice(0, numOfQuestions);
 
-    // Ensure correct count
-    const trimmedText = text.slice(0, numOfQuestions);
-
-    res.json(trimmedText);
-  } catch (error) {
-    console.error("Error generating content:", error);
-    res.status(500).json({ error: "Failed to generate programming questions" });
-  }
+    res.json(text);
+   } catch (error) {
+     console.error("Error generating content:", error);
+     return handleError(res, "Failed to generate programming questions");
+   }
 };
 
 export { generateQuestions };

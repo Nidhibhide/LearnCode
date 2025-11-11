@@ -23,10 +23,7 @@ Return only a JSON array of objects. No explanation, no markdown, no backticks.
   let text = result.response.text().trim();
 
   if (text.startsWith("```")) {
-    text = text
-      .replace(/^```[\w]*\n?/, "")
-      .replace(/```$/, "")
-      .trim();
+    text = text.replace(/^```[\w]*\n?/, "").replace(/```$/, "").trim();
   }
 
   return JSON.parse(text).slice(0, numOfQuestions);

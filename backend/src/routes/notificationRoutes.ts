@@ -1,11 +1,9 @@
-import { getAllByUser, update } from "../controllers/notification";
+import { getAllByUser, updateNotification } from "../controllers";
 import express from "express";
-import IsLoggeedIn from "../middlewares/TokenAuth";
-
-import RoleAuth from "../middlewares/RoleAuth";
+import { TokenAuth, RoleAuth } from "../middlewares";
 
 const router = express.Router();
 
-router.get("/getAll/:id", IsLoggeedIn, RoleAuth("admin", "user"), getAllByUser);
-router.put("/update/:id", IsLoggeedIn, RoleAuth("admin", "user"), update);
+router.get("/getAll/:id", TokenAuth, RoleAuth("admin", "user"), getAllByUser);
+router.put("/update/:id", TokenAuth, RoleAuth("admin", "user"), updateNotification);
 export default router;

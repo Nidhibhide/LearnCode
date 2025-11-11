@@ -11,6 +11,7 @@ export const socketService = (server: http.Server) => {
       cors: {
         origin: [
           "http://localhost:5173",
+          "http://localhost:5174",
           "https://learn-code-three.vercel.app",
         ],
         methods: ["GET", "POST"],
@@ -57,14 +58,13 @@ export async function sendToUser(
   }
 ) {
   try {
-    // 1) Save to DB
     const savedNotification = await Notification.create({
       userId,
       title: payload.title,
       message: payload.message,
       type: payload.type || "info",
     });
-    //live notifications
+
     io.to(userId).emit("demo", [savedNotification]);
     const unread = await Notification.find({ userId, read: false }).lean();
     io.to(userId).emit("notificationCount", { count: unread?.length });

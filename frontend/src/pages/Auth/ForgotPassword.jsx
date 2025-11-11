@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-import { codingImage } from "../../images/index";
 import { Formik } from "formik";
 import { forgotPass } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import { InputField } from "../../components/index";
+import { InputField, Button, AuthImage } from "../../components/index";
+import { handleApiResponse, handleApiError } from "../../utils";
 
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
@@ -15,19 +15,10 @@ const ForgotPassword = () => {
       if (loading) return;
       setLoading(true);
       const response = await forgotPass(values);
-
-      const { message, statusCode } = response;
-
-      if (statusCode === 200) {
-        toast.success(message);
-      } else if (message) {
-        toast.error(message);
-      }
+      handleApiResponse(response);
       resetForm();
     } catch (err) {
-      toast.error(
-        err.message || "Something went wrong. Please try again later."
-      );
+      handleApiError(err, "Something went wrong. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -69,24 +60,18 @@ const ForgotPassword = () => {
                   </div>
                 </div>
 
-                <button
+                <Button
+                  loading={loading}
                   onClick={handleSubmit}
-                  type="button"
-                  className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                 >
-                  {loading ? "Loading..." : "Send reset Link"}
-                </button>
+                  Send reset Link
+                </Button>
               </>
             )}
           </Formik>
         </div>
       </div>
-      <div className=" w-[50%] lg:block hidden ">
-        <img
-          src={codingImage}
-          className="h-full w-full object-fill rounded-tr-2xl rounded-br-2xl"
-        />
-      </div>
+      <AuthImage />
     </div>
   );
 };

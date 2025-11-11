@@ -4,8 +4,8 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { ChangePass, resetPassword } from "../../api/user";
 import { toast } from "react-toastify";
-import { InputField } from "../../components/index";
-import { codingImage } from "../../images/index";
+import { InputField, Button, AuthImage } from "../../components/index";
+import { handleApiResponse, handleApiError } from "../../utils";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -23,18 +23,17 @@ const ResetPassword = () => {
   const reset = async () => {
     try {
       const response = await resetPassword(token);
-      const { message, statusCode } = response;
-      if (statusCode === 200) {
+      const { status, message } = handleApiResponse(response);
+      if (status === 200) {
         setEmail(response?.data?.email);
         setStatus("pass");
       } else {
-        toast.error(message);
         setStatus("fail");
         setMessage("Reset Link Expired or Invalid");
       }
     } catch (e) {
       console.error("resetPassword error", e);
-      toast.error("Something went wrong!");
+      handleApiError(e, "Something went wrong!");
     }
   };
 
@@ -52,20 +51,14 @@ const ResetPassword = () => {
       };
 
       const response = await ChangePass(data);
+      const { status } = handleApiResponse(response);
 
-      const { message, statusCode } = response;
-
-      if (statusCode === 200) {
-        toast.success(message);
+      if (status === 200) {
         setTimeout(() => navigate("/login"), 3000);
-      } else if (message) {
-        toast.error(message);
       }
       resetForm();
     } catch (err) {
-      toast.error(
-        err.message || "Something went wrong. Please try again later."
-      );
+      handleApiError(err, "Something went wrong. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -93,13 +86,11 @@ const ResetPassword = () => {
 
           {status === "fail" ? (
             <>
-              <button
-                type="button"
-                className="bg-black text-white py-3 font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
+              <Button
                 onClick={() => navigate("/forgotPass")}
               >
                 Send Again
-              </button>
+              </Button>
             </>
           ) : (
             <>
@@ -124,13 +115,12 @@ const ResetPassword = () => {
                         placeholder="Confirm new password"
                       />
                     </div>
-                    <button
-                      type="button"
+                    <Button
+                      loading={loading}
                       onClick={handleSubmit}
-                      className="bg-black text-white md:py-3 py-2.5 md:text-lg text-base font-medium rounded-xl md:mb-4 mb-2 hover:bg-gray-700 hover:shadow-md transition duration-500"
                     >
-                      {loading ? "Loading..." : "Reset Password"}
-                    </button>
+                      Reset Password
+                    </Button>
                   </>
                 )}
               </Formik>
@@ -139,13 +129,7 @@ const ResetPassword = () => {
         </div>
       </div>
 
-      <div className="w-[50%] lg:block hidden">
-        <img
-          src={codingImage}
-          className="h-full w-full object-fill rounded-tr-2xl rounded-br-2xl"
-          alt="Coding"
-        />
-      </div>
+      <AuthImage />
     </div>
   );
 };
