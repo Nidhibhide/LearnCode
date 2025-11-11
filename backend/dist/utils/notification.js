@@ -27,6 +27,7 @@ const socketService = (server) => {
             cors: {
                 origin: [
                     "http://localhost:5173",
+                    "http://localhost:5174",
                     "https://learn-code-three.vercel.app",
                 ],
                 methods: ["GET", "POST"],
