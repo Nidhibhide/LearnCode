@@ -54,10 +54,10 @@ const Sidebar = ({ onLinkClick }) => {
     {
       to: "/dashboard/notifications",
       label: (
-        <span className="relative flex items-center gap-2">
+        <span className="flex items-center gap-2">
           Notifications
           {unreadCount > 0 && (
-            <span className="absolute -top-3 -right-4 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+            <span className="bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
               {unreadCount}
             </span>
           )}

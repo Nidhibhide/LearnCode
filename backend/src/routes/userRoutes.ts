@@ -7,7 +7,7 @@ import {
   updateProfile,
 } from "../controllers";
 import express from "express";
-import { TokenAuth } from "../middlewares";
+import { TokenAuth, BlockCheck } from "../middlewares";
 import {
   userRegisterMid,
   LoginValidtorMid,
@@ -23,12 +23,13 @@ router.post("/login", LoginValidtorMid, login);
 router.put(
   "/updateProfile/:id",
   TokenAuth,
+  BlockCheck,
   RoleAuth("admin", "user"),
   userUpdateMid,
   updateProfile
 );
 
-router.get("/getMe", TokenAuth, RoleAuth("admin", "user"), getMe);
-router.get("/logout", TokenAuth, RoleAuth("admin", "user"), logOut);
+router.get("/getMe", TokenAuth, BlockCheck, RoleAuth("admin", "user"), getMe);
+router.get("/logout", TokenAuth, BlockCheck, RoleAuth("admin", "user"), logOut);
 
 export default router;

@@ -187,6 +187,8 @@ const changePassword = async (req: Request, res: Response) => {
 
     const hashedPass = await bcrypt.hash(password, 10);
     user.password = hashedPass;
+    user.failedAttempts = 0;
+    user.isBlocked = false;
     await user.save();
 
     return JsonOne(res, 200, "Password reset successfully", true);

@@ -187,11 +187,24 @@ const login = async (req: Request, res: Response) => {
     if (!user.isVerified) {
       return JsonOne(res, 400, "User is not verified", false);
     }
+    if (user.isBlocked) {
+      return JsonOne(res, 403, "Account is blocked due to multiple failed login attempts. Please reset your password.", false);
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      user.failedAttempts += 1;
+      if (user.failedAttempts >= parseInt(process.env.MAX_FAILED_ATTEMPTS || '3')) {
+        user.isBlocked = true;
+      }
+      await user.save();
       return JsonOne(res, 401, "Incorrect password", false);
     }
+
+    // Successful login
+    user.failedAttempts = 0;
+    user.lastLogin = new Date();
+    await user.save();
 
     const access_token = jwt.sign(
       { id: user._id },
@@ -253,7 +266,7 @@ const updateProfile = async (req: Request, res: Response) => {
       id,
       { name, email },
       { new: true }
-    ).select("createdAt email isVerified name role _id");
+    ).select("createdAt email isVerified name role _id lastLogin");
 
     if (!updatedUser) {
       return JsonOne(res, 404, "User not found", false);
