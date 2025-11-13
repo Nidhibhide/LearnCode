@@ -20,6 +20,9 @@ const UserSchmea = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    failedAttempts: { type: Number, default: 0 },
+    lastLogin: { type: Date },
+    isBlocked: { type: Boolean, default: false },
   },
   {
     timestamps: true,

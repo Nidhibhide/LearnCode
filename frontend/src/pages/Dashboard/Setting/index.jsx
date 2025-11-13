@@ -5,6 +5,7 @@ import { Button } from "../../../components/index";
 const SettingsPage = () => {
   const userData = getUserData();
   const createdAt = userData?.createdAt;
+  const lastLogin = userData?.lastLogin;
   const navigate = useNavigate();
   return (
     <div className="w-full  h-full shadow-lg rounded-2xl md:py-12 px-4 py-4">
@@ -35,6 +36,13 @@ const SettingsPage = () => {
           <span className="font-semibold">Created Account At:</span>{" "}
           {new Date(createdAt).toLocaleDateString("en-GB")}
         </div>
+
+        {lastLogin && (
+          <div className="w-full bg-purple-100 text-purple-700 md:py-5  py-3 px-4 rounded-lg md:text-lg text-base">
+            <span className="font-semibold">Last Login At:</span>{" "}
+            {new Date(lastLogin).toLocaleString("en-GB")}
+          </div>
+        )}
       </div>
       <Outlet />
     </div>

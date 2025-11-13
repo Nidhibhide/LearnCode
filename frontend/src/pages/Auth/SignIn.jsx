@@ -41,6 +41,9 @@ const SignIn = () => {
         setTimeout(() => navigate(path), 3000);
       } else if (signinStatus === 400) {
         setTimeout(() => navigate("/resend-verify"), 3000);
+      } else if (signinStatus === 403) {
+        // Account blocked, redirect to forgot password
+        setTimeout(() => navigate("/forgotPass"), 3000);
       }
       resetForm();
     } catch (err) {

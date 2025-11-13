@@ -161,10 +161,22 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!user.isVerified) {
             return (0, utils_1.JsonOne)(res, 400, "User is not verified", false);
         }
+        if (user.isBlocked) {
+            return (0, utils_1.JsonOne)(res, 403, "Account is blocked due to multiple failed login attempts. Please reset your password.", false);
+        }
         const isMatch = yield bcryptjs_1.default.compare(password, user.password);
         if (!isMatch) {
+            user.failedAttempts += 1;
+            if (user.failedAttempts >= 5) {
+                user.isBlocked = true;
+            }
+            yield user.save();
             return (0, utils_1.JsonOne)(res, 401, "Incorrect password", false);
         }
+        // Successful login
+        user.failedAttempts = 0;
+        user.lastLogin = new Date();
+        yield user.save();
         const access_token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
         res.cookie("access_token", access_token, utils_1.accessTokenOptions);
         const refresh_token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.REFRESH_TOKEN, { expiresIn: "7d" });

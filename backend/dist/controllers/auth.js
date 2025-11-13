@@ -166,6 +166,8 @@ const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }
         const hashedPass = yield bcryptjs_1.default.hash(password, 10);
         user.password = hashedPass;
+        user.failedAttempts = 0;
+        user.isBlocked = false;
         yield user.save();
         return (0, utils_1.JsonOne)(res, 200, "Password reset successfully", true);
     }

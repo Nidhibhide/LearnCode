@@ -14,7 +14,7 @@ import {
   LoginValidtorMid,
   EmailValidtorMid,
 } from "../middlewares/validationMid";
-import { TokenAuth, RoleAuth } from "../middlewares";
+import { TokenAuth, RoleAuth, BlockCheck } from "../middlewares";
 
 const router = express.Router();
 
@@ -24,6 +24,7 @@ router.put("/changePassword", LoginValidtorMid, changePassword);
 router.post(
   "/verifyCurrentPassword",
   TokenAuth,
+  BlockCheck,
   RoleAuth("admin", "user"),
   LoginValidtorMid,
   verifyCurrentPassword
