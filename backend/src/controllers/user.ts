@@ -4,7 +4,19 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { OAuth2Client } from "google-auth-library";
 import crypto from "crypto";
-import { JsonOne, expireTime, sendWelcomeMessage, notifyAdminOfNewUser, mailOptionsForVerify, transporterFun, refreshTokenOptions, accessTokenOptions, clearCookies, findUserByEmail, handleError } from "../utils";
+import {
+  JsonOne,
+  expireTime,
+  sendWelcomeMessage,
+  notifyAdminOfNewUser,
+  mailOptionsForVerify,
+  transporterFun,
+  refreshTokenOptions,
+  accessTokenOptions,
+  clearCookies,
+  findUserByEmail,
+  handleError,
+} from "../utils";
 import { Request, Response } from "express";
 
 const registerUser = async (req: Request, res: Response) => {
@@ -50,76 +62,6 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-// const googleLogin = async (req: Request, res: Response) => {
-//   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-//   const { token } = req.body;
-
-//   try {
-//     if (!token) {
-//       return JsonOne(res, 404, "Google token not found", false);
-//     }
-//     const ticket = await client.verifyIdToken({
-//       idToken: token,
-//       audience: process.env.GOOGLE_CLIENT_ID,
-//     });
-
-//     const payload = ticket.getPayload();
-//     if (!payload) return JsonOne(res, 401, "Invalid Google token", false);
-
-//     const { email, name, sub } = payload;
-//     if (!email || !name || !sub) {
-//       return JsonOne(res, 400, "Incomplete Google user data", false);
-//     }
-
-//     let user = await User.findOne({ email });
-
-//     if (!user) {
-//       user = await User.create({
-//         name,
-//         email,
-//         password: sub,
-//         isVerified: true,
-//         role: "user",
-//         authProvider: "google",
-//       });
-
-//       if (!user) {
-//         return JsonOne(res, 500, "Failed to create user", false);
-//       }
-//       const hashedPass = await bcrypt.hash(sub, 10);
-//       user.password = hashedPass;
-
-//       await user.save();
-
-//       await sendWelcomeMessage(user._id.toString(), name);
-//       await notifyAdminOfNewUser(name);
-//     }
-
-//     const access_token = jwt.sign(
-//       { id: user._id },
-//       process.env.ACCESS_TOKEN as string,
-//       {
-//         expiresIn: "1h",
-//       }
-//     );
-
-//     res.cookie("access_token", access_token, accessTokenOptions);
-//     const refresh_token = jwt.sign(
-//       { id: user._id },
-//       process.env.REFRESH_TOKEN as string,
-//       {
-//         expiresIn: "7d",
-//       }
-//     );
-
-//     res.cookie("refresh_token", refresh_token, refreshTokenOptions);
-
-//     return JsonOne(res, 200, "Login successful", true);
-//   } catch (err) {
-//     JsonOne(res, 500, "Google login failed", false);
-//   }
-// };
-
 const googleLogin = async (req: Request, res: Response) => {
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const { token } = req.body;
@@ -156,6 +98,9 @@ const googleLogin = async (req: Request, res: Response) => {
       });
     }
 
+    user.lastLogin = new Date();
+    await user.save();
+
     const access_token = jwt.sign(
       { id: user._id },
       process.env.ACCESS_TOKEN as string,
@@ -188,13 +133,20 @@ const login = async (req: Request, res: Response) => {
       return JsonOne(res, 400, "User is not verified", false);
     }
     if (user.isBlocked) {
-      return JsonOne(res, 403, "Account is blocked due to multiple failed login attempts. Please reset your password.", false);
+      return JsonOne(
+        res,
+        403,
+        "Account is blocked due to multiple failed login attempts. Please reset your password.",
+        false
+      );
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       user.failedAttempts += 1;
-      if (user.failedAttempts >= parseInt(process.env.MAX_FAILED_ATTEMPTS || '3')) {
+      if (
+        user.failedAttempts >= parseInt(process.env.MAX_FAILED_ATTEMPTS || "3")
+      ) {
         user.isBlocked = true;
       }
       await user.save();
