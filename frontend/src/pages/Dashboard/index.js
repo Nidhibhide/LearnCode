@@ -8,6 +8,7 @@ import Assessments from "./Assessments/index.jsx";
 import MyScores from "./MyScores";
 import Notification from "./Notification";
 import UserAttempts from "./UserAttempts";
+import AdminDashboard from "./AdminDashboard";
 
 export {
   DashboardPage,
@@ -20,4 +21,5 @@ export {
   MyScores,
   Notification,
   UserAttempts,
+  AdminDashboard,
 };

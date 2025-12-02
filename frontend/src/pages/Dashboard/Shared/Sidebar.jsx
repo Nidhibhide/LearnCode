@@ -6,6 +6,7 @@ import {
   MdOutlineRemoveRedEye,
   MdOutlineLogout,
   MdOutlineRestore,
+  MdOutlineAnalytics,
 } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
@@ -21,6 +22,12 @@ const Sidebar = ({ onLinkClick }) => {
     (state) => state.notifications.notificationCount
   );
   const sidebarLinks = [
+    {
+      to: "/dashboard/adminDashboard",
+      label: "Admin Dashboard",
+      icon: <MdOutlineAnalytics size={28} />,
+      roles: ["admin"],
+    },
     {
       to: "/dashboard/viewTest",
       label: "View Tests",

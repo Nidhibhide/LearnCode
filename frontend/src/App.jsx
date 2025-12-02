@@ -19,6 +19,7 @@ import {
   MyScores,
   Notification,
   UserAttempts,
+  AdminDashboard,
 } from "./pages/Dashboard/index";
 import {
   EditTest,
@@ -168,6 +169,14 @@ function App() {
                 </RoleAuth>
               }
             ></Route>
+            <Route
+              path="adminDashboard"
+              element={
+                <RoleAuth allowedRoles={["admin"]}>
+                  <AdminDashboard />
+                </RoleAuth>
+              }
+            />
             <Route
               path="setting"
               element={

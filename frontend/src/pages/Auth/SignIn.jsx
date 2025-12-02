@@ -37,7 +37,7 @@ const SignIn = () => {
 
         const role = data?.role;
         const path =
-          role === "admin" ? "/dashboard/viewTest" : "/dashboard/assessments";
+          role === "admin" ? "/dashboard/adminDashboard" : "/dashboard/assessments";
         setTimeout(() => navigate(path), 3000);
       } else if (signinStatus === 400) {
         setTimeout(() => navigate("/resend-verify"), 3000);
