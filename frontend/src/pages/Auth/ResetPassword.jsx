@@ -6,6 +6,7 @@ import { ChangePass, resetPassword } from "../../api/user";
 import { toast } from "react-toastify";
 import { InputField, Button, AuthImage } from "../../components/index";
 import { handleApiResponse, handleApiError } from "../../utils";
+import { stringValidator, matchValidator, passwordValidator } from "../../validation/GlobalValidation";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -64,15 +65,10 @@ const ResetPassword = () => {
     }
   };
 
+  // Validation schema - using validators directly from GlobalValidation
   const validationSchema = Yup.object({
-    password: Yup.string()
-      .matches(/^\d+$/, "Password must contain digits only")
-      .min(5, "Password must be at least 5 characters")
-      .max(10, "Password must not exceed 10 characters")
-      .required("Password is required"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords must match")
-      .required("Confirm Password is required"),
+    password: passwordValidator("Password", 8, 12, true),
+    confirmPassword: matchValidator("Confirm password", "password", "Password", true),
   });
 
   return (

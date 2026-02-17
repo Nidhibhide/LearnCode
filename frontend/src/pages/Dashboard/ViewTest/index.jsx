@@ -3,11 +3,11 @@ import {
   SearchFilters,
   PaginationControls,
   NotFoundControls,
+  Button,
 } from "../../../components/index";
 import { getAll } from "../../../api/test";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Preview } from "./index";
 
 const index = () => {
@@ -19,6 +19,7 @@ const index = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
   const location = useLocation();
+  const navigate = useNavigate();
   const preview = location.state?.preview;
 
   //api
@@ -48,7 +49,7 @@ const index = () => {
   return (
     <div className="md:py-12 py-4 px-4  h-full">
       <h1 className="md:text-2xl text-xl font-bold text-center md:mb-4">
-        View Tests
+        View Testss
       </h1>
 
       {/* Search, Filter, Sort UI */}
@@ -60,6 +61,12 @@ const index = () => {
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
+
+      <div className="flex justify-end mb-4">
+        <Button onClick={() => navigate('/dashboard/createTest')} width="w-32" className="bg-black hover:bg-gray-800 text-white font-semibold px-6 py-2 rounded-lg">
+          Create Test
+        </Button>
+      </div>
 
       {/* Cards */}
 

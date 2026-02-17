@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { InputField, Button, AuthImage } from "../../components/index";
 import { handleApiResponse, handleApiError } from "../../utils";
+import { emailValidator } from "../../validation/GlobalValidation";
 
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ const ForgotPassword = () => {
 
   // validation schema
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Email is required"),
+    email: emailValidator("Email", true),
   });
   return (
     <div className="h-screen flex  bg-slate-200">

@@ -4,9 +4,14 @@ import { Formik } from "formik";
 import { getMe, signin } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import { InputField, Button, AuthImage } from "../../components/index";
+import {
+  InputField,
+  Button,
+  AuthImage,
+} from "../../components/index";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { handleApiResponse, handleApiError } from "../../utils";
+import { emailValidator, stringValidator, passwordValidator } from "../../validation/GlobalValidation";
 
 const SignIn = () => {
   const [loading, setLoading] = useState(false);
@@ -25,7 +30,8 @@ const SignIn = () => {
       if (loading) return;
       setLoading(true);
       const signinRes = await signin(values);
-      const { status: signinStatus, message: signinMsg } = handleApiResponse(signinRes);
+      const { status: signinStatus, message: signinMsg } =
+        handleApiResponse(signinRes);
 
       if (signinStatus === 200) {
         //fetch user api
@@ -37,7 +43,9 @@ const SignIn = () => {
 
         const role = data?.role;
         const path =
-          role === "admin" ? "/dashboard/adminDashboard" : "/dashboard/assessments";
+          role === "admin"
+            ? "/dashboard/adminDashboard"
+            : "/dashboard/assessments";
         setTimeout(() => navigate(path), 3000);
       } else if (signinStatus === 400) {
         setTimeout(() => navigate("/resend-verify"), 3000);
@@ -53,15 +61,10 @@ const SignIn = () => {
     }
   };
 
-  // validation schema
+  // validation schema - using validators directly from GlobalValidation
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Email is required"),
-
-    password: Yup.string()
-      .matches(/^\d+$/, "Password must contain digits only")
-      .min(5, "Password must be at least 5 characters")
-      .max(10, "Password must not exceed 10 characters")
-      .required("Password is required"),
+    email: emailValidator("Email", true),
+    password: passwordValidator("Password", 8, 12, true),
   });
   return (
     <div className="h-screen flex bg-white">
@@ -102,10 +105,7 @@ const SignIn = () => {
                   </div>
                 </div>
 
-                <Button
-                  loading={loading}
-                  onClick={handleSubmit}
-                >
+                <Button loading={loading} onClick={handleSubmit}>
                   Sign In
                 </Button>
                 <p className="md:text-lg text-sm text-center md:text-left">

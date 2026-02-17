@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Field, ErrorMessage } from "formik";
+import { Field, ErrorMessage, useFormikContext } from "formik";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { PasswordRules } from "./index";
 
 const InputField = ({
   label,
@@ -9,11 +10,30 @@ const InputField = ({
   as = "input",
   placeholder,
   options = [],
+  onChange,
+  onFocus,
+  onBlur,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const formikContext = useFormikContext();
+
+  // Get the actual field value from Formik if available
+  const fieldValue = formikContext?.values?.[name] || "";
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleFocus = (e) => {
+    setIsFocused(true);
+    if (onFocus) onFocus(e);
+  };
+
+  const handleBlur = (e) => {
+    setIsFocused(false);
+    if (onBlur) onBlur(e);
   };
 
   return (
@@ -37,12 +57,31 @@ const InputField = ({
       ) : (
         <div className="relative">
           <Field
-            as={as}
             name={name}
             type={type === "password" ? (showPassword ? "text" : "password") : type}
             placeholder={placeholder}
             className="md:py-3 md:px-4 py-2 px-2 pr-10 rounded-lg border border-gray-300 placeholder:text-base w-full"
-          />
+            onFocus={onFocus}
+            onBlur={onBlur}
+            onMouseEnter={() => type === "password" && setIsHovered(true)}
+            onMouseLeave={() => type === "password" && setIsHovered(false)}
+          >
+            {({ field }) => (
+              <input
+                {...field}
+                type={type === "password" ? (showPassword ? "text" : "password") : type}
+                placeholder={placeholder}
+                className="md:py-3 md:px-4 py-2 px-2 pr-10 rounded-lg border border-gray-300 placeholder:text-base w-full"
+                onChange={(e) => {
+                  field.onChange(e);
+                  if (onChange) onChange(e);
+                }}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+            )}
+          </Field>
+          {type === "password" && <PasswordRules isVisible={isHovered || isFocused} password={fieldValue} />}
           {type === "password" && (
             <button
               type="button"

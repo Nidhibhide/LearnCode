@@ -6,6 +6,7 @@ import { InputField, Button, AuthImage } from "../../components/index";
 import { resendVerify } from "../../api/user";
 import { useNavigate } from "react-router-dom";
 import { handleApiResponse, handleApiError } from "../../utils";
+import { emailValidator } from "../../validation/GlobalValidation";
 
 const ResendVerification = () => {
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ const ResendVerification = () => {
     }
   };
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Email is required"),
+    email: emailValidator("Email", true),
   });
 
   return (
