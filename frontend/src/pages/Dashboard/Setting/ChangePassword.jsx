@@ -10,8 +10,9 @@ import {
   VerifyCurrentPassword,
   ChangePass,
 } from "../../../api/user";
-import { passwordValidationSchema, newPasswordValidationSchema } from "../../../validation";
+import { stringValidator, matchValidator, passwordValidator } from "../../../validation/GlobalValidation";
 import { getUserEmail, navigateTo, delay, ROUTES, handleApiResponse, handleApiError } from "../../../utils";
+import * as Yup from "yup";
 
 const ChangePassword = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -69,6 +70,15 @@ const ChangePassword = () => {
       setLoading(false);
     }
   };
+
+  const passwordValidationSchema = Yup.object().shape({
+    currentPassword: passwordValidator("Current password", 8, 12, true),
+  });
+
+  const newPasswordValidationSchema = Yup.object().shape({
+    password: passwordValidator("New password", 8, 12, true),
+    confirmPassword: matchValidator("Confirm password", "password", "Password", true),
+  });
 
   return (
     <ModalWrapper

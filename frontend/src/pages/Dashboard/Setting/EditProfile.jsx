@@ -7,8 +7,9 @@ import {
   InputField,
   Button
 } from "../../../components/index";
-import { userProfileValidationSchema } from "../../../validation";
+import { alphabetStringValidator, emailValidator } from "../../../validation/GlobalValidation";
 import { getUserData, setUserData, navigateTo, delay, ROUTES, handleApiResponse, handleApiError } from "../../../utils";
+import * as Yup from "yup";
 
 const EditProfile = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +44,11 @@ const EditProfile = () => {
       setIsOpen(false);
     }
   };
+
+  const userProfileValidationSchema = Yup.object().shape({
+    name: alphabetStringValidator("Name", 2, 50, true),
+    email: emailValidator("Email", true),
+  });
 
   return (
     <ModalWrapper

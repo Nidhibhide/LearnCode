@@ -4,14 +4,15 @@ const Button = ({
   loading,
   children,
   loadingText = "Loading...",
-  className = "bg-black text-white w-full py-3 font-medium rounded-xl mb-2 md:mb-4 hover:bg-dark-gray-hover hover:shadow-md transition duration-500",
+  className = "bg-black text-white py-3 font-medium rounded-xl mb-2 md:mb-4 hover:bg-dark-gray-hover hover:shadow-md transition duration-500",
+  width = "",
   disabled,
   ...props
 }) => {
   return (
     <button
       type="button"
-      className={className}
+      className={`${className} ${width}`}
       disabled={loading || disabled}
       {...props}
     >

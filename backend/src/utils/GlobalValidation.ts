@@ -1,11 +1,11 @@
-import Joi, { string } from "joi";
+import Joi from "joi";
 
 // 1. String Validator
 export const stringValidator = (
   label: string,
   min: number,
   max: number,
-  required = false
+  required = false,
 ) => {
   let rule = Joi.string()
     .pattern(/^[a-zA-Z\s]+$/)
@@ -35,33 +35,38 @@ export const emailValidator = (label = "Email", required = true) => {
     : rule;
 };
 
-// 3. Password Validator (digits only)
+// 3. Password Validator (Strong password validation)
+// Rules: 8-12 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char, no spaces
 export const passwordValidator = (
   label = "Password",
-  min = 5,
-  max = 10,
-  required = false
+  min = 8,
+  max = 12,
+  required = false,
 ) => {
   let rule = Joi.string()
-    .pattern(/^\d+$/)
     .min(min)
     .max(max)
+    .pattern(
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])\S+$/,
+    )
     .messages({
-      "string.pattern.base": `${label} must contain digits only`,
-      "string.min": `${label} must be at least ${min} digits`,
-      "string.max": `${label} must not exceed ${max} digits`,
+      "string.min": `${label} must be at least ${min} characters`,
+      "string.max": `${label} must not exceed ${max} characters`,
+      "string.pattern.base": `${label} must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character, and no spaces`,
     });
 
-  return required
-    ? rule.required().messages({ "any.required": `${label} is required` })
-    : rule;
+  if (required) {
+    rule = rule.required().messages({ "any.required": `${label} is required` });
+  }
+
+  return rule;
 };
 
 // 4. Select Validator
 export const selectValidator = (
   label: string,
   options = [""],
-  required = true
+  required = true,
 ) => {
   let rule = Joi.string()
     .valid(...options)
@@ -79,7 +84,7 @@ export const numberValidator = (
   label: string,
   min: number,
   max: number,
-  required = false
+  required = false,
 ) => {
   let rule = Joi.number()
     .min(min)

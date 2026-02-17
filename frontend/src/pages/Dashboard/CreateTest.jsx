@@ -5,6 +5,10 @@ import { toast } from "react-toastify";
 import { create } from "../../api/test";
 import * as Yup from "yup";
 import { handleApiResponse, handleApiError } from "../../utils";
+import { stringValidator, integerValidator, selectValidator } from "../../validation/GlobalValidation";
+
+const LANGUAGES = ["Java", "C++", "JavaScript", "Python", "C"];
+const LEVELS = ["Basic", "Intermediate", "Advanced"];
 
 const CreateTest = () => {
   const [loading, setLoading] = useState(false);
@@ -24,33 +28,12 @@ const CreateTest = () => {
     }
   };
 
-  //validation schema
+  //validation schema - using validators directly from GlobalValidation
   const validationSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(3, "Test name must be at least 3 characters")
-      .max(100, "Test name should not exceed 100 characters")
-      .required("Test name is required"),
-
-    numOfQuestions: Yup.number()
-      .typeError("Number of questions must be a number")
-      .integer("Number of questions must be an integer")
-      .min(1, "There must be at least 1 question")
-      .max(5, "Questions should not exceed 5")
-      .required("Number of questions is required"),
-
-    language: Yup.string()
-      .oneOf(
-        ["Java", "C++", "JavaScript", "Python", "C"],
-        "Language must be one of Java, C++, JavaScript, Python, or C"
-      )
-      .required("Language is required"),
-
-    level: Yup.string()
-      .oneOf(
-        ["Basic", "Intermediate", "Advanced"],
-        "Level must be one of Basic, Intermediate, or Advanced"
-      )
-      .required("Level is required"),
+    name: stringValidator("Test name", 3, 100, true),
+    numOfQuestions: integerValidator("Number of questions", 1, 5, true),
+    language: selectValidator("Language", LANGUAGES, true),
+    level: selectValidator("Level", LEVELS, true),
   });
 
   return (
@@ -91,7 +74,7 @@ const CreateTest = () => {
                     label="Language"
                     name="language"
                     as="select"
-                    options={["Java", "C++", "JavaScript", "Python", "C"]}
+                    options={LANGUAGES}
                   />
                 </div>
                 <div className="flex flex-col space-y-1">
@@ -99,7 +82,7 @@ const CreateTest = () => {
                     label="Test Level"
                     name="level"
                     as="select"
-                    options={["Basic", "Intermediate", "Advanced"]}
+                    options={LEVELS}
                   />
                 </div>
               </div>

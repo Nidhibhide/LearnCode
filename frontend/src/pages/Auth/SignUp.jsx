@@ -7,6 +7,8 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 import { handleApiResponse, handleApiError } from "../../utils";
+import { emailValidator, stringValidator, alphabetStringValidator, passwordValidator } from "../../validation/GlobalValidation";
+
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -54,20 +56,11 @@ const SignUp = () => {
     }
   };
 
+  // Validation schema - using validators directly from GlobalValidation
   const validationSchema = Yup.object({
-    name: Yup.string()
-      .matches(/^[a-zA-Z\s]+$/, "Only alphabets and spaces are allowed")
-      .min(3, "Name must be at least 3 characters")
-      .max(50, "Name should not exceed 50 characters")
-      .required("Name is required"),
-
-    email: Yup.string().email("Invalid email").required("Email is required"),
-
-    password: Yup.string()
-      .matches(/^\d+$/, "Password must contain digits only")
-      .min(5, "Password must be at least 5 characters")
-      .max(10, "Password must not exceed 10 characters")
-      .required("Password is required"),
+    name: alphabetStringValidator("Name", 2, 50, true),
+    email: emailValidator("Email", true),
+    password: passwordValidator("Password", 8, 12, true),
   });
 
   return (

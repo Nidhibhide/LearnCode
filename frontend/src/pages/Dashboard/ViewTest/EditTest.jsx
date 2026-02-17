@@ -8,9 +8,10 @@ import {
   InputField,
   Button
 } from "../../../components/index";
-import { testValidationSchema } from "../../../validation";
+import { stringValidator, integerValidator, selectValidator } from "../../../validation/GlobalValidation";
 import { SUPPORTED_LANGUAGES, TEST_LEVELS, ROUTES } from "../../../constants";
 import { navigateTo, delay, handleApiResponse, handleApiError } from "../../../utils";
+import * as Yup from "yup";
 
 function EditTest() {
   const { testId } = useParams();
@@ -43,6 +44,13 @@ function EditTest() {
       setLoading(false);
     }
   };
+
+  const testValidationSchema = Yup.object().shape({
+    name: stringValidator("Test name", 3, 100, true),
+    numOfQuestions: integerValidator("Number of questions", 1, 100, true),
+    language: selectValidator("Language", SUPPORTED_LANGUAGES, true),
+    level: selectValidator("Level", TEST_LEVELS, true),
+  });
 
   return (
     <ModalWrapper
