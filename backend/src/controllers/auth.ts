@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { JsonOne, expireTime, mailOptionsForVResetPass, mailOptionsForVerify, transporterFun, accessTokenOptions, findUserByEmail, verifyToken, handleError } from "../utils";
+import { JsonOne, expireTime, mailOptionsForVResetPass, mailOptionsForVerify, transporterFun, accessTokenOptions, findUserByEmail, verifyToken, handleError, isOldPassword, addToPasswordHistory } from "../utils";
 import { Request, Response } from "express";
 
 const resendVerificationEmail = async (req: Request, res: Response) => {
@@ -183,6 +183,17 @@ const changePassword = async (req: Request, res: Response) => {
     const user = await findUserByEmail(email);
     if (!user) {
       return JsonOne(res, 404, "User not found", false);
+    }
+
+    // Check if the new password is the same as the old password
+    const isOldPwd = await isOldPassword(user._id.toString(), password);
+    if (isOldPwd) {
+      return JsonOne(res, 400, "You cannot use your previous password. Please choose a different password.", false);
+    }
+
+    // Add current password to history before changing
+    if (user.password) {
+      await addToPasswordHistory(user._id.toString(), user.password);
     }
 
     const hashedPass = await bcrypt.hash(password, 10);

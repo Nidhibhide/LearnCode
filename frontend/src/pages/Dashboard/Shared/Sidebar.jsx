@@ -1,22 +1,20 @@
 import { FaClipboard } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { IoMdAdd, IoMdNotifications } from "react-icons/io";
+import { IoMdNotifications } from "react-icons/io";
 import { IoStatsChartSharp } from "react-icons/io5";
 import {
   MdOutlineRemoveRedEye,
   MdOutlineLogout,
-  MdOutlineRestore,
   MdOutlineAnalytics,
 } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { getUserData, getUserRole, getUserName } from "../../../utils";
 
 const Sidebar = ({ onLinkClick }) => {
-  const data = getUserData();
-  const role = getUserRole();
-  const name = getUserName();
+  const user = useSelector((state) => state.user);
+  const role = user?.role;
+  const name = user?.name;
 
   const unreadCount = useSelector(
     (state) => state.notifications.notificationCount
@@ -35,28 +33,16 @@ const Sidebar = ({ onLinkClick }) => {
       roles: ["admin"],
     },
     {
-      to: "/dashboard/createTest",
-      label: "Create Test",
-      icon: <IoMdAdd size={28} />,
-      roles: ["admin"],
-    },
-    {
-      to: "/dashboard/restoreTest",
-      label: "Restore Tests",
-      icon: <MdOutlineRestore size={28} />,
-      roles: ["admin"],
-    },
-    {
       to: "/dashboard/assessments",
       label: "Assessments",
       icon: <FaClipboard size={28} />,
-      roles: ["user"],
+      roles: ["student"],
     },
     {
       to: "/dashboard/myScores",
       label: "My Scores",
       icon: <GiCheckMark size={28} />,
-      roles: ["user"],
+      roles: ["student"],
     },
     {
       to: "/dashboard/notifications",
@@ -71,7 +57,7 @@ const Sidebar = ({ onLinkClick }) => {
         </span>
       ),
       icon: <IoMdNotifications size={28} />,
-      roles: ["user", "admin"],
+      roles: ["student", "admin"],
     },
     {
       to: "/dashboard/userAttempts",
@@ -83,13 +69,13 @@ const Sidebar = ({ onLinkClick }) => {
       to: "/dashboard/setting",
       label: "Setting",
       icon: <IoSettingsSharp size={28} />,
-      roles: ["admin", "user"],
+      roles: ["admin", "student"],
     },
     {
       to: "/dashboard/logout",
       label: "Logout",
       icon: <MdOutlineLogout size={28} />,
-      roles: ["admin", "user"],
+      roles: ["admin", "student"],
     },
   ];
 

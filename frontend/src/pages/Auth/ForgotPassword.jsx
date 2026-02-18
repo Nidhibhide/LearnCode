@@ -5,11 +5,13 @@ import { forgotPass } from "../../api/user";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { InputField, Button, AuthImage } from "../../components/index";
+import { useNavigate } from "react-router-dom";
 import { handleApiResponse, handleApiError } from "../../utils";
 import { emailValidator } from "../../validation/GlobalValidation";
 
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   // handle forgot Password
   const handleForgotPass = async (values, { resetForm }) => {
     try {
@@ -61,12 +63,18 @@ const ForgotPassword = () => {
                   </div>
                 </div>
 
-                <Button
-                  loading={loading}
-                  onClick={handleSubmit}
-                >
-                  Send reset Link
-                </Button>
+                <div className="flex gap-4">
+                  <Button
+                    width="w-full"
+                    loading={loading}
+                    onClick={handleSubmit}
+                  >
+                    Send reset Link
+                  </Button>
+                  <Button width="w-full" onClick={() => navigate("/")}>
+                    Home
+                  </Button>
+                </div>
               </>
             )}
           </Formik>

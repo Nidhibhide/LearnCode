@@ -10,7 +10,7 @@ import { useLocation } from "react-router-dom";
 import { Tabs, Tab } from "@heroui/react";
 import { Preview } from "../ViewTest/index";
 import { toast } from "react-toastify";
-import { getUserId } from "../../../utils";
+import { useSelector } from "react-redux";
 const Assessments = () => {
   const [tests, setTests] = useState([]);
 
@@ -21,7 +21,7 @@ const Assessments = () => {
 
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
-  const user = getUserId();
+  const user = useSelector((state) => state.user?.id);
   const location = useLocation();
   const preview = location.state?.preview;
   //api

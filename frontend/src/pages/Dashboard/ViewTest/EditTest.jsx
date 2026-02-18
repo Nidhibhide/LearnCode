@@ -101,6 +101,7 @@ function EditTest() {
               loading={loading}
               onClick={handleSubmit}
               loadingText="Updating..."
+              width="w-full"
             >
               Update Test
             </Button>

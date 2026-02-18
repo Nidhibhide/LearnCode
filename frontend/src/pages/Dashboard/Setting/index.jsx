@@ -1,12 +1,13 @@
 import { useNavigate, Outlet } from "react-router-dom";
-import { getUserData } from "../../../utils";
+import { useSelector } from "react-redux";
 import { Button } from "../../../components/index";
 
 const SettingsPage = () => {
-  const userData = getUserData();
-  const createdAt = userData?.createdAt;
-  const lastLogin = userData?.lastLogin;
+  const user = useSelector((state) => state.user);
+  const createdAt = user?.createdAt;
+  const lastLogin = user?.lastLogin;
   const navigate = useNavigate();
+  const role = user?.role;
   return (
     <div className="w-full  h-full shadow-lg rounded-2xl md:py-12 px-4 py-4">
       <h1 className="md:text-2xl text-xl font-bold mb-8 text-gray-800 text-center">
@@ -31,6 +32,17 @@ const SettingsPage = () => {
         >
           Edit Profile
         </Button>
+
+        {role === "admin" && (
+          <Button
+            className="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold py-3 md:py-5  px-4 rounded-lg text-left md:text-lg text-base"
+            onClick={() => {
+              navigate("/dashboard/restoreTest");
+            }}
+          >
+            Restore Tests
+          </Button>
+        )}
 
         <div className="w-full bg-gray-100 text-gray-700 md:py-5  py-3 px-4 rounded-lg md:text-lg text-base">
           <span className="font-semibold">Created Account At:</span>{" "}

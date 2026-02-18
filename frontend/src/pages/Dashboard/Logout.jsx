@@ -10,10 +10,14 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { logout } from "../../api/user";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser } from "../../redux/features/userSlice";
 
 const Logout = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const dispatch = useDispatch();
+  const role = useSelector((state) => state.user?.role);
 
   useEffect(() => {
     onOpen();
@@ -23,13 +27,12 @@ const Logout = () => {
     const res = await logout();
     const { message, statusCode } = res;
     if (statusCode === 200) {
-      localStorage.removeItem("data");
+      dispatch(clearUser());
       onClose();
       navigate("/");
     }
   };
   const handleCancel = (onClose) => {
-    const role = JSON.parse(localStorage.getItem("data"))?.role;
     onClose();
     role === "admin"
       ? navigate("/dashboard/viewTest")

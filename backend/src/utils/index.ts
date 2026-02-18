@@ -6,3 +6,4 @@ export * from './GlobalValidation';
 export * from './notification';
 export * from './responseFun';
 export * from './sendEmailFun';
+export * from './passwordUtils';

@@ -17,12 +17,13 @@ const UserSchmea = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ["student", "admin"],
+      default: "student",
     },
     failedAttempts: { type: Number, default: 0 },
     lastLogin: { type: Date },
     isBlocked: { type: Boolean, default: false },
+    passwordHistory: { type: [String], default: [] },
   },
   {
     timestamps: true,

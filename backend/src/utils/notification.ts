@@ -29,13 +29,23 @@ export const socketService = (server: http.Server) => {
 
         console.log(`Socket ${socket.id} → joined personal room [${userId}]`);
         try {
-          const unread = await Notification.find({
+          console.log("userID"+userId)
+          // Get unread notifications
+          const unreadNotifications = await Notification.find({
             userId,
-            read: false,
+            read: false
           }).lean();
 
-          socket.emit("demo", unread);
-          socket.emit("notificationCount", { count: unread?.length });
+          // Get read notifications
+          const readNotifications = await Notification.find({
+            userId,
+            read: true
+          }).lean();
+
+          // Send unread notifications
+          socket.emit("unreadNotifications", unreadNotifications);
+          // Send read notifications
+          socket.emit("readNotifications", readNotifications);
         } catch (e) {
           console.log(e);
         }
@@ -65,9 +75,7 @@ export async function sendToUser(
       type: payload.type || "info",
     });
 
-    io.to(userId).emit("demo", [savedNotification]);
-    const unread = await Notification.find({ userId, read: false }).lean();
-    io.to(userId).emit("notificationCount", { count: unread?.length });
+    io.to(userId).emit("unreadNotifications", [savedNotification]);
   } catch (err) {
     console.error("sendToUser error:", err);
   }

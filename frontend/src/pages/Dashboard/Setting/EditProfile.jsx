@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { update } from "../../../api/user";
 import { toast } from "react-toastify";
 import {
@@ -8,20 +9,22 @@ import {
   Button
 } from "../../../components/index";
 import { alphabetStringValidator, emailValidator } from "../../../validation/GlobalValidation";
-import { getUserData, setUserData, navigateTo, delay, ROUTES, handleApiResponse, handleApiError } from "../../../utils";
+import { setUser } from "../../../redux/features/userSlice";
+import { navigateTo, delay, ROUTES, handleApiResponse, handleApiError } from "../../../utils";
 import * as Yup from "yup";
 
 const EditProfile = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const data = getUserData();
-  const id = data?._id;
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const id = user?._id;
 
   useEffect(() => {
-    if (data) {
+    if (user) {
       setIsOpen(true);
     }
-  }, [data]);
+  }, [user]);
 
   const handleUpdateProfile = async (values, { resetForm }) => {
     try {
@@ -31,7 +34,7 @@ const EditProfile = () => {
       const { status, data } = handleApiResponse(res);
 
       if (status === 200) {
-        setUserData(data);
+        dispatch(setUser(data));
         await delay(3000);
         navigateTo(window.history, ROUTES.DASHBOARD + "/setting");
       }
@@ -58,8 +61,8 @@ const EditProfile = () => {
     >
       <FormWrapper
         initialValues={{
-          name: data?.name || "",
-          email: data?.email || "",
+          name: user?.name || "",
+          email: user?.email || "",
         }}
         validationSchema={userProfileValidationSchema}
         onSubmit={handleUpdateProfile}

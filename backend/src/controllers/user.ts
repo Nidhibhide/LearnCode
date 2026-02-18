@@ -16,16 +16,23 @@ import {
   clearCookies,
   findUserByEmail,
   handleError,
+  isPasswordUsedByOtherUser,
 } from "../utils";
 import { Request, Response } from "express";
 
 const registerUser = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   try {
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
       return JsonOne(res, 409, "User already exists ", false);
+    }
+
+    // Check if password is already used by someone else with the same role
+    const passwordInUse = await isPasswordUsedByOtherUser(password, role);
+    if (passwordInUse) {
+      return JsonOne(res, 400, "This password is already in use by another user. Please choose a different password.", false);
     }
 
     const hashedPass = await bcrypt.hash(password, 10);
@@ -38,6 +45,7 @@ const registerUser = async (req: Request, res: Response) => {
       password: hashedPass,
       expireTime: time,
       verificationToken: token,
+      role: role || "student",
     });
 
     if (!user) {
@@ -93,7 +101,7 @@ const googleLogin = async (req: Request, res: Response) => {
         email,
         password: hashedPass,
         isVerified: true,
-        role: "user",
+        role: "student",
         authProvider: "google",
       });
     }
@@ -124,7 +132,7 @@ const googleLogin = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const { password, email } = req.body;
+    const { password, email, role } = req.body;
     const user = await findUserByEmail(email);
     if (!user || !user.password) {
       return JsonOne(res, 404, "User or password not found", false);

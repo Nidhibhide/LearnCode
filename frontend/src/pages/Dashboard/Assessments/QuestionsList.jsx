@@ -4,7 +4,7 @@ import { TableComponent, Button } from "../../../components/index";
 import { create } from "../../../api/testAttempt";
 import { Rules } from "./index";
 import { toast } from "react-toastify";
-import { getUserId } from "../../../utils";
+import { useSelector } from "react-redux";
 const QuestionsList = () => {
   const { state } = useLocation();
   const test = state?.test;
@@ -17,7 +17,7 @@ const QuestionsList = () => {
   let hasCreatedAttempt = false;
   const isAttempted = state?.isAttempted;
   const [rules, setRules] = useState(false);
-  const userId = getUserId();
+  const userId = useSelector((state) => state.user?.id);
   const [selectedKey, setSelectedKey] = useState(null);
   const navigate = useNavigate();
   const transformedQuestions = questions.map((item, index) => ({

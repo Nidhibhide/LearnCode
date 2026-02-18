@@ -21,7 +21,7 @@ const create = async (req: Request, res: Response) => {
       return JsonOne(res, 500, "Failed to create test", false);
     }
 
-    const users = await User.find({ role: "user" });
+    const users = await User.find({ role: "student" });
     users.forEach((user) => {
       sendToUser(user._id.toString(), {
         type: "info",

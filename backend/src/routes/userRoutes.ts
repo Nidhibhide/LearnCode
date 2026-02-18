@@ -24,12 +24,12 @@ router.put(
   "/updateProfile/:id",
   TokenAuth,
   BlockCheck,
-  RoleAuth("admin", "user"),
+  RoleAuth("admin", "student"),
   userUpdateMid,
   updateProfile
 );
 
-router.get("/getMe", TokenAuth, BlockCheck, RoleAuth("admin", "user"), getMe);
-router.get("/logout", TokenAuth, BlockCheck, RoleAuth("admin", "user"), logOut);
+router.get("/getMe", TokenAuth, BlockCheck, RoleAuth("admin", "student"), getMe);
+router.get("/logout", TokenAuth, BlockCheck, RoleAuth("admin", "student"), logOut);
 
 export default router;

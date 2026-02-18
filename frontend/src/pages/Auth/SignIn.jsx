@@ -11,11 +11,15 @@ import {
 } from "../../components/index";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { handleApiResponse, handleApiError } from "../../utils";
-import { emailValidator, stringValidator, passwordValidator } from "../../validation/GlobalValidation";
+import { emailValidator, stringValidator, passwordValidator, selectValidator } from "../../validation/GlobalValidation";
+import { FaUserGraduate, FaUserShield } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/features/userSlice";
 
 const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const message = searchParams.get("message");
   const status = searchParams.get("status");
@@ -38,7 +42,7 @@ const SignIn = () => {
         const userRes = await getMe();
         const { statusCode: getMeStatus, data } = userRes;
         if (getMeStatus === 200) {
-          localStorage.setItem("data", JSON.stringify(data));
+          dispatch(setUser(data));
         }
 
         const role = data?.role;
@@ -65,6 +69,7 @@ const SignIn = () => {
   const validationSchema = Yup.object({
     email: emailValidator("Email", true),
     password: passwordValidator("Password", 8, 12, true),
+    role: selectValidator("Role", ["student", "admin"], false),
   });
   return (
     <div className="h-screen flex bg-white">
@@ -80,13 +85,24 @@ const SignIn = () => {
           {/* form */}
 
           <Formik
-            initialValues={{ email: "", password: "" }}
+            initialValues={{ email: "", password: "", role: "student" }}
             validationSchema={validationSchema}
             onSubmit={handleSignIn}
           >
             {({ handleSubmit }) => (
               <>
                 <div className="flex flex-col space-y-4 mb-12">
+                  <div className="flex flex-col space-y-1">
+                    <InputField
+                      label="Select Role"
+                      name="role"
+                      as="radio"
+                      radioOptions={[
+                        { value: "student", label: "Student", icon: <FaUserGraduate /> },
+                        { value: "admin", label: "Admin", icon: <FaUserShield /> },
+                      ]}
+                    />
+                  </div>
                   <div className="flex flex-col space-y-1">
                     <InputField
                       label="Email"
@@ -105,9 +121,14 @@ const SignIn = () => {
                   </div>
                 </div>
 
-                <Button loading={loading} onClick={handleSubmit}>
-                  Sign In
-                </Button>
+                <div className="flex gap-4">
+                  <Button width="w-full" loading={loading} onClick={handleSubmit}>
+                    Sign In
+                  </Button>
+                  <Button width="w-full" onClick={() => navigate("/")}>
+                    Home
+                  </Button>
+                </div>
                 <p className="md:text-lg text-sm text-center md:text-left">
                   Forgot Password?{" "}
                   <Link

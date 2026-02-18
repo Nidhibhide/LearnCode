@@ -13,6 +13,7 @@ const InputField = ({
   onChange,
   onFocus,
   onBlur,
+  radioOptions = [],
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -54,6 +55,35 @@ const InputField = ({
             </option>
           ))}
         </Field>
+      ) : as === "radio" ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-4">
+            {radioOptions.map((option) => (
+              <label
+                key={option.value}
+                className={`flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 w-full ${
+                  fieldValue === option.value
+                    ? "border-blue bg-blue/10"
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
+                <Field
+                  type="radio"
+                  name={name}
+                  value={option.value}
+                  className="w-4 h-4 text-blue"
+                />
+                {option.icon && <span className="text-xl">{option.icon}</span>}
+                <span className="font-medium">{option.label}</span>
+              </label>
+            ))}
+          </div>
+          <ErrorMessage
+            name={name}
+            component="p"
+            className="text-sm text-red-500"
+          />
+        </div>
       ) : (
         <div className="relative">
           <Field

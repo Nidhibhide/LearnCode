@@ -67,12 +67,19 @@ export const selectValidator = (
   label: string,
   options = [""],
   required = true,
+  defaultValue?: string,
 ) => {
   let rule = Joi.string()
-    .valid(...options)
-    .messages({
-      "any.only": `${label} must be one of: ${options.join(", ")}`,
-    });
+    .valid(...options);
+
+  // Only set default if provided
+  if (defaultValue) {
+    rule = rule.default(defaultValue);
+  }
+
+  rule = rule.messages({
+    "any.only": `${label} must be one of: ${options.join(", ")}`,
+  });
 
   return required
     ? rule.required().messages({ "any.required": `${label} is required` })

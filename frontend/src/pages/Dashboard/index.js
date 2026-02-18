@@ -1,5 +1,4 @@
 import DashboardPage from "./DashboardPage";
-import CreateTest from "./CreateTest";
 import ViewTest from "./ViewTest/index.jsx";
 import Setting from "./Setting/index.jsx";
 import Logout from "./Logout";
@@ -12,7 +11,6 @@ import AdminDashboard from "./AdminDashboard";
 
 export {
   DashboardPage,
-  CreateTest,
   ViewTest,
   Setting,
   Logout,

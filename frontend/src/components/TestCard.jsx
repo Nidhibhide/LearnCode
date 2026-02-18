@@ -2,10 +2,10 @@ import { MdDelete } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
 import { Tooltip, Button } from "./index";
 import { useNavigate } from "react-router-dom";
-import { getUserRole } from "../utils";
+import { useSelector } from "react-redux";
 
 const TestCard = ({ test }) => {
-  const role = getUserRole();
+  const role = useSelector((state) => state.user?.role);
   const navigate = useNavigate();
   const levelColor = {
     Basic: "border-green-400 bg-green-100",
@@ -78,9 +78,10 @@ const TestCard = ({ test }) => {
           Preview
         </span>
       </p>
-      {role === "user" && (
+      {role === "student" && (
         <div className="mt-4 text-center">
           <Button
+            width="w-full"
             onClick={handleStart}
           >
             {test?.completedAt === null ? "Resume" : "Start"}

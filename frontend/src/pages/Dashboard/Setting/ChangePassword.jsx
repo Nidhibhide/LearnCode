@@ -11,14 +11,16 @@ import {
   ChangePass,
 } from "../../../api/user";
 import { stringValidator, matchValidator, passwordValidator } from "../../../validation/GlobalValidation";
-import { getUserEmail, navigateTo, delay, ROUTES, handleApiResponse, handleApiError } from "../../../utils";
+import { store } from "../../../redux/store";
+import { useSelector } from "react-redux";
+import { navigateTo, delay, ROUTES, handleApiResponse, handleApiError } from "../../../utils";
 import * as Yup from "yup";
 
 const ChangePassword = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
-  const email = getUserEmail();
+  const email = useSelector((state) => state.user?.email);
 
   useEffect(() => {
     if (email) {
@@ -138,6 +140,7 @@ const ChangePassword = () => {
               loading={loading}
               onClick={handleSubmit}
               loadingText="Loading..."
+              width="w-full"
             >
               {step === 0 ? "Verify Password" : "Change Password"}
             </Button>

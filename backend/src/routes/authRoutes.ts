@@ -25,7 +25,7 @@ router.post(
   "/verifyCurrentPassword",
   TokenAuth,
   BlockCheck,
-  RoleAuth("admin", "user"),
+  RoleAuth("admin", "student"),
   LoginValidtorMid,
   verifyCurrentPassword
 );

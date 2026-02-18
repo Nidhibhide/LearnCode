@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { useSelector } from "react-redux";
 import {
   SearchFilters,
   PaginationControls,
@@ -33,7 +33,7 @@ function MyScores() {
   const [sortOrder, setSortOrder] = useState("desc");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
-  const user = JSON.parse(localStorage.getItem("data"))?._id;
+  const user = useSelector((state) => state.user?.id);
   const filters = {
     search,
     sortOrder,

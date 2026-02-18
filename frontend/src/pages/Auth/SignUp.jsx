@@ -7,11 +7,15 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 import { handleApiResponse, handleApiError } from "../../utils";
-import { emailValidator, stringValidator, alphabetStringValidator, passwordValidator } from "../../validation/GlobalValidation";
+import { emailValidator, alphabetStringValidator, passwordValidator, selectValidator } from "../../validation/GlobalValidation";
+import { FaUserGraduate, FaUserShield } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/features/userSlice";
 
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   // handle sign up
   const handleSignUp = async (values, { resetForm }) => {
     try {
@@ -44,7 +48,7 @@ const SignUp = () => {
         const userRes = await getMe();
         const { statusCode: getMeStatus, data } = userRes;
         if (getMeStatus === 200) {
-          localStorage.setItem("data", JSON.stringify(data));
+          dispatch(setUser(data));
         }
         const role = data?.role;
         const path =
@@ -61,6 +65,7 @@ const SignUp = () => {
     name: alphabetStringValidator("Name", 2, 50, true),
     email: emailValidator("Email", true),
     password: passwordValidator("Password", 8, 12, true),
+    role: selectValidator("Role", ["student", "admin"], false),
   });
 
   return (
@@ -91,7 +96,7 @@ const SignUp = () => {
             <div className=" flex-1 border-t border-light-gray-border"></div>
           </div>
           <Formik
-            initialValues={{ name: "", email: "", password: "" }}
+            initialValues={{ name: "", email: "", password: "", role: "student" }}
             validationSchema={validationSchema}
             onSubmit={handleSignUp}
           >
@@ -120,6 +125,17 @@ const SignUp = () => {
                       name="password"
                       type="password"
                       placeholder="Enter your password"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1">
+                    <InputField
+                      label="Select Role"
+                      name="role"
+                      as="radio"
+                      radioOptions={[
+                        { value: "student", label: "Student", icon: <FaUserGraduate /> },
+                        { value: "admin", label: "Admin", icon: <FaUserShield /> },
+                      ]}
                     />
                   </div>
                 </div>

@@ -63,7 +63,7 @@ const index = () => {
       />
 
       <div className="flex justify-end mb-4">
-        <Button onClick={() => navigate('/dashboard/createTest')} width="w-32" className="bg-black hover:bg-gray-800 text-white font-semibold px-6 py-2 rounded-lg">
+        <Button onClick={() => navigate('/dashboard/viewTest/createTest')} width="w-32" className="bg-black hover:bg-gray-800 text-white font-semibold px-6 py-2 rounded-lg">
           Create Test
         </Button>
       </div>

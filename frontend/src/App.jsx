@@ -10,7 +10,6 @@ import {
 import Unauthorized from "./Unauthorized";
 import SessionExpired from "./SessionExpired";
 import {
-  CreateTest,
   ViewTest,
   Setting,
   Logout,
@@ -25,6 +24,7 @@ import {
   EditTest,
   DeleteTest,
   Preview,
+  CreateTest,
 } from "./pages/Dashboard/ViewTest/index";
 import {
   ChangePassword,
@@ -58,19 +58,11 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <RoleAuth allowedRoles={["admin", "user"]}>
+              <RoleAuth allowedRoles={["admin", "student"]}>
                 <DashboardPage />
               </RoleAuth>
             }
           >
-            <Route
-              path="createTest"
-              element={
-                <RoleAuth allowedRoles={["admin"]}>
-                  <CreateTest />
-                </RoleAuth>
-              }
-            />
             <Route
               path="viewTest"
               element={
@@ -79,6 +71,14 @@ function App() {
                 </RoleAuth>
               }
             >
+              <Route
+                path="createTest"
+                element={
+                  <RoleAuth allowedRoles={["admin"]}>
+                    <CreateTest />
+                  </RoleAuth>
+                }
+              />
               <Route
                 path="editTest/:testId"
                 element={
@@ -107,7 +107,7 @@ function App() {
             <Route
               path="assessments"
               element={
-                <RoleAuth allowedRoles={["user"]}>
+                <RoleAuth allowedRoles={["student"]}>
                   <Assessments />
                 </RoleAuth>
               }
@@ -115,7 +115,7 @@ function App() {
             <Route
               path="questionsList"
               element={
-                <RoleAuth allowedRoles={["user"]}>
+                <RoleAuth allowedRoles={["student"]}>
                   <QuestionsList />
                 </RoleAuth>
               }
@@ -123,7 +123,7 @@ function App() {
             <Route
               path="rules"
               element={
-                <RoleAuth allowedRoles={["user"]}>
+                <RoleAuth allowedRoles={["student"]}>
                   <Rules />
                 </RoleAuth>
               }
@@ -131,7 +131,7 @@ function App() {
             <Route
               path="TestLayout"
               element={
-                <RoleAuth allowedRoles={["user"]}>
+                <RoleAuth allowedRoles={["student"]}>
                   <TestLayout />
                 </RoleAuth>
               }
@@ -140,7 +140,7 @@ function App() {
             <Route
               path="myScores"
               element={
-                <RoleAuth allowedRoles={["user"]}>
+                <RoleAuth allowedRoles={["student"]}>
                   <MyScores />
                 </RoleAuth>
               }
@@ -148,7 +148,7 @@ function App() {
             <Route
               path="preview"
               element={
-                <RoleAuth allowedRoles={["admin", "user"]}>
+                <RoleAuth allowedRoles={["admin", "student"]}>
                   <Preview />
                 </RoleAuth>
               }
@@ -156,7 +156,7 @@ function App() {
             <Route
               path="notifications"
               element={
-                <RoleAuth allowedRoles={["admin", "user"]}>
+                <RoleAuth allowedRoles={["admin", "student"]}>
                   <Notification />
                 </RoleAuth>
               }
@@ -180,7 +180,7 @@ function App() {
             <Route
               path="setting"
               element={
-                <RoleAuth allowedRoles={["admin", "user"]}>
+                <RoleAuth allowedRoles={["admin", "student"]}>
                   <Setting />
                 </RoleAuth>
               }
@@ -188,7 +188,7 @@ function App() {
               <Route
                 path="changePassword"
                 element={
-                  <RoleAuth allowedRoles={["admin", "user"]}>
+                  <RoleAuth allowedRoles={["admin", "student"]}>
                     <ChangePassword />
                   </RoleAuth>
                 }
@@ -196,7 +196,7 @@ function App() {
               <Route
                 path="editProfile"
                 element={
-                  <RoleAuth allowedRoles={["admin", "user"]}>
+                  <RoleAuth allowedRoles={["admin", "student"]}>
                     <EditProfile />
                   </RoleAuth>
                 }
@@ -205,7 +205,7 @@ function App() {
             <Route
               path="logout"
               element={
-                <RoleAuth allowedRoles={["admin", "user"]}>
+                <RoleAuth allowedRoles={["admin", "student"]}>
                   <Logout />
                 </RoleAuth>
               }
