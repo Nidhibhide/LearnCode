@@ -27,7 +27,7 @@ const IsLoggeedIn = async (req: Request, res: Response, next: NextFunction) => {
     ) as JwtPayload;
     const userID = decode.id;
     const user = await User.findById(userID).select(
-      "name  email   role   isVerified createdAt isBlocked lastLogin"
+      "name  email   role   isVerified createdAt isBlocked lastLogin dob"
     );
 
     if (!user) {

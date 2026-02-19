@@ -41,6 +41,7 @@ const SignIn = () => {
         //fetch user api
         const userRes = await getMe();
         const { statusCode: getMeStatus, data } = userRes;
+        console.log(data);
         if (getMeStatus === 200) {
           dispatch(setUser(data));
         }
@@ -91,7 +92,7 @@ const SignIn = () => {
           >
             {({ handleSubmit }) => (
               <>
-                <div className="flex flex-col space-y-4 mb-12">
+                <div className="flex flex-col space-y-4 mb-10">
                   <div className="flex flex-col space-y-1">
                     <InputField
                       label="Select Role"

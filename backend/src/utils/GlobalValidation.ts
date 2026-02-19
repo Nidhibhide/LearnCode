@@ -106,3 +106,19 @@ export const numberValidator = (
     ? rule.required().messages({ "any.required": `${label} is required` })
     : rule;
 };
+
+// 6. Date Validator (yyyy-mm-dd format)
+export const dateValidator = (
+  label: string,
+  required = false,
+) => {
+  let rule = Joi.string()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .messages({
+      "string.pattern.base": `${label} must be in yyyy-mm-dd format`,
+    });
+
+  return required
+    ? rule.required().messages({ "any.required": `${label} is required` })
+    : rule;
+};

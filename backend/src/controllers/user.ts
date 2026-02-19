@@ -9,6 +9,7 @@ import {
   expireTime,
   sendWelcomeMessage,
   notifyAdminOfNewUser,
+  notifyDobMissing,
   mailOptionsForVerify,
   transporterFun,
   refreshTokenOptions,
@@ -53,7 +54,10 @@ const registerUser = async (req: Request, res: Response) => {
     }
 
     await sendWelcomeMessage(user._id.toString(), name);
-    await notifyAdminOfNewUser(name);
+    // Only notify admin if the new user is NOT an admin
+    if (role !== "admin") {
+      await notifyAdminOfNewUser(name);
+    }
 
     await nodemailer.createTestAccount();
     const transporter = transporterFun();
@@ -92,8 +96,15 @@ const googleLogin = async (req: Request, res: Response) => {
       return JsonOne(res, 400, "Incomplete Google user data", false);
     }
 
-    let user = await User.findOne({ email });
+     let user = await findUserByEmail(email);
 
+    // If user exists but with different auth provider, return error
+    if (user && user.authProvider && user.authProvider !== "google") {
+      const providerName = user.authProvider === "local" ? "Credential login" : "sign in with Google";
+      return JsonOne(res, 400, `This email is already registered with ${providerName}. Please use your that method.`, false);
+    }
+
+    // If user doesn't exist, create a new one
     if (!user) {
       const hashedPass = await bcrypt.hash(sub, 10);
       user = await User.create({
@@ -106,8 +117,29 @@ const googleLogin = async (req: Request, res: Response) => {
       });
     }
 
+    // Check if user is verified
+    if (!user.isVerified) {
+      return JsonOne(res, 400, "User is not verified", false);
+    }
+
+    // Check if user is blocked (same as login)
+    if (user.isBlocked) {
+      return JsonOne(
+        res,
+        403,
+        "Account is blocked due to multiple failed login attempts. Please reset your password.",
+        false
+      );
+    }
+
+   
+    // Reset failed attempts and update last login (same as login)
+    user.failedAttempts = 0;
     user.lastLogin = new Date();
     await user.save();
+
+    // Check and notify if DOB is missing
+    await notifyDobMissing(user._id.toString());
 
     const access_token = jwt.sign(
       { id: user._id },
@@ -166,6 +198,9 @@ const login = async (req: Request, res: Response) => {
     user.lastLogin = new Date();
     await user.save();
 
+    // Check and notify if DOB is missing
+    await notifyDobMissing(user._id.toString());
+
     const access_token = jwt.sign(
       { id: user._id },
       process.env.ACCESS_TOKEN as string,
@@ -210,9 +245,14 @@ const logOut = async (req: Request, res: Response) => {
 };
 const updateProfile = async (req: Request, res: Response) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, dob } = req.body;
     const { id } = req.params;
     const user = await User.findById(id);
+    
+    if (!user) {
+      return JsonOne(res, 404, "User not found", false);
+    }
+    
     if (user?.authProvider === "google" && email !== user?.email) {
       return JsonOne(
         res,
@@ -222,20 +262,69 @@ const updateProfile = async (req: Request, res: Response) => {
       );
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { name, email },
-      { new: true }
-    ).select("createdAt email isVerified name role _id lastLogin");
+    // If email is being changed, send verification email
+    if (email && email !== user.email) {
+      const existingUser = await findUserByEmail(email);
+      if (existingUser) {
+        return JsonOne(res, 400, "Email already in use", false);
+      }
 
+      // Create token with user ID and new email
+      const token = jwt.sign({ id: user._id, newEmail: email }, process.env.ACCESS_TOKEN as string, { expiresIn: "10m" });
+      
+      await nodemailer.createTestAccount();
+      const transporter = transporterFun();
+      await transporter.sendMail(mailOptionsForVerify(email, token));
+
+      return JsonOne(res, 200, `Verification email sent to ${email}. Verify to complete email change.`, true);
+    }
+
+    // Update name only
+    if (name) {
+      user.name = name;
+    }
+
+    // Update dob - convert to ISO format
+    if (dob) {
+      user.dob = new Date(dob);
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(id).select("createdAt email isVerified name role _id lastLogin dob");
+    
     if (!updatedUser) {
       return JsonOne(res, 404, "User not found", false);
     }
-
+    
     JsonOne(res, 200, "Profile updated successfully", true, updatedUser);
   } catch (err) {
     return handleError(res, "unexpected error occurred while updating user");
   }
 };
 
-export { registerUser, login, getMe, logOut, updateProfile, googleLogin };
+const verifyEmailChange = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+    if (!token) {
+      return JsonOne(res, 401, "Token not provided", false);
+    }
+
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN as string) as { id: string; newEmail: string };
+    const user = await User.findById(decoded.id);
+    
+    if (!user) {
+      return JsonOne(res, 404, "User not found", false);
+    }
+
+    // Update email
+    user.email = decoded.newEmail;
+    await user.save();
+
+    JsonOne(res, 200, "Email changed successfully", true);
+  } catch (err) {
+    return JsonOne(res, 400, "Invalid or expired token", false);
+  }
+};
+
+export { registerUser, login, getMe, logOut, updateProfile, googleLogin, verifyEmailChange };

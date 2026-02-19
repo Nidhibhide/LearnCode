@@ -1,4 +1,3 @@
-import { rule } from 'postcss';
 import { MdCheck } from 'react-icons/md';
 
 const Tooltip = ({ icon: Icon, label, onClick }) => (
@@ -23,17 +22,34 @@ export const PasswordRules = ({ isVisible, password = "" }) => {
   ];
 
   return (
-    <div className="absolute z-10 left-0 top-full mt-2 w-64 bg-gray-800 text-white text-base rounded-lg p-3 shadow-lg">
-      <p className="font-semibold mb-2">Password must :</p>
-      <ul className="space-y-1">
+    <div className="mt-2 bg-gray-50 border border-gray-200 text-base text-gray-700  rounded-lg p-3">
+      <p className="font-semibold mb-2 ">Password must :</p>
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-1  ">
         {rules.map((rule) => (
           <li key={rule.id} className="flex items-center">
-            <MdCheck className={`mr-2 ${rule.valid ? 'text-green-400' : 'text-red-400'}`} size={16} />{rule.label}
+            <MdCheck className={`mr-1 ${rule.valid ? 'text-green-500' : 'text-red-400'}`} size={14} />
+            <span className={rule.valid ? 'text-green-600' : ''}>{rule.label}</span>
           </li>
         ))}
       </ul>
     </div>
   );
+};
+
+export const checkDobAndShowNotification = (userDob) => {
+  const isDobSet = userDob !== null && userDob !== undefined && userDob !== '';
+  console.log("this is dob notification")
+  if (!isDobSet) {
+    // Return notification object instead of showing toast
+    return {
+      _id: `dob-${Date.now()}`,
+      title: 'Date of Birth Required',
+      message: 'Please set your date of birth in your profile settings',
+      type: 'warning',
+      createdAt: new Date().toISOString(),
+    };
+  }
+  return null;
 };
 
 export default Tooltip;

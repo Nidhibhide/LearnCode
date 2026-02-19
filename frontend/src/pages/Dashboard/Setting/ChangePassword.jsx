@@ -87,6 +87,7 @@ const ChangePassword = () => {
       isOpen={isOpen}
       onOpenChange={setIsOpen}
       title={step === 1 ? "Change Password" : "Verify Password"}
+      size="xl"
     >
       <div className="text-center mb-4">
         <span className="text-blue-600 font-bold text-lg tracking-wide">

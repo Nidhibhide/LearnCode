@@ -5,5 +5,5 @@ import { TokenAuth, RoleAuth, BlockCheck } from "../middlewares";
 const router = express.Router();
 
 router.get("/getAll/:id", TokenAuth, BlockCheck, RoleAuth("admin", "student"), getAllByUser);
-router.put("/update/:id", TokenAuth, BlockCheck, RoleAuth("admin", "student"), updateNotification);
+router.put("/update/:userId", TokenAuth, BlockCheck, RoleAuth("admin", "student"), updateNotification);
 export default router;

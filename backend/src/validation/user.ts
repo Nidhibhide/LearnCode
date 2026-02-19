@@ -4,6 +4,7 @@ import {
   emailValidator,
   passwordValidator,
   selectValidator,
+  dateValidator,
 } from "../utils/GlobalValidation";
 
 const userRegisterValidation = Joi.object({
@@ -29,6 +30,7 @@ const EmailValidation = Joi.object({
 const userUpdateValidation = Joi.object({
   name: stringValidator("Name", 3, 50, true),
   email: emailValidator(),
+  dob: dateValidator("Date of Birth", false),
 });
 
 // const ResetPassValidation = Joi.object({

@@ -1,6 +1,7 @@
 import {
   IoMdCheckmarkCircleOutline,
   IoMdInformationCircleOutline,
+  IoMdWarning,
 } from "react-icons/io";
 import { getDaysAgo, Button } from "../../components/index";
 import { NotFoundControls } from "../../components/index";
@@ -17,11 +18,12 @@ const Notification = () => {
   const readNotifications = useSelector(
     (state) => state.notifications.readNotifications || []
   );
+  const user = useSelector((state) => state.user);
   const [activeTab, setActiveTab] = useState("unread"); // 'unread' or 'read'
 
   const handleMarkAsRead = async (id) => {
     try {
-      await markAsread(id);
+      await markAsread(user._id, id);
       dispatch(setMarkAsRead(id));
     } catch (e) {
       console.log(e);
@@ -80,13 +82,24 @@ const Notification = () => {
             {notifications.map((note) => (
               <li
                 key={note._id}
-                className="px-5 py-4 transition-all mb-3 bg-blue-100 hover:bg-blue-200"
+                className={`px-5 py-4 transition-all mb-3 ${
+                  note.type === "success"
+                    ? "bg-green-100 hover:bg-green-200"
+                    : note.type === "warning"
+                    ? "bg-yellow-100 hover:bg-yellow-200"
+                    : "bg-blue-100 hover:bg-blue-200"
+                }`}
               >
                 <div className="flex items-start gap-3">
                   {note.type === "success" ? (
                     <IoMdCheckmarkCircleOutline
                       size={32}
                       className="text-green-600 mt-2"
+                    />
+                  ) : note.type === "warning" ? (
+                    <IoMdWarning
+                      size={32}
+                      className="text-yellow-600 mt-2"
                     />
                   ) : (
                     <IoMdInformationCircleOutline

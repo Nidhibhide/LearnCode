@@ -102,7 +102,7 @@ const SignUp = () => {
           >
             {({ handleSubmit }) => (
               <>
-                <div className="flex flex-col space-y-4 mb-12">
+                <div className="flex flex-col space-y-4 mb-10">
                   <div className="flex flex-col space-y-1">
                     <InputField
                       label="Name"

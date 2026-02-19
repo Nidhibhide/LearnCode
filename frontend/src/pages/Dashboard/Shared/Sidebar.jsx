@@ -1,5 +1,5 @@
 import { FaClipboard } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { IoMdNotifications } from "react-icons/io";
 import { IoStatsChartSharp } from "react-icons/io5";
 import {
@@ -16,9 +16,10 @@ const Sidebar = ({ onLinkClick }) => {
   const role = user?.role;
   const name = user?.name;
 
-  const unreadCount = useSelector(
-    (state) => state.notifications.notificationCount
+  const unreadNotifications = useSelector(
+    (state) => state.notifications.unreadNotifications
   );
+  const unreadCount = unreadNotifications?.length || 0;
   const sidebarLinks = [
     {
       to: "/dashboard/adminDashboard",
@@ -47,12 +48,10 @@ const Sidebar = ({ onLinkClick }) => {
     {
       to: "/dashboard/notifications",
       label: (
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-1">
           Notifications
           {unreadCount > 0 && (
-            <span className="bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {unreadCount}
-            </span>
+            <span className="w-2.5 h-2.5 bg-red-600 rounded-full ml-1"></span>
           )}
         </span>
       ),
@@ -110,16 +109,22 @@ const Sidebar = ({ onLinkClick }) => {
             {filteredLinks.map((link) => (
               <li
                 key={link.to}
-                className="flex items-center gap-2 cursor-pointer hover:bg-dark-gray-hover py-2 sm:py-3 px-2 justify-center"
+                className="flex items-center gap-2 cursor-pointer hover:bg-dark-gray-hover py-2 sm:py-3 px-1 justify-center"
               >
-                <Link
+                <NavLink
                   to={link.to}
-                  className="flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl text-white w-full"
+                  className={({ isActive }) =>
+                    `flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full ${
+                      isActive
+                        ? "bg-white text-black font-semibold  px-2 py-2.5"
+                        : "text-white"
+                    }`
+                  }
                   onClick={onLinkClick}
                 >
                   <span className="flex-shrink-0">{link.icon}</span>
                   <span className="truncate">{link.label}</span>
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>

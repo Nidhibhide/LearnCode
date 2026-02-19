@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Content } from "./Shared";
 import { SocketConnection } from "../../components/index";
 import { socket } from "../../globals";

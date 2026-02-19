@@ -3,4 +3,4 @@ export { verifyUser, resendVerificationEmail, changePassword, forgotPass, resetP
 export { getAllByUser, update as updateNotification } from './notification';
 export { create as createTest, getAll as getAllTests, softDelete, restore, edit, getDeletedAll, getOngoing } from './test';
 export { create as createTestAttempt, update as updateTestAttempt, getAll as getAllTestAttempts } from './testAttempt';
-export { registerUser, login, getMe, logOut, updateProfile, googleLogin } from './user';
+export { registerUser, login, getMe, logOut, updateProfile, googleLogin, verifyEmailChange } from './user';

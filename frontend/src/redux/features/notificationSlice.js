@@ -12,6 +12,7 @@ const notificationSlice = createSlice({
   reducers: {
     setUnreadNotifications: (state, action) => {
       state.unreadNotifications = action.payload;
+      state.notificationCount = action.payload.length;
     },
     setReadNotifications: (state, action) => {
       state.readNotifications = action.payload;
@@ -38,6 +39,17 @@ const notificationSlice = createSlice({
       state.unreadNotifications = [];
       state.readNotifications = [];
     },
+    // Filter out "Complete Your Profile" notification from both unread and read arrays
+    filterProfileNotification: (state) => {
+      state.unreadNotifications = state.unreadNotifications.filter(
+        (n) => n.title !== "Complete Your Profile"
+      );
+      state.readNotifications = state.readNotifications.filter(
+        (n) => n.title !== "Complete Your Profile"
+      );
+      // Recalculate count
+      state.notificationCount = state.unreadNotifications.length;
+    },
   },
 });
 
@@ -46,6 +58,7 @@ export const {
   setReadNotifications,
   setMarkAsRead,
   clearAllNotifications,
+  filterProfileNotification,
 } = notificationSlice.actions;
 
 export default notificationSlice.reducer;

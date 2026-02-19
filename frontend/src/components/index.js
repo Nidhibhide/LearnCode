@@ -1,6 +1,6 @@
 import InputField from "./InputField";
 import TestCard from "./TestCard";
-import Tooltip, { PasswordRules } from "./ToolTip";
+import Tooltip, { PasswordRules, checkDobAndShowNotification } from "./Alerts";
 import { NotFoundControls, SearchFilters, PaginationControls } from "./Filters";
 import TableComponent from "./TableComponent";
 import { getDaysAgo, SocketConnection } from "./Notification";
@@ -16,6 +16,7 @@ export {
   TestCard,
   Tooltip,
   PasswordRules,
+  checkDobAndShowNotification,
   SearchFilters,
   PaginationControls,
   NotFoundControls,

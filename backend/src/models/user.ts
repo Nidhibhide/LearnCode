@@ -22,6 +22,7 @@ const UserSchmea = new mongoose.Schema(
     },
     failedAttempts: { type: Number, default: 0 },
     lastLogin: { type: Date },
+    dob: { type: Date, required: false },
     isBlocked: { type: Boolean, default: false },
     passwordHistory: { type: [String], default: [] },
   },

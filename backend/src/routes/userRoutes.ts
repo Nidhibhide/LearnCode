@@ -5,6 +5,7 @@ import {
   googleLogin,
   logOut,
   updateProfile,
+  verifyEmailChange,
 } from "../controllers";
 import express from "express";
 import { TokenAuth, BlockCheck } from "../middlewares";
@@ -28,6 +29,7 @@ router.put(
   userUpdateMid,
   updateProfile
 );
+router.get("/verifyEmailChange/:token", verifyEmailChange);
 
 router.get("/getMe", TokenAuth, BlockCheck, RoleAuth("admin", "student"), getMe);
 router.get("/logout", TokenAuth, BlockCheck, RoleAuth("admin", "student"), logOut);
