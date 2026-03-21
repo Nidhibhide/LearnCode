@@ -1,7 +1,6 @@
 import { FaClipboard } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { IoMdNotifications } from "react-icons/io";
-import { IoStatsChartSharp } from "react-icons/io5";
 import {
   MdOutlineRemoveRedEye,
   MdOutlineLogout,
@@ -11,10 +10,45 @@ import { GiCheckMark } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useSelector } from "react-redux";
 
+// Define parent-child route relationships for active state
+const parentChildRoutes = {
+  "/dashboard/assessments": [
+    "/dashboard/questionsList", 
+    "/dashboard/TestLayout", 
+    "/dashboard/rules"
+  ],
+  "/dashboard/viewTest": [
+    "/dashboard/viewTest/createTest", 
+    "/dashboard/viewTest/editTest", 
+    "/dashboard/viewTest/deleteTest"
+  ],
+  "/dashboard/setting": [
+    "/dashboard/setting/changePassword", 
+    "/dashboard/setting/editProfile",
+    "/dashboard/restoreTest"
+  ],
+};
+
 const Sidebar = ({ onLinkClick }) => {
   const user = useSelector((state) => state.user);
   const role = user?.role;
   const name = user?.name;
+  const location = useLocation();
+
+  // Helper function to check if a route or its children are active
+  const isRouteActive = (routePath) => {
+    if (location.pathname === routePath) return true;
+    const childRoutes = parentChildRoutes[routePath];
+    if (childRoutes) {
+      return childRoutes.some(child => location.pathname.startsWith(child));
+    }
+    return false;
+  };
+
+  // Click handler
+  const handleLinkClick = () => {
+    if (onLinkClick) onLinkClick();
+  };
 
   const unreadNotifications = useSelector(
     (state) => state.notifications.unreadNotifications
@@ -41,7 +75,7 @@ const Sidebar = ({ onLinkClick }) => {
     },
     {
       to: "/dashboard/myScores",
-      label: "My Scores",
+      label: "My Progress",
       icon: <GiCheckMark size={28} />,
       roles: ["student"],
     },
@@ -57,12 +91,6 @@ const Sidebar = ({ onLinkClick }) => {
       ),
       icon: <IoMdNotifications size={28} />,
       roles: ["student", "admin"],
-    },
-    {
-      to: "/dashboard/userAttempts",
-      label: "User Attempts",
-      icon: <IoStatsChartSharp size={28} />,
-      roles: ["admin"],
     },
     {
       to: "/dashboard/setting",
@@ -83,7 +111,7 @@ const Sidebar = ({ onLinkClick }) => {
   );
 
   return (
-    <div className="w-full sm:w-96 md:w-72 min-w-[320px] h-full">
+    <div className="w-full xl:w-72 h-full">
       <div className="w-full h-full flex flex-col text-white">
         {/* Profile Section */}
         <div className="h-[120px] sm:h-[150px] bg-blue-950 flex flex-col md:flex-row justify-center items-center gap-2 sm:gap-4 px-4 relative">
@@ -104,23 +132,17 @@ const Sidebar = ({ onLinkClick }) => {
         </div>
 
         {/* Sidebar Navigation */}
-        <div className="h-full bg-black py-3 sm:py-4 md:py-6 overflow-y-auto">
+        <div className="h-screen bg-black py-3 sm:py-4 md:py-6 overflow-y-auto">
           <ul className="flex flex-col text-lg sm:text-xl font-medium">
             {filteredLinks.map((link) => (
               <li
                 key={link.to}
-                className="flex items-center gap-2 cursor-pointer hover:bg-dark-gray-hover py-2 sm:py-3 px-1 justify-center"
+                className="flex items-center gap-2 cursor-pointer py-1 sm:py-2 px-2"
               >
                 <NavLink
                   to={link.to}
-                  className={({ isActive }) =>
-                    `flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full ${
-                      isActive
-                        ? "bg-white text-black font-semibold  px-2 py-2.5"
-                        : "text-white"
-                    }`
-                  }
-                  onClick={onLinkClick}
+                  className={() => isRouteActive(link.to) ? "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full bg-white text-black font-semibold py-2.5" : "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full text-white hover:bg-gray-700 py-2.5"}
+                  onClick={handleLinkClick}
                 >
                   <span className="flex-shrink-0">{link.icon}</span>
                   <span className="truncate">{link.label}</span>

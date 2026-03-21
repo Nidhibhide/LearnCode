@@ -4,9 +4,7 @@ import {
   selectValidator,
   stringValidator,
 } from "../utils/GlobalValidation";
-
-const TEST_LANGUAGES = ["Java", "C++", "JavaScript", "Python", "C"];
-const TEST_LEVELS = ["Basic", "Intermediate", "Advanced"];
+import { TEST_LANGUAGES, TEST_LEVELS } from "../constants";
 
 const TestValidation = Joi.object({
   name: stringValidator("Test Name", 3, 100, true),

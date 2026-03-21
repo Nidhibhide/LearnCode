@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Test, User, TestAttempt } from "../models";
 import { JsonOne, JsonAll, generateQuestions, sendToUser, getPaginationParams, buildAggregationPipeline, handleError } from "../utils";
 import { Request, Response } from "express";
+import { TEST_LANGUAGES, TEST_LEVELS } from "../constants";
 
 
 const create = async (req: Request, res: Response) => {
@@ -42,11 +43,13 @@ const getAll = async (req: Request, res: Response) => {
     const {
       search = "",
       level = "All",
+      languageFilter = "All",
       onlyUnattempted = "false",
       userId,
     } = req.query as {
       search?: string;
       level?: string;
+      languageFilter?: string;
       onlyUnattempted?: string;
       userId?: string;
     };
@@ -63,6 +66,10 @@ const getAll = async (req: Request, res: Response) => {
 
     if (level && level !== "All") {
       matchStage["level"] = level;
+    }
+
+    if (languageFilter && languageFilter !== "All") {
+      matchStage["language"] = languageFilter;
     }
     // Apply unattempted test filter if required
     if (onlyUnattempted === "true" && userId) {
@@ -189,9 +196,11 @@ const getDeletedAll = async (req: Request, res: Response) => {
     const {
       search = "",
       level = "All",
+      languageFilter = "All",
     } = req.query as {
       search?: string;
       level?: string;
+      languageFilter?: string;
     };
 
     const { skip, sort, page, limit } = getPaginationParams(req);
@@ -206,6 +215,10 @@ const getDeletedAll = async (req: Request, res: Response) => {
 
     if (level && level !== "All") {
       matchStage["level"] = level;
+    }
+
+    if (languageFilter && languageFilter !== "All") {
+      matchStage["language"] = languageFilter;
     }
 
     const aggregation = buildAggregationPipeline(matchStage, sort, skip, limit, {
@@ -241,10 +254,12 @@ const getOngoing = async (req: Request, res: Response) => {
     const {
       search = "",
       level = "All",
+      languageFilter = "All",
       onlyOnGoing = "false",
     } = req.query as {
       search?: string;
       level?: string;
+      languageFilter?: string;
       onlyOnGoing?: string;
     };
 
@@ -278,6 +293,10 @@ const getOngoing = async (req: Request, res: Response) => {
 
     if (level !== "All") {
       matchStage["test.level"] = level;
+    }
+
+    if (languageFilter && languageFilter !== "All") {
+      matchStage["test.language"] = languageFilter;
     }
 
     if (Object.keys(matchStage).length > 0) {

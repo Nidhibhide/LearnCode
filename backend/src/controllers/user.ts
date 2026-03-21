@@ -10,6 +10,7 @@ import {
   sendWelcomeMessage,
   notifyAdminOfNewUser,
   notifyDobMissing,
+  notifyUpcomingBirthday,
   mailOptionsForVerify,
   transporterFun,
   refreshTokenOptions,
@@ -141,6 +142,9 @@ const googleLogin = async (req: Request, res: Response) => {
     // Check and notify if DOB is missing
     await notifyDobMissing(user._id.toString());
 
+    // Check and notify if birthday is upcoming
+    await notifyUpcomingBirthday(user._id.toString());
+
     const access_token = jwt.sign(
       { id: user._id },
       process.env.ACCESS_TOKEN as string,
@@ -200,6 +204,9 @@ const login = async (req: Request, res: Response) => {
 
     // Check and notify if DOB is missing
     await notifyDobMissing(user._id.toString());
+
+    // Check and notify if birthday is upcoming
+    await notifyUpcomingBirthday(user._id.toString());
 
     const access_token = jwt.sign(
       { id: user._id },

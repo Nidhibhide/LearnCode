@@ -14,6 +14,7 @@ const index = () => {
   const [tests, setTests] = useState([]);
   const [search, setSearch] = useState("");
   const [level, setLevel] = useState("All");
+  const [languageFilter, setLanguageFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("desc");
 
   const [page, setPage] = useState(1);
@@ -29,6 +30,7 @@ const index = () => {
     page,
     limit: 5,
     level,
+    languageFilter,
   };
 
   const handleViewTests = async () => {
@@ -56,10 +58,8 @@ const index = () => {
       <SearchFilters
         search={search}
         setSearch={setSearch}
-        level={level}
         setLevel={setLevel}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
+        setLanguageFilter={setLanguageFilter}
       />
 
       <div className="flex justify-end mb-4">

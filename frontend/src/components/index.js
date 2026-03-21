@@ -10,6 +10,8 @@ import FormWrapper from "./FormWrapper";
 import Button from "./Button";
 import ConfirmationDialog from "./ConfirmationDialog";
 import AuthImage from "./AuthImage";
+import { LanguageBarChart, DifficultyPieChart, WeeklyActivityChart, StatCard, Leaderboard } from "./AdminCharts";
+import { SummaryCards, LevelBreakdown, TechStack, ActivityCalendar } from "./StudentCharts";
 
 export {
   InputField,
@@ -30,5 +32,14 @@ export {
   FormWrapper,
   Button,
   ConfirmationDialog,
-  AuthImage
+  AuthImage,
+  LanguageBarChart,
+  DifficultyPieChart,
+  WeeklyActivityChart,
+  StatCard,
+  Leaderboard,
+  SummaryCards,
+  LevelBreakdown,
+  TechStack,
+  ActivityCalendar
 };

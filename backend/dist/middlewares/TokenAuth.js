@@ -24,7 +24,7 @@ const IsLoggeedIn = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         }
         const decode = jsonwebtoken_1.default.verify(access_token, process.env.ACCESS_TOKEN);
         const userID = decode.id;
-        const user = yield user_1.default.findById(userID).select("name  email   role   isVerified createdAt ");
+        const user = yield user_1.default.findById(userID).select("name  email   role   isVerified createdAt isBlocked lastLogin dob");
         if (!user) {
             return (0, responseFun_1.JsonOne)(res, 404, "User not found", false);
         }

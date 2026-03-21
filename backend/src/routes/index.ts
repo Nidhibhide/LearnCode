@@ -5,6 +5,7 @@ import testRoutes from "./testRoutes";
 import aiRoutes from "./aiRoutes";
 import testAttemptRoutes from "./testAttempt";
 import notificationRoutes from "./notificationRoutes";
+import dashboardRoutes from "./dashboardRoutes";
 import { handleError } from "../utils";
 
 const router = express.Router();
@@ -21,5 +22,6 @@ router.use("/test", testRoutes);
 router.use("/ai", aiRoutes);
 router.use("/testAttempt", testAttemptRoutes);
 router.use("/notification", notificationRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 export default router;

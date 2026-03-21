@@ -17,7 +17,7 @@ const QuestionsList = () => {
   let hasCreatedAttempt = false;
   const isAttempted = state?.isAttempted;
   const [rules, setRules] = useState(false);
-  const userId = useSelector((state) => state.user?.id);
+  const userId = useSelector((state) => state.user?._id);
   const [selectedKey, setSelectedKey] = useState(null);
   const navigate = useNavigate();
   const transformedQuestions = questions.map((item, index) => ({
@@ -96,7 +96,7 @@ const QuestionsList = () => {
   ];
 
   return (
-    <div className="py-12 px-4 md:w-full w-screen">
+    <div className="py-12 px-4 md:w-full">
       <h2 className="text-2xl font-bold text-center md:mb-4 mb-2">{title}</h2>
       {/* 🔽 Rules link below title */}
       <div

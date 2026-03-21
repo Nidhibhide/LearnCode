@@ -2,7 +2,40 @@ import http from "http";
 import { Server } from "socket.io";
 import Notification from "../models/notification";
 import User from "../models/user";
+
 export let io: Server;
+
+// Helper function to calculate days until next birthday
+const getDaysUntilBirthday = (dob: Date): number => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const birthDate = new Date(dob);
+  const currentYear = today.getFullYear();
+  
+  // Create birthday for current year
+  let nextBirthday = new Date(
+    currentYear,
+    birthDate.getMonth(),
+    birthDate.getDate()
+  );
+  
+  // If birthday has passed this year, use next year
+  if (nextBirthday < today) {
+    nextBirthday = new Date(
+      currentYear + 1,
+      birthDate.getMonth(),
+      birthDate.getDate()
+    );
+  }
+  
+  // Calculate difference in days
+  const diffTime = nextBirthday.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+};
+
 export const socketService = (server: http.Server) => {
   try {
     // Create HTTP server and attach Socket.IO
@@ -143,6 +176,53 @@ export async function notifyDobMissing(userId: string) {
     return false;
   } catch (error) {
     console.error("Error checking DOB:", error);
+    return false;
+  }
+}
+
+// Function to notify user of upcoming birthday (10, 9, 8, 7 days before)
+export const notifyUpcomingBirthday = async (userId: string) => {
+  try {
+    const user = await User.findById(userId).lean();
+    
+    if (!user || !user.dob) {
+      return false;
+    }
+    
+    const daysUntil = getDaysUntilBirthday(user.dob);
+    
+    // Show notification if birthday is within 10 days (10, 9, 8, 7, 6, 5, 4, 3, 2, 1 days before or on birthday)
+    if (daysUntil >= 0 && daysUntil <= 10) {
+      // Use static title so sendToUser's duplicate check prevents multiple notifications
+      const title = "Upcoming Birthday";
+      const message = daysUntil === 0 
+        ? `🎂 Today is ${user.name}'s birthday! Wishing them a very Happy Birthday!`
+        : `🎂 ${user.name}'s birthday is in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}!`;
+
+      // Check if notification already exists
+      const existingNotification = await Notification.findOne({
+        userId,
+        title
+      }).lean();
+
+      if (existingNotification) {
+        // Update the message with current days count and set read to false
+        await Notification.findByIdAndUpdate(existingNotification._id, { message, read: false });
+        return true;
+      }
+
+      // Create new notification if doesn't exist
+      await sendToUser(userId, {
+        type: "success",
+        title: title,
+        message: message,
+      }, false); // false = don't push via socket
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error("Error checking upcoming birthday:", error);
     return false;
   }
 }

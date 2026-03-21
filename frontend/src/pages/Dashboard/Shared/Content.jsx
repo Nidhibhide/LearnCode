@@ -11,20 +11,22 @@ const Content = () => {
 
   return (
     <div className="flex w-full h-screen">
-      <div className="hidden lg:block">
+      {/* Sidebar - visible on xl (1280px) and above */}
+      <div className="hidden xl:block">
         <Sidebar />
       </div>
 
-      <div className="lg:hidden absolute top-4 left-4 z-50">
+      {/* Mobile menu button - only visible below xl (1280px) */}
+      <div className="xl:hidden absolute top-4 left-4 z-50">
             <button onClick={() => setShowSidebar(true)} className="p-2 bg-black text-white rounded-md">
               <IoMenu size={24} />
             </button>
           </div>
-      {/* ✅ Sidebar overlay for small screens */}
+      {/* Mobile sidebar overlay - only below xl (1280px) */}
       {showSidebar && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex xl:hidden">
           {/* Sidebar slides in from the left */}
-          <div className="w-full sm:w-96 md:w-72 min-w-[320px] h-full relative">
+          <div className="w-72 h-full relative">
             <Sidebar onLinkClick={handleLinkClick} />
             {/* Close button */}
             <button
@@ -44,7 +46,7 @@ const Content = () => {
       )}
 
       {/*  Main Content */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         <Outlet />
       </div>
     </div>

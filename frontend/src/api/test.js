@@ -13,11 +13,9 @@ export const create = async (data) => {
 export const getAll = async (filters) => {
   try {
     const res = await globalaxios.get("/test/getAll", { params: filters });
-    return res.data;
+    return { data: res.data?.data || [], total: res.data?.total || 0 };
   } catch (err) {
-    return (
-      err.response || { message: "Unexpected error occurred", status: 500 }
-    );
+    return { data: [], total: 0 };
   }
 };
 export const GetDeletedAll = async (filters) => {
@@ -69,10 +67,8 @@ export const getAllOngoing = async (filters, user) => {
     const res = await globalaxios.get(`/test/getOngoing/${user}`, {
       params: filters,
     });
-    return res.data;
+    return { data: res.data?.data || [], total: res.data?.total || 0 };
   } catch (err) {
-    return (
-      err.response || { message: "Unexpected error occurred", status: 500 }
-    );
+    return { data: [], total: 0 };
   }
 };

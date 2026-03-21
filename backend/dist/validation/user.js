@@ -10,12 +10,13 @@ const userRegisterValidation = joi_1.default.object({
     name: (0, GlobalValidation_1.stringValidator)("Name", 3, 50, true),
     email: (0, GlobalValidation_1.emailValidator)(),
     password: (0, GlobalValidation_1.passwordValidator)(),
-    // role: selectValidator("Role", ["user", "admin"]),
+    role: (0, GlobalValidation_1.selectValidator)("Role", ["student", "admin"], false, "student"),
 });
 exports.userRegisterValidation = userRegisterValidation;
 const LoginValidation = joi_1.default.object({
     email: (0, GlobalValidation_1.emailValidator)(),
     password: (0, GlobalValidation_1.passwordValidator)(),
+    role: (0, GlobalValidation_1.selectValidator)("Role", ["student", "admin"], false),
 });
 exports.LoginValidation = LoginValidation;
 const EmailValidation = joi_1.default.object({
@@ -25,6 +26,7 @@ exports.EmailValidation = EmailValidation;
 const userUpdateValidation = joi_1.default.object({
     name: (0, GlobalValidation_1.stringValidator)("Name", 3, 50, true),
     email: (0, GlobalValidation_1.emailValidator)(),
+    dob: (0, GlobalValidation_1.dateValidator)("Date of Birth", false),
 });
 exports.userUpdateValidation = userUpdateValidation;
 //# sourceMappingURL=user.js.map

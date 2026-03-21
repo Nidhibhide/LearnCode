@@ -10,6 +10,7 @@ const testRoutes_1 = __importDefault(require("./testRoutes"));
 const aiRoutes_1 = __importDefault(require("./aiRoutes"));
 const testAttempt_1 = __importDefault(require("./testAttempt"));
 const notificationRoutes_1 = __importDefault(require("./notificationRoutes"));
+const dashboardRoutes_1 = __importDefault(require("./dashboardRoutes"));
 const router = express_1.default.Router();
 // Health check route
 router.get("/health", (_req, res) => {
@@ -22,5 +23,6 @@ router.use("/test", testRoutes_1.default);
 router.use("/ai", aiRoutes_1.default);
 router.use("/testAttempt", testAttempt_1.default);
 router.use("/notification", notificationRoutes_1.default);
+router.use("/dashboard", dashboardRoutes_1.default);
 exports.default = router;
 //# sourceMappingURL=index.js.map

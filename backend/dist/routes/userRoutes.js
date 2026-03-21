@@ -12,8 +12,9 @@ const router = express_1.default.Router();
 router.post("/register", validationMid_1.userRegisterMid, controllers_1.registerUser);
 router.post("/google-login", controllers_1.googleLogin);
 router.post("/login", validationMid_1.LoginValidtorMid, controllers_1.login);
-router.put("/updateProfile/:id", middlewares_1.TokenAuth, (0, middlewares_2.RoleAuth)("admin", "user"), validationMid_1.userUpdateMid, controllers_1.updateProfile);
-router.get("/getMe", middlewares_1.TokenAuth, (0, middlewares_2.RoleAuth)("admin", "user"), controllers_1.getMe);
-router.get("/logout", middlewares_1.TokenAuth, (0, middlewares_2.RoleAuth)("admin", "user"), controllers_1.logOut);
+router.put("/updateProfile/:id", middlewares_1.TokenAuth, middlewares_1.BlockCheck, (0, middlewares_2.RoleAuth)("admin", "student"), validationMid_1.userUpdateMid, controllers_1.updateProfile);
+router.get("/verifyEmailChange/:token", controllers_1.verifyEmailChange);
+router.get("/getMe", middlewares_1.TokenAuth, middlewares_1.BlockCheck, (0, middlewares_2.RoleAuth)("admin", "student"), controllers_1.getMe);
+router.get("/logout", middlewares_1.TokenAuth, middlewares_1.BlockCheck, (0, middlewares_2.RoleAuth)("admin", "student"), controllers_1.logOut);
 exports.default = router;
 //# sourceMappingURL=userRoutes.js.map

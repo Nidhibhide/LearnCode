@@ -30,7 +30,7 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!test) {
             return (0, utils_1.JsonOne)(res, 500, "Failed to create test", false);
         }
-        const users = yield models_1.User.find({ role: "user" });
+        const users = yield models_1.User.find({ role: "student" });
         users.forEach((user) => {
             (0, utils_1.sendToUser)(user._id.toString(), {
                 type: "info",
@@ -48,7 +48,7 @@ exports.create = create;
 //get all and unattempted tests
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { search = "", level = "All", onlyUnattempted = "false", userId, } = req.query;
+        const { search = "", level = "All", languageFilter = "All", onlyUnattempted = "false", userId, } = req.query;
         const { skip, sort, page, limit } = (0, utils_1.getPaginationParams)(req);
         const matchStage = {
             isDeleted: false,
@@ -59,6 +59,9 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         if (level && level !== "All") {
             matchStage["level"] = level;
+        }
+        if (languageFilter && languageFilter !== "All") {
+            matchStage["language"] = languageFilter;
         }
         // Apply unattempted test filter if required
         if (onlyUnattempted === "true" && userId) {
@@ -150,7 +153,7 @@ const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.edit = edit;
 const getDeletedAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { search = "", level = "All", } = req.query;
+        const { search = "", level = "All", languageFilter = "All", } = req.query;
         const { skip, sort, page, limit } = (0, utils_1.getPaginationParams)(req);
         const matchStage = {
             isDeleted: true,
@@ -161,6 +164,9 @@ const getDeletedAll = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         };
         if (level && level !== "All") {
             matchStage["level"] = level;
+        }
+        if (languageFilter && languageFilter !== "All") {
+            matchStage["language"] = languageFilter;
         }
         const aggregation = (0, utils_1.buildAggregationPipeline)(matchStage, sort, skip, limit, {
             name: 1,
@@ -184,7 +190,7 @@ const getOngoing = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { user } = req.params;
         const userObjectId = new mongoose_1.default.Types.ObjectId(user);
-        const { search = "", level = "All", onlyOnGoing = "false", } = req.query;
+        const { search = "", level = "All", languageFilter = "All", onlyOnGoing = "false", } = req.query;
         const { skip, sort, page, limit } = (0, utils_1.getPaginationParams)(req);
         const aggregation = [
             { $match: { userId: userObjectId } },
@@ -212,6 +218,9 @@ const getOngoing = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
         if (level !== "All") {
             matchStage["test.level"] = level;
+        }
+        if (languageFilter && languageFilter !== "All") {
+            matchStage["test.language"] = languageFilter;
         }
         if (Object.keys(matchStage).length > 0) {
             aggregation.push({ $match: matchStage });

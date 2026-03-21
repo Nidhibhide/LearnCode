@@ -32,6 +32,7 @@ function UserAttempts() {
 
   const [search, setSearch] = useState("");
   const [level, setLevel] = useState("All");
+  const [languageFilter, setLanguageFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("desc");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
@@ -42,6 +43,7 @@ function UserAttempts() {
     page,
     limit: 5,
     level,
+    languageFilter,
   };
 
   const handleViewTests = async () => {
@@ -59,7 +61,7 @@ function UserAttempts() {
   }, [level, sortOrder, search, page]);
 
   return (
-    <div className="md:py-12 py-4 px-4 w-screen md:w-full">
+    <div className="md:py-12 py-4 px-4 w-full">
       <h1 className="md:text-2xl text-xl font-bold text-center ">
         User Attempts
       </h1>
@@ -68,10 +70,8 @@ function UserAttempts() {
       <SearchFilters
         search={search}
         setSearch={setSearch}
-        level={level}
         setLevel={setLevel}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
+        setLanguageFilter={setLanguageFilter}
       />
 
       <TableComponent

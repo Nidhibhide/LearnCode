@@ -2,6 +2,7 @@
 import { TestAttempt } from "../models";
 import { JsonOne, JsonAll, getPaginationParams, buildAggregationPipeline, handleError } from "../utils";
 import { Request, Response } from "express";
+import { TEST_LANGUAGES, TEST_LEVELS } from "../constants";
 const create = async (req: Request, res: Response) => {
   const { userId, testId, remainingQuestionIds } = req.body;
 
@@ -63,9 +64,11 @@ const getAll = async (req: Request, res: Response) => {
     const {
       search = "",
       level = "All",
+      languageFilter = "All",
     } = req.query as {
       search?: string;
       level?: string;
+      languageFilter?: string;
     };
 
     const { skip, sort, page, limit } = getPaginationParams(req);
@@ -98,6 +101,9 @@ const getAll = async (req: Request, res: Response) => {
     };
     if (level !== "All") {
       matchStage["testData.level"] = level;
+    }
+    if (languageFilter && languageFilter !== "All") {
+      matchStage["testData.language"] = languageFilter;
     }
     aggregation.push({ $match: matchStage });
     aggregation.push({

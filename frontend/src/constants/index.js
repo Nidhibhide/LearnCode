@@ -53,3 +53,12 @@ export const ROUTES = {
   PROFILE: "/profile",
   SETTINGS: "/settings",
 };
+
+// Calendar days
+export const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+// Calendar months (3 letter abbreviations)
+export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Calendar years
+export const YEARS = [2024, 2025, 2026, 2027, 2028];

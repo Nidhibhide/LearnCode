@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { JUDGE_API_KEY, JUDGE_HOST, JUDGE_BASE_URL } from "../../../constants";
 import {
   CalculateCode,
@@ -26,10 +27,24 @@ const TestLayout = () => {
   const [code, setCode] = useState(getComment(language));
 
   const runCode = async () => {
+    // Check if code is empty or just placeholder comment
+    const isPlaceholder = /^\s*(#|\/\/)\s*Write your code here\s*$/;
+    if (!code?.trim() || isPlaceholder.test(code)) {
+      setOutput("Please write something");
+      setHasRunCode(false);
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     setOutput("");
 
     try {
+      console.log("Starting code execution...");
+      console.log("Language:", language);
+      console.log("Code:", code);
+      console.log("Sample Input:", question?.sampleInput);
+
       // Submit code to Judge0
       const submission = await axios.post(
         `${JUDGE_BASE_URL}/submissions?base64_encoded=false&wait=false`,
@@ -47,7 +62,10 @@ const TestLayout = () => {
         }
       );
 
+      console.log("Submission response:", submission.data);
+
       const token = submission.data.token;
+      console.log("Token:", token);
 
       // Poll for result
       let result;
@@ -63,6 +81,7 @@ const TestLayout = () => {
         );
 
         result = response.data;
+        console.log("Result status:", result.status);
 
         if (result.status.id <= 2) {
           await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -71,19 +90,25 @@ const TestLayout = () => {
         }
       }
 
+      console.log("Final result:", result);
+
       // Set output based on result
       if (result.stdout) {
         setOutput(result.stdout);
       } else if (result.stderr) {
         setOutput(result.stderr);
+      } else if (result.compile_output) {
+        setOutput(result.compile_output);
       } else {
-        setOutput(result.compile_output || "Unknown error");
+        setOutput("Please write something");
       }
 
       if (result.stdout || result.stderr || result.compile_output) {
+        console.log("Setting hasRunCode to true");
         setHasRunCode(true);
       }
     } catch (error) {
+      console.error("Run code error:", error);
       setOutput(error.message);
     } finally {
       setLoading(false);
@@ -91,13 +116,32 @@ const TestLayout = () => {
   };
 
   const submitCode = async () => {
+    console.log("Submit button clicked!");
+    console.log("hasRunCode:", hasRunCode);
+    
+    // Show warning toast if code hasn't been run
+    if (!hasRunCode) {
+      toast.warn("Please run your code first before submitting");
+      return;
+    }
+    
+    console.log("output:", output);
+    console.log("expectedOutput:", question?.expectedOutput);
+    console.log("test._id:", test?._id);
+    
     try {
       const isCorrect = output.trim() === question?.expectedOutput.trim();
+      console.log("isCorrect:", isCorrect);
+      
       const values = {
         questionId: question?._id,
         flag: isCorrect,
       };
+      console.log("Submitting values:", values);
+      
       const response = await update(test?._id, values);
+      console.log("Update response:", response);
+      
       const { statusCode } = response;
       if (statusCode === 200) {
         setScore(isCorrect ? 10 : 0);
@@ -105,6 +149,7 @@ const TestLayout = () => {
       await delay(3000);
       navigateTo(navigate, ROUTES.DASHBOARD + "/assessments");
     } catch (err) {
+      console.error("Submit error:", err);
       alert(err?.message || "Test attempt update failed");
     }
   };
@@ -160,7 +205,6 @@ const TestLayout = () => {
         <Button
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
           onClick={submitCode}
-          disabled={!hasRunCode}
         >
           Submit Output
         </Button>

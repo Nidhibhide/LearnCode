@@ -1,0 +1,258 @@
+import React from 'react';
+import { FaCheckCircle, FaClock, FaTrophy, FaLanguage, FaCalendarAlt } from 'react-icons/fa';
+import { SUPPORTED_LANGUAGES, DAYS, MONTHS, YEARS } from '../constants';
+
+/**
+ * Summary cards component for MyScores page
+ * Displays total tests, submissions, and acceptance rate with colored backgrounds
+ */
+export const SummaryCards = ({ 
+  totalSolved = 0, 
+  totalSubmissions = 0, 
+  acceptanceRate = 0,
+  onViewMoreClick = null
+}) => {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      {/* Total Tests Card */}
+      <div className="bg-blue-600 rounded-xl p-5 md:p-6 text-white">
+        <div className="flex items-center justify-between mb-3">
+          <FaCheckCircle className="text-2xl md:text-3xl" />
+          <span className="text-3xl md:text-4xl font-bold">
+            {totalSolved}
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <h3 className="text-base md:text-lg font-medium opacity-90">
+            Total Tests
+          </h3>
+          {onViewMoreClick && (
+            <button
+              onClick={onViewMoreClick}
+              className="text-sm font-medium opacity-80 hover:opacity-100 underline cursor-pointer"
+            >
+              View More
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Total Submissions Card */}
+      <div className="bg-purple-600 rounded-xl p-5 md:p-6 text-white">
+        <div className="flex items-center justify-between mb-3">
+          <FaClock className="text-2xl md:text-3xl" />
+          <span className="text-3xl md:text-4xl font-bold">
+            {totalSubmissions}
+          </span>
+        </div>
+        <h3 className="text-base md:text-lg font-medium opacity-90">
+          Total Submissions
+        </h3>
+      </div>
+
+      {/* Acceptance Rate Card */}
+      <div className="bg-green-600 rounded-xl p-5 md:p-6 text-white">
+        <div className="flex items-center justify-between mb-3">
+          <FaTrophy className="text-2xl md:text-3xl" />
+          <span className="text-3xl md:text-4xl font-bold">
+            {acceptanceRate}%
+          </span>
+        </div>
+        <h3 className="text-base md:text-lg font-medium opacity-90">
+          Acceptance Rate
+        </h3>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Get color class based on language name
+ */
+const getLanguageColor = (name) => {
+  const isSupported = SUPPORTED_LANGUAGES.includes(name);
+  if (!isSupported) return "bg-gray-100";
+   
+  switch (name) {
+    case "JavaScript": return "bg-yellow-100";
+    case "Python": return "bg-blue-100";
+    case "Java": return "bg-orange-100";
+    case "C++": return "bg-purple-100";
+    case "C": return "bg-gray-200";
+    default: return "bg-gray-100";
+  }
+};
+
+/**
+ * Tech Stack component for displaying user's solved languages
+ */
+export const TechStack = ({ languages = [] }) => {
+  return (
+    <section className="bg-white border border-gray-200 p-4 md:p-6 rounded-xl flex flex-col">
+      <div className="flex items-center gap-2 mb-4">
+        <FaLanguage className="text-blue-500 text-xl" />
+        <h2 className="text-xl font-semibold text-gray-700">
+          Tech Stack
+        </h2>
+      </div>
+
+      <div>
+        <table className="w-full">
+          <thead className="bg-gray-100 sticky top-0">
+            <tr>
+              <th className="px-4 py-3 text-left text-base font-bold text-gray-800">
+                Language
+              </th>
+              <th className="px-4 py-3 text-right text-base font-bold text-gray-800">
+                Solved
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {languages.length > 0 ? (
+              languages.map((lang, index) => (
+                <tr
+                  key={index}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-8 h-8 ${getLanguageColor(lang.name)} rounded-lg flex items-center justify-center text-lg flex-shrink-0`}
+                      >
+                        {lang.icon}
+                      </div>
+                      <span className="text-base font-medium text-gray-800">
+                        {lang.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
+                      {lang.solvedCount}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={2} className="px-4 py-8 text-center text-gray-500">
+                  No languages found. Start solving tests to see your tech stack!
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Level breakdown component for modal display
+ */
+export const LevelBreakdown = ({ basic = 0, intermediate = 0, advanced = 0 }) => {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between p-4 bg-green-100 rounded-lg">
+        <div className="flex items-center gap-3">
+          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+          <span className="text-lg font-medium text-gray-800">Basic</span>
+        </div>
+        <span className="text-2xl font-bold text-green-700">
+          {basic}
+        </span>
+      </div>
+      <div className="flex items-center justify-between p-4 bg-yellow-100 rounded-lg">
+        <div className="flex items-center gap-3">
+          <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
+          <span className="text-lg font-medium text-gray-800">
+            Intermediate
+          </span>
+        </div>
+        <span className="text-2xl font-bold text-yellow-700">
+          {intermediate}
+        </span>
+      </div>
+      <div className="flex items-center justify-between p-4 bg-red-100 rounded-lg">
+        <div className="flex items-center gap-3">
+          <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+          <span className="text-lg font-medium text-gray-800">
+            Advanced
+          </span>
+        </div>
+        <span className="text-2xl font-bold text-red-700">
+          {advanced}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Activity Calendar component for displaying user's daily activity
+ */
+export const ActivityCalendar = ({ 
+  events = [], 
+  selectedMonth = new Date().getMonth(),
+  selectedYear = new Date().getFullYear(),
+  onMonthChange = null
+}) => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const currentDay = now.getDate();
+  
+  const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+  const firstDay = new Date(selectedYear, selectedMonth, 1).getDay();
+
+  const getEventCount = (day) => {
+    const dateStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const event = events.find(e => e.date === dateStr);
+    return event ? event.count : 0;
+  };
+
+  return (
+    <section className="bg-white border border-gray-200 p-4 md:p-6 rounded-xl flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <FaCalendarAlt className="text-green-500 text-xl" />
+          <h2 className="text-xl font-semibold text-gray-700">Activity</h2>
+        </div>
+        {onMonthChange && (
+          <div className="flex items-center gap-2">
+            <select value={selectedMonth} onChange={(e) => onMonthChange(parseInt(e.target.value), selectedYear)} className="text-sm border border-gray-600 bg-gray-700 text-white rounded px-2 py-1">
+              {MONTHS.map((month, index) => <option key={index} value={index}>{month}</option>)}
+            </select>
+            <select value={selectedYear} onChange={(e) => onMonthChange(selectedMonth, parseInt(e.target.value))} className="text-sm border border-gray-600 bg-gray-700 text-white rounded px-2 py-1">
+              {YEARS.map(year => <option key={year} value={year}>{year}</option>)}
+            </select>
+          </div>
+        )}
+      </div>
+      <div className="bg-gray-100 p-3 rounded-lg">
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {DAYS.map(day => <div key={day} className="text-center text-xs text-gray-600 font-medium">{day}</div>)}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: firstDay }).map((_, i) => <div key={i} className="h-10 bg-gray-200" />)}
+          {Array.from({ length: daysInMonth }).map((_, i) => {
+            const day = i + 1, count = getEventCount(day), today = selectedYear === currentYear && selectedMonth === currentMonth && day === currentDay;
+            return <div key={day} className={`h-10 rounded flex items-center justify-center text-sm font-bold relative ${count ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-800'} ${today ? 'ring-4 ring-blue-600' : ''}`} title={count ? `${count} submissions` : ''}>{day}{count > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-purple-600 rounded-full border-2 border-white" />}</div>;
+          })}
+        </div>
+        <div className="flex items-center justify-center gap-6 mt-3 text-sm font-bold text-gray-700">
+          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-gray-200 border border-gray-400" /><span>No activity</span></div>
+          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-green-500 border border-green-700" /><span>Activity</span></div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default {
+  SummaryCards,
+  LevelBreakdown,
+  TechStack,
+  ActivityCalendar,
+};

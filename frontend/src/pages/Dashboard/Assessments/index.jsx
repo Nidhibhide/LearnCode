@@ -16,12 +16,13 @@ const Assessments = () => {
 
   const [search, setSearch] = useState("");
   const [level, setLevel] = useState("All");
+  const [languageFilter, setLanguageFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("desc");
   const [selectedTab, setSelectedTab] = useState("new");
 
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
-  const user = useSelector((state) => state.user?.id);
+  const user = useSelector((state) => state.user?._id);
   const location = useLocation();
   const preview = location.state?.preview;
   //api
@@ -31,6 +32,7 @@ const Assessments = () => {
     page,
     limit: 5,
     level,
+    languageFilter,
     onlyUnattempted: true,
     userId: user,
   };
@@ -40,6 +42,7 @@ const Assessments = () => {
     page,
     limit: 5,
     level,
+    languageFilter,
     onlyOnGoing: true,
   };
 
@@ -50,8 +53,8 @@ const Assessments = () => {
           ? await getAll(filtersNew)
           : await getAllOngoing(filtersOnGoing, user);
 
-      setTotal(response?.total);
-      setTests(response?.data);
+      setTotal(response?.total || 0);
+      setTests(response?.data || []);
     } catch (err) {
       toast.error(err.message || "View Unattempted Tests failed");
     }
@@ -82,10 +85,8 @@ const Assessments = () => {
             <SearchFilters
               search={search}
               setSearch={setSearch}
-              level={level}
               setLevel={setLevel}
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
+              setLanguageFilter={setLanguageFilter}
             />
             <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 pb-4 overflow-y-auto max-h-[60vh] md:max-h-[70vh]">
               {tests.map((test, index) => (
@@ -98,12 +99,10 @@ const Assessments = () => {
             <SearchFilters
               search={search}
               setSearch={setSearch}
-              level={level}
               setLevel={setLevel}
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
+              setLanguageFilter={setLanguageFilter}
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 pb-4 overflow-y-auto max-h-[60vh] md:max-h-[70vh]">
+            <div className="grid grid-cols-1  md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 pb-4 overflow-y-auto max-h-[60vh] md:max-h-[70vh]">
               {tests.map((test, index) => (
                 <TestCard key={index} test={test} />
               ))}

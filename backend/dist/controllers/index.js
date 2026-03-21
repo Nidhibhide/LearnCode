@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.googleLogin = exports.updateProfile = exports.logOut = exports.getMe = exports.login = exports.registerUser = exports.getAllTestAttempts = exports.updateTestAttempt = exports.createTestAttempt = exports.getOngoing = exports.getDeletedAll = exports.edit = exports.restore = exports.softDelete = exports.getAllTests = exports.createTest = exports.updateNotification = exports.getAllByUser = exports.refreshToken = exports.verifyCurrentPassword = exports.checkToken = exports.resetPass = exports.forgotPass = exports.changePassword = exports.resendVerificationEmail = exports.verifyUser = exports.generateQuestions = void 0;
+exports.getUserStats = exports.verifyEmailChange = exports.googleLogin = exports.updateProfile = exports.logOut = exports.getMe = exports.login = exports.registerUser = exports.getAllTestAttempts = exports.updateTestAttempt = exports.createTestAttempt = exports.getOngoing = exports.getDeletedAll = exports.edit = exports.restore = exports.softDelete = exports.getAllTests = exports.createTest = exports.updateNotification = exports.getAllByUser = exports.refreshToken = exports.verifyCurrentPassword = exports.checkToken = exports.resetPass = exports.forgotPass = exports.changePassword = exports.resendVerificationEmail = exports.verifyUser = exports.generateQuestions = void 0;
 var ai_1 = require("./ai");
 Object.defineProperty(exports, "generateQuestions", { enumerable: true, get: function () { return ai_1.generateQuestions; } });
 var auth_1 = require("./auth");
@@ -34,4 +34,7 @@ Object.defineProperty(exports, "getMe", { enumerable: true, get: function () { r
 Object.defineProperty(exports, "logOut", { enumerable: true, get: function () { return user_1.logOut; } });
 Object.defineProperty(exports, "updateProfile", { enumerable: true, get: function () { return user_1.updateProfile; } });
 Object.defineProperty(exports, "googleLogin", { enumerable: true, get: function () { return user_1.googleLogin; } });
+Object.defineProperty(exports, "verifyEmailChange", { enumerable: true, get: function () { return user_1.verifyEmailChange; } });
+var dashboard_1 = require("./dashboard");
+Object.defineProperty(exports, "getUserStats", { enumerable: true, get: function () { return dashboard_1.getUserStats; } });
 //# sourceMappingURL=index.js.map

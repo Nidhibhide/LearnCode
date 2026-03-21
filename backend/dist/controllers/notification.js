@@ -20,7 +20,7 @@ const getAllByUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const { id } = req.params;
         const ObjectId = new mongoose_1.default.Types.ObjectId(id);
-        const { search = "", type = "All", } = req.query;
+        const { search = "", type = "All" } = req.query;
         const { skip, sort, page, limit } = (0, utils_1.getPaginationParams)(req);
         const matchStage = {
             userId: ObjectId, // match notifications for a specific user
@@ -51,11 +51,30 @@ const getAllByUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.getAllByUser = getAllByUser;
 const update = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params;
-        const updated = yield models_1.Notification.findByIdAndUpdate(id, { read: true }, { new: true });
-        if (!updated) {
+        const { userId } = req.params;
+        const { id, profileChange } = req.query;
+        let notification;
+        // If profileChange is true, find notification by userId and title "Complete Your Profile"
+        if (profileChange === "true") {
+            notification = yield models_1.Notification.findOne({
+                userId,
+                title: "Complete Your Profile",
+                read: false,
+            });
+        }
+        else if (id) {
+            // Find by notification id
+            notification = yield models_1.Notification.findById(id);
+        }
+        else {
+            return (0, utils_1.JsonOne)(res, 400, "Either notification ID or profileChange=true is required", false);
+        }
+        if (!notification) {
             return (0, utils_1.JsonOne)(res, 404, "Notification not found", false);
         }
+        // Mark notification as read
+        notification.read = true;
+        const updated = yield notification.save();
         return (0, utils_1.JsonOne)(res, 200, "Notification marked as read", true, updated);
     }
     catch (error) {

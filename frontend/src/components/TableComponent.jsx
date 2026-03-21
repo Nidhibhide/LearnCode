@@ -17,7 +17,7 @@ function TableComponent({
   ariaLabel = "Data Table",
 }) {
   return (
-    <div className="md:mt-6 w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto">
       <Table
         aria-label={ariaLabel}
         selectionMode={selectionMode}
@@ -25,6 +25,11 @@ function TableComponent({
         onSelectionChange={(keys) => {
           const keyArray = Array.from(keys);
           setSelectedKey?.(keyArray[0]);
+        }}
+        classNames={{
+          wrapper: "bg-white border border-gray-200 rounded-xl",
+          th: "bg-gray-100 text-gray-700 text-sm font-semibold",
+          td: "text-gray-800 text-sm",
         }}
       >
         <TableHeader>
@@ -40,7 +45,7 @@ function TableComponent({
 
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row._id}>
+            <TableRow key={row._id} className="hover:bg-gray-50">
               {columns.map((col) => (
                 <TableCell
                   key={col.key}

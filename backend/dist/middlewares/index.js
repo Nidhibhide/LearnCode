@@ -17,10 +17,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TokenAuth = exports.RoleAuth = void 0;
+exports.BlockCheck = exports.TokenAuth = exports.RoleAuth = void 0;
 var RoleAuth_1 = require("./RoleAuth");
 Object.defineProperty(exports, "RoleAuth", { enumerable: true, get: function () { return __importDefault(RoleAuth_1).default; } });
 var TokenAuth_1 = require("./TokenAuth");
 Object.defineProperty(exports, "TokenAuth", { enumerable: true, get: function () { return __importDefault(TokenAuth_1).default; } });
+var BlockCheck_1 = require("./BlockCheck");
+Object.defineProperty(exports, "BlockCheck", { enumerable: true, get: function () { return __importDefault(BlockCheck_1).default; } });
 __exportStar(require("./validationMid"), exports);
 //# sourceMappingURL=index.js.map

@@ -20,12 +20,14 @@ const UserSchmea = new mongoose_1.default.Schema({
     },
     role: {
         type: String,
-        enum: ["user", "admin"],
-        default: "user",
+        enum: ["student", "admin"],
+        default: "student",
     },
     failedAttempts: { type: Number, default: 0 },
     lastLogin: { type: Date },
+    dob: { type: Date, required: false },
     isBlocked: { type: Boolean, default: false },
+    passwordHistory: { type: [String], default: [] },
 }, {
     timestamps: true,
 } // auto adds createdAt and updatedAt

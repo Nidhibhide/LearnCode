@@ -164,6 +164,15 @@ const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (!user) {
             return (0, utils_1.JsonOne)(res, 404, "User not found", false);
         }
+        // Check if the new password is the same as the old password
+        const isOldPwd = yield (0, utils_1.isOldPassword)(user._id.toString(), password);
+        if (isOldPwd) {
+            return (0, utils_1.JsonOne)(res, 400, "You cannot use your previous password. Please choose a different password.", false);
+        }
+        // Add current password to history before changing
+        if (user.password) {
+            yield (0, utils_1.addToPasswordHistory)(user._id.toString(), user.password);
+        }
         const hashedPass = yield bcryptjs_1.default.hash(password, 10);
         user.password = hashedPass;
         user.failedAttempts = 0;

@@ -40,7 +40,7 @@ const DashboardPage = () => {
 
   return (
     <>
-      <div className="w-screen h-screen flex ">
+      <div className="w-full h-screen flex">
         <Content />
       </div>
     </>

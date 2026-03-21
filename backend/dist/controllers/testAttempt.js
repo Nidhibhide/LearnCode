@@ -65,7 +65,7 @@ exports.update = update;
 const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const { search = "", level = "All", } = req.query;
+        const { search = "", level = "All", languageFilter = "All", } = req.query;
         const { skip, sort, page, limit } = (0, utils_1.getPaginationParams)(req);
         const aggregation = [
             {
@@ -95,6 +95,9 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         if (level !== "All") {
             matchStage["testData.level"] = level;
+        }
+        if (languageFilter && languageFilter !== "All") {
+            matchStage["testData.language"] = languageFilter;
         }
         aggregation.push({ $match: matchStage });
         aggregation.push({

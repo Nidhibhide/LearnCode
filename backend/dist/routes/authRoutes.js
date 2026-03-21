@@ -10,7 +10,7 @@ const middlewares_1 = require("../middlewares");
 const router = express_1.default.Router();
 router.post("/reset-verify", validationMid_1.EmailValidtorMid, controllers_1.resendVerificationEmail);
 router.put("/changePassword", validationMid_1.LoginValidtorMid, controllers_1.changePassword);
-router.post("/verifyCurrentPassword", middlewares_1.TokenAuth, (0, middlewares_1.RoleAuth)("admin", "user"), validationMid_1.LoginValidtorMid, controllers_1.verifyCurrentPassword);
+router.post("/verifyCurrentPassword", middlewares_1.TokenAuth, middlewares_1.BlockCheck, (0, middlewares_1.RoleAuth)("admin", "student"), validationMid_1.LoginValidtorMid, controllers_1.verifyCurrentPassword);
 router.post("/forgotPassword", validationMid_1.EmailValidtorMid, controllers_1.forgotPass);
 router.get("/reset/:token", controllers_1.resetPass);
 router.get("/checkToken", controllers_1.checkToken);
