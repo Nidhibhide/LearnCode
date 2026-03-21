@@ -1,1 +1,0 @@
-{"version":3,"file":"expireTimeFun.js","sourceRoot":"","sources":["../../src/utils/expireTimeFun.ts"],"names":[],"mappings":";;AAAA,MAAM,UAAU,GAAG,GAAG,EAAE;IACtB,IAAI,IAAI,GAAG,IAAI,IAAI,EAAE,CAAC;IACtB,IAAI,CAAC,UAAU,CAAC,IAAI,CAAC,UAAU,EAAE,GAAG,CAAC,CAAC,CAAC,CAAC,mBAAmB;IAC3D,OAAO,IAAI,CAAC;AACd,CAAC,CAAC;AAEF,kBAAe,UAAU,CAAC"}
