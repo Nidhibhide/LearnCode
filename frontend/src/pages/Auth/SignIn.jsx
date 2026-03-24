@@ -11,7 +11,7 @@ import {
 } from "../../components/index";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { handleApiResponse, handleApiError } from "../../utils";
-import { emailValidator, stringValidator, passwordValidator, selectValidator } from "../../validation/GlobalValidation";
+import { emailValidator, passwordValidator, selectValidator } from "../../validation/GlobalValidation";
 import { FaUserGraduate, FaUserShield } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/features/userSlice";
@@ -72,8 +72,8 @@ const SignIn = () => {
     role: selectValidator("Role", ["student", "admin"], false),
   });
   return (
-    <div className="h-screen flex bg-white">
-      <div className=" xl:w-[50%] w-full rounded-tl-2xl rounded-bl-2xl px-4  md:px-12 bg-white ">
+    <div className="h-screen flex bg-surface">
+      <div className=" xl:w-[50%] w-full rounded-tl-2xl rounded-bl-2xl px-4  md:px-12 bg-surface ">
         <div className=" h-full flex flex-col justify-center">
           <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-4">
             LearnCode
@@ -133,7 +133,7 @@ const SignIn = () => {
                   Forgot Password?{" "}
                   <Link
                     to="/forgotPass"
-                    className="font-semibold text-blue hover:underline"
+                    className="font-semibold text-primary hover:underline"
                   >
                     Click Here
                   </Link>

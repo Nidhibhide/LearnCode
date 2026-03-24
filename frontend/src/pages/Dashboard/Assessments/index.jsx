@@ -73,8 +73,11 @@ const Assessments = () => {
         <Tabs
           aria-label="Options"
           classNames={{
-            tabList: "flex w-full",
-            tab: "w-1/2 text-center",
+            tabList: "flex w-full border-b border-border",
+            tab: "w-1/2 text-center py-3",
+            tabContent: "font-semibold",
+            selected: "text-primary border-b-2 border-primary",
+            unselected: "text-textSecondary hover:text-textPrimary",
           }}
           onSelectionChange={(key) => {
             setSelectedTab(key);

@@ -34,14 +34,14 @@ const Preview = () => {
             </ModalHeader>
             <ModalBody className="space-y-4 p-4 overflow-y-auto max-h-[60vh]">
               {list.length === 0 ? (
-                <p className="text-center text-gray-500">
+                <p className="text-center text-textSecondary">
                   No questions to display.
                 </p>
               ) : (
                 list.map((item, index) => (
                   <div
                     key={item._id}
-                    className="p-3 border rounded-md bg-gray-50 w-full break-words"
+                    className="p-3 border rounded-md bg-surfaceAlt w-full break-words"
                   >
                     <p className="font-semibold mb-1">
                       Q{index + 1}: {item.questionText}

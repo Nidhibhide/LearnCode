@@ -33,7 +33,7 @@ function RestoreTest() {
       key: "language", 
       label: "LANGUAGE",
       render: (row) => row.language ? (
-        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">{row.language}</span>
+        <span className="px-2 py-1 bg-infoBg text-info rounded text-sm">{row.language}</span>
       ) : null
     },
     { 
@@ -41,12 +41,12 @@ function RestoreTest() {
       label: "LEVEL",
       render: (row) => {
         const levelColors = {
-          Basic: 'bg-green-100 text-green-700',
-          Intermediate: 'bg-yellow-100 text-yellow-700',
-          Advanced: 'bg-red-100 text-red-700',
+          Basic: 'bg-successBg text-success',
+          Intermediate: 'bg-warningBg text-warning',
+          Advanced: 'bg-errorBg text-error',
         };
         return row.level ? (
-          <span className={`px-2 py-1 rounded text-sm ${levelColors[row.level] || 'bg-gray-100 text-gray-700'}`}>
+          <span className={`px-2 py-1 rounded text-sm ${levelColors[row.level] || 'bg-surfaceAlt text-textPrimary'}`}>
             {row.level}
           </span>
         ) : null;
@@ -58,7 +58,7 @@ function RestoreTest() {
       render: (row) => (
         <Button
           onClick={() => handleRestore(row)}
-          className="text-blue-600 hover:text-blue-800"
+          className="text-primary hover:text-primaryDark"
         >
           <FaArrowsRotate size={14} />
         </Button>

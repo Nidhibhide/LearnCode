@@ -23,11 +23,11 @@ const Rules = ({ onClose }) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="text-lg font-semibold text-blue-800">
+              <ModalHeader className="text-lg font-semibold text-primary">
                 📝 Test Rules
               </ModalHeader>
               <ModalBody>
-                <ul className="list-disc space-y-2 pl-5 text-sm text-gray-800 mb-6">
+                <ul className="list-disc space-y-2 pl-5 text-sm text-textPrimary mb-6">
                   <li>
                     Each question carries <strong>10 marks</strong>.
                   </li>
@@ -46,7 +46,7 @@ const Rules = ({ onClose }) => {
                     Your output must <strong>exactly match</strong> the expected
                     result.
                     <br />
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-textSecondary">
                       E.g., if expected output is <code>total=10</code>, your
                       output must be exactly <code>total=10</code>.
                     </span>

@@ -32,8 +32,8 @@ const ForgotPassword = () => {
     email: emailValidator("Email", true),
   });
   return (
-    <div className="h-screen flex  bg-slate-200">
-      <div className=" xl:w-[50%] w-full rounded-tl-2xl rounded-bl-2xl px-4  md:px-12 bg-white ">
+    <div className="h-screen flex  bg-background">
+      <div className=" xl:w-[50%] w-full rounded-tl-2xl rounded-bl-2xl px-4  md:px-12 bg-surface ">
         <div className=" h-full flex flex-col justify-center">
           <p className="font-extrabold text-3xl md:text-4xl md:mb-12 mb-4">
             LearnCode

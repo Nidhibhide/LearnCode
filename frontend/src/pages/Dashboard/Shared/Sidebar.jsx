@@ -85,7 +85,7 @@ const Sidebar = ({ onLinkClick }) => {
         <span className="flex items-center gap-1">
           Notifications
           {unreadCount > 0 && (
-            <span className="w-2.5 h-2.5 bg-red-600 rounded-full ml-1"></span>
+            <span className="w-2.5 h-2.5 bg-error rounded-full ml-1"></span>
           )}
         </span>
       ),
@@ -114,8 +114,8 @@ const Sidebar = ({ onLinkClick }) => {
     <div className="w-full xl:w-72 h-full">
       <div className="w-full h-full flex flex-col text-white">
         {/* Profile Section */}
-        <div className="h-[120px] sm:h-[150px] bg-blue-950 flex flex-col md:flex-row justify-center items-center gap-2 sm:gap-4 px-4 relative">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-yellow-500 flex justify-center items-center">
+        <div className="h-[120px] sm:h-[150px] bg-sidebar flex flex-col md:flex-row justify-center items-center gap-2 sm:gap-4 px-4 relative">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-warning flex justify-center items-center">
             <span className="text-2xl sm:text-3xl font-bold text-dark-gray">
               {name?.charAt(0).toUpperCase()}
             </span>
@@ -125,14 +125,14 @@ const Sidebar = ({ onLinkClick }) => {
             <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold capitalize text-white">
               {name?.split(' ')[0]}
             </h1>
-            <p className="text-xs sm:text-sm md:text-base font-medium text-green-500">
+            <p className="text-xs sm:text-sm md:text-base font-medium text-success">
               {role.toUpperCase()}
             </p>
           </div>
         </div>
 
         {/* Sidebar Navigation */}
-        <div className="h-screen bg-black py-3 sm:py-4 md:py-6 overflow-y-auto">
+        <div className="h-screen bg-sidebar py-3 sm:py-4 md:py-6 overflow-y-auto">
           <ul className="flex flex-col text-lg sm:text-xl font-medium">
             {filteredLinks.map((link) => (
               <li
@@ -141,7 +141,7 @@ const Sidebar = ({ onLinkClick }) => {
               >
                 <NavLink
                   to={link.to}
-                  className={() => isRouteActive(link.to) ? "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full bg-white text-black font-semibold py-2.5" : "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full text-white hover:bg-gray-700 py-2.5"}
+                  className={() => isRouteActive(link.to) ? "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full bg-surface text-sidebar font-semibold py-2.5" : "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full text-sidebarText hover:bg-sidebarHover py-2.5"}
                   onClick={handleLinkClick}
                 >
                   <span className="flex-shrink-0">{link.icon}</span>

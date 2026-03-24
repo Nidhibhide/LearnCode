@@ -10,13 +10,13 @@ const SettingsPage = () => {
   const role = user?.role;
   return (
     <div className="w-full  h-full shadow-lg rounded-2xl md:py-12 px-4 py-4">
-      <h1 className="md:text-2xl text-xl font-bold mb-8 text-gray-800 text-center">
+      <h1 className="md:text-2xl text-xl font-bold mb-8 text-textPrimary text-center">
         Settings
       </h1>
 
       <div className="space-y-4">
         <Button
-          className="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-3 md:py-5 px-4  rounded-lg text-left text-base md:text-lg"
+          className="w-full bg-infoBg hover:bg-info/30 text-info font-bold py-3 md:py-5 px-4  rounded-lg text-left text-base md:text-lg"
           onClick={() => {
             navigate("/dashboard/setting/changePassword");
           }}
@@ -25,7 +25,7 @@ const SettingsPage = () => {
         </Button>
 
         <Button
-          className="w-full bg-green-100 hover:bg-green-200 text-green-800 font-bold py-3 md:py-5  px-4 rounded-lg text-left md:text-lg text-base"
+          className="w-full bg-successBg hover:bg-success/20 text-success font-bold py-3 md:py-5  px-4 rounded-lg text-left md:text-lg text-base"
           onClick={() => {
             navigate("/dashboard/setting/editProfile");
           }}
@@ -35,7 +35,7 @@ const SettingsPage = () => {
 
         {role === "admin" && (
           <Button
-            className="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold py-3 md:py-5  px-4 rounded-lg text-left md:text-lg text-base"
+            className="w-full bg-warningBg hover:bg-warning/30 text-warning font-bold py-3 md:py-5  px-4 rounded-lg text-left md:text-lg text-base"
             onClick={() => {
               navigate("/dashboard/restoreTest");
             }}
@@ -44,13 +44,13 @@ const SettingsPage = () => {
           </Button>
         )}
 
-        <div className="w-full bg-gray-100 text-gray-700 md:py-5  py-3 px-4 rounded-lg md:text-lg text-base">
+        <div className="w-full bg-border text-textPrimary md:py-5  py-3 px-4 rounded-lg md:text-lg text-base">
           <span className="font-semibold">Created Account At:</span>{" "}
           {new Date(createdAt).toLocaleDateString("en-GB")}
         </div>
 
         {lastLogin && (
-          <div className="w-full bg-purple-100 text-purple-700 md:py-5  py-3 px-4 rounded-lg md:text-lg text-base">
+          <div className="w-full bg-infoBg text-info md:py-5  py-3 px-4 rounded-lg md:text-lg text-base">
             <span className="font-semibold">Last Login At:</span>{" "}
             {new Date(lastLogin).toLocaleString("en-GB")}
           </div>

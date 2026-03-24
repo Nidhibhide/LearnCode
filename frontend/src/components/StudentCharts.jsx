@@ -16,7 +16,7 @@ export const SummaryCards = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
       {/* Total Tests Card */}
-      <div className="bg-blue-600 rounded-xl p-5 md:p-6 text-white">
+      <div className="bg-primary rounded-xl p-5 md:p-6 text-white">
         <div className="flex items-center justify-between mb-3">
           <FaCheckCircle className="text-2xl md:text-3xl" />
           <span className="text-3xl md:text-4xl font-bold">
@@ -39,7 +39,7 @@ export const SummaryCards = ({
       </div>
 
       {/* Total Submissions Card */}
-      <div className="bg-purple-600 rounded-xl p-5 md:p-6 text-white">
+      <div className="bg-secondary rounded-xl p-5 md:p-6 text-white">
         <div className="flex items-center justify-between mb-3">
           <FaClock className="text-2xl md:text-3xl" />
           <span className="text-3xl md:text-4xl font-bold">
@@ -52,7 +52,7 @@ export const SummaryCards = ({
       </div>
 
       {/* Acceptance Rate Card */}
-      <div className="bg-green-600 rounded-xl p-5 md:p-6 text-white">
+      <div className="bg-success rounded-xl p-5 md:p-6 text-white">
         <div className="flex items-center justify-between mb-3">
           <FaTrophy className="text-2xl md:text-3xl" />
           <span className="text-3xl md:text-4xl font-bold">
@@ -72,15 +72,15 @@ export const SummaryCards = ({
  */
 const getLanguageColor = (name) => {
   const isSupported = SUPPORTED_LANGUAGES.includes(name);
-  if (!isSupported) return "bg-gray-100";
+  if (!isSupported) return "bg-surfaceAlt";
    
   switch (name) {
-    case "JavaScript": return "bg-yellow-100";
-    case "Python": return "bg-blue-100";
-    case "Java": return "bg-orange-100";
-    case "C++": return "bg-purple-100";
-    case "C": return "bg-gray-200";
-    default: return "bg-gray-100";
+    case "JavaScript": return "bg-warningBg";
+    case "Python": return "bg-infoBg";
+    case "Java": return "bg-warningBg";
+    case "C++": return "bg-secondaryBg";
+    case "C": return "bg-surfaceAlt";
+    default: return "bg-surfaceAlt";
   }
 };
 
@@ -89,22 +89,22 @@ const getLanguageColor = (name) => {
  */
 export const TechStack = ({ languages = [] }) => {
   return (
-    <section className="bg-white border border-gray-200 p-4 md:p-6 rounded-xl flex flex-col">
+    <section className="bg-surface border border-border p-4 md:p-6 rounded-xl flex flex-col">
       <div className="flex items-center gap-2 mb-4">
-        <FaLanguage className="text-blue-500 text-xl" />
-        <h2 className="text-xl font-semibold text-gray-700">
+        <FaLanguage className="text-primary text-xl" />
+        <h2 className="text-xl font-semibold text-textPrimary">
           Tech Stack
         </h2>
       </div>
 
       <div>
         <table className="w-full">
-          <thead className="bg-gray-100 sticky top-0">
+          <thead className="bg-surfaceAlt sticky top-0">
             <tr>
-              <th className="px-4 py-3 text-left text-base font-bold text-gray-800">
+              <th className="px-4 py-3 text-left text-base font-bold text-textPrimary">
                 Language
               </th>
-              <th className="px-4 py-3 text-right text-base font-bold text-gray-800">
+              <th className="px-4 py-3 text-right text-base font-bold text-textPrimary">
                 Solved
               </th>
             </tr>
@@ -114,7 +114,7 @@ export const TechStack = ({ languages = [] }) => {
               languages.map((lang, index) => (
                 <tr
                   key={index}
-                  className="border-b border-gray-200 hover:bg-gray-50"
+                  className="border-b border-border hover:bg-surfaceAlt"
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -123,13 +123,13 @@ export const TechStack = ({ languages = [] }) => {
                       >
                         {lang.icon}
                       </div>
-                      <span className="text-base font-medium text-gray-800">
+                      <span className="text-base font-medium text-textPrimary">
                         {lang.name}
                       </span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-infoBg text-info">
                       {lang.solvedCount}
                     </span>
                   </td>
@@ -137,7 +137,7 @@ export const TechStack = ({ languages = [] }) => {
               ))
             ) : (
               <tr>
-                <td colSpan={2} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={2} className="px-4 py-8 text-center text-textSecondary">
                   No languages found. Start solving tests to see your tech stack!
                 </td>
               </tr>
@@ -155,34 +155,34 @@ export const TechStack = ({ languages = [] }) => {
 export const LevelBreakdown = ({ basic = 0, intermediate = 0, advanced = 0 }) => {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between p-4 bg-green-100 rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-successBg rounded-lg">
         <div className="flex items-center gap-3">
-          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-          <span className="text-lg font-medium text-gray-800">Basic</span>
+          <span className="w-3 h-3 bg-success rounded-full"></span>
+          <span className="text-lg font-medium text-textPrimary">Basic</span>
         </div>
-        <span className="text-2xl font-bold text-green-700">
+        <span className="text-2xl font-bold text-success">
           {basic}
         </span>
       </div>
-      <div className="flex items-center justify-between p-4 bg-yellow-100 rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-warningBg rounded-lg">
         <div className="flex items-center gap-3">
-          <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
-          <span className="text-lg font-medium text-gray-800">
+          <span className="w-3 h-3 bg-warning rounded-full"></span>
+          <span className="text-lg font-medium text-textPrimary">
             Intermediate
           </span>
         </div>
-        <span className="text-2xl font-bold text-yellow-700">
+        <span className="text-2xl font-bold text-warning">
           {intermediate}
         </span>
       </div>
-      <div className="flex items-center justify-between p-4 bg-red-100 rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-errorBg rounded-lg">
         <div className="flex items-center gap-3">
-          <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-          <span className="text-lg font-medium text-gray-800">
+          <span className="w-3 h-3 bg-error rounded-full"></span>
+          <span className="text-lg font-medium text-textPrimary">
             Advanced
           </span>
         </div>
-        <span className="text-2xl font-bold text-red-700">
+        <span className="text-2xl font-bold text-error">
           {advanced}
         </span>
       </div>
@@ -200,13 +200,13 @@ const getDifficultyBadge = (difficulty) => {
   const level = difficulty?.toLowerCase();
   switch (level) {
     case 'basic':
-      return { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' };
+      return { bg: 'bg-successBg', text: 'text-success', border: 'border-success' };
     case 'intermediate':
-      return { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-300' };
+      return { bg: 'bg-warningBg', text: 'text-warning', border: 'border-warning' };
     case 'advanced':
-      return { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' };
+      return { bg: 'bg-errorBg', text: 'text-error', border: 'border-error' };
     default:
-      return { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300' };
+      return { bg: 'bg-surfaceAlt', text: 'text-textPrimary', border: 'border-border' };
   }
 };
 
@@ -255,9 +255,9 @@ export const SolvedTestsTable = ({
       render: (row) => {
         const status = row.status || "not_attempted";
         const statusConfig = {
-          correct: { bg: "bg-green-100", text: "text-green-700", label: "Correct" },
-          wrong: { bg: "bg-red-100", text: "text-red-700", label: "Wrong" },
-          not_attempted: { bg: "bg-gray-100", text: "text-gray-700", label: "Not Attempted" },
+          correct: { bg: "bg-successBg", text: "text-success", label: "Correct" },
+          wrong: { bg: "bg-errorBg", text: "text-error", label: "Wrong" },
+          not_attempted: { bg: "bg-surfaceAlt", text: "text-textPrimary", label: "Not Attempted" },
         };
         const config = statusConfig[status] || statusConfig.not_attempted;
         return (
@@ -290,7 +290,7 @@ export const SolvedTestsTable = ({
           }}
         />
       ) : (
-        <div className="flex items-center justify-center h-full text-gray-500 py-8">
+        <div className="flex items-center justify-center h-full text-textSecondary py-8">
           {emptyMessage}
         </div>
       )}
@@ -322,37 +322,37 @@ export const ActivityCalendar = ({
   };
 
   return (
-    <section className="bg-white border border-gray-200 p-4 md:p-6 rounded-xl flex flex-col">
+    <section className="bg-surface border border-border p-4 md:p-6 rounded-xl flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <FaCalendarAlt className="text-green-500 text-xl" />
-          <h2 className="text-xl font-semibold text-gray-700">Activity</h2>
+          <FaCalendarAlt className="text-success text-xl" />
+          <h2 className="text-xl font-semibold text-textPrimary">Activity</h2>
         </div>
         {onMonthChange && (
           <div className="flex items-center gap-2">
-            <select value={selectedMonth} onChange={(e) => onMonthChange(parseInt(e.target.value), selectedYear)} className="text-sm border border-gray-600 bg-gray-700 text-white rounded px-2 py-1">
+            <select value={selectedMonth} onChange={(e) => onMonthChange(parseInt(e.target.value), selectedYear)} className="text-sm border border-borderDark bg-sidebar text-white rounded px-2 py-1">
               {MONTHS.map((month, index) => <option key={index} value={index}>{month}</option>)}
             </select>
-            <select value={selectedYear} onChange={(e) => onMonthChange(selectedMonth, parseInt(e.target.value))} className="text-sm border border-gray-600 bg-gray-700 text-white rounded px-2 py-1">
+            <select value={selectedYear} onChange={(e) => onMonthChange(selectedMonth, parseInt(e.target.value))} className="text-sm border border-borderDark bg-sidebar text-white rounded px-2 py-1">
               {YEARS.map(year => <option key={year} value={year}>{year}</option>)}
             </select>
           </div>
         )}
       </div>
-      <div className="bg-gray-100 p-3 rounded-lg">
+      <div className="bg-surfaceAlt p-3 rounded-lg">
         <div className="grid grid-cols-7 gap-1 mb-2">
-          {DAYS.map(day => <div key={day} className="text-center text-xs text-gray-600 font-medium">{day}</div>)}
+          {DAYS.map(day => <div key={day} className="text-center text-xs text-textSecondary font-medium">{day}</div>)}
         </div>
         <div className="grid grid-cols-7 gap-1">
-          {Array.from({ length: firstDay }).map((_, i) => <div key={i} className="h-10 bg-gray-200" />)}
+          {Array.from({ length: firstDay }).map((_, i) => <div key={i} className="h-10 bg-border" />)}
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1, count = getEventCount(day), today = selectedYear === currentYear && selectedMonth === currentMonth && day === currentDay;
-            return <div key={day} className={`h-10 rounded flex items-center justify-center text-sm font-bold relative ${count ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-800'} ${today ? 'ring-4 ring-blue-600' : ''}`} title={count ? `${count} submissions` : ''}>{day}{count > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-purple-600 rounded-full border-2 border-white" />}</div>;
+            return <div key={day} className={`h-10 rounded flex items-center justify-center text-sm font-bold relative ${count ? 'bg-success text-white' : 'bg-border text-textPrimary'} ${today ? 'ring-4 ring-primary' : ''}`} title={count ? `${count} submissions` : ''}>{day}{count > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full border-2 border-surface" />}</div>;
           })}
         </div>
-        <div className="flex items-center justify-center gap-6 mt-3 text-sm font-bold text-gray-700">
-          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-gray-200 border border-gray-400" /><span>No activity</span></div>
-          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-green-500 border border-green-700" /><span>Activity</span></div>
+        <div className="flex items-center justify-center gap-6 mt-3 text-sm font-bold text-textPrimary">
+          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-border border border-borderDark" /><span>No activity</span></div>
+          <div className="flex items-center gap-2"><div className="w-5 h-5 rounded bg-success border border-success" /><span>Activity</span></div>
         </div>
       </div>
     </section>

@@ -78,15 +78,15 @@ const QuestionsList = () => {
       label: "Action",
       render: (row) => {
         let id = row._id;
-        let btnClass = "bg-yellow-500 hover:bg-yellow-600";
+        let btnClass = "bg-warning hover:bg-warning";
         let btnText = "Remaining";
         let isDisabled = false;
 
         if (correctQuestionIds.includes(id) || wrongQuestionIds.includes(id)) {
           const isCorrect = correctQuestionIds.includes(id);
           btnClass = isCorrect
-            ? "bg-green-500 hover:bg-green-600"
-            : "bg-red-500 hover:bg-red-600";
+            ? "bg-success hover:bg-success"
+            : "bg-error hover:bg-error";
           btnText = isCorrect ? "Correct" : "Wrong";
           isDisabled = true;
         }
@@ -109,7 +109,7 @@ const QuestionsList = () => {
       <h2 className="text-2xl font-bold text-center md:mb-4 mb-2">{title}</h2>
       {/* 🔽 Rules link below title */}
       <div
-        className="md:text-lg text-base text-red-600 font-semibold mb-5 text-center cursor-pointer hover:text-red-700"
+        className="md:text-lg text-base text-error font-semibold mb-5 text-center cursor-pointer hover:text-error"
         onClick={() => setRules(true)}
       >
         🔍 Please click to view test rules

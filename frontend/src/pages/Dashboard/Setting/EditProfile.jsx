@@ -118,7 +118,7 @@ const EditProfile = () => {
               <div className="flex flex-col space-y-1">
                 <p className="md:text-lg text-base font-medium">
                   Date of Birth{" "}
-                  <span className="text-sm text-gray-600 font-normal">
+                  <span className="text-sm text-textSecondary font-normal">
                     (MM-DD-YYYY)
                   </span>
                 </p>
@@ -131,7 +131,7 @@ const EditProfile = () => {
                   variant="bordered"
                 />
                 {errors.dob && touched.dob && (
-                  <p className="text-sm text-red-500">{errors.dob}</p>
+                  <p className="text-sm text-error">{errors.dob}</p>
                 )}
               </div>
             </div>

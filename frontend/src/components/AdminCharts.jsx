@@ -69,8 +69,8 @@ export const WeeklyActivityChart = ({ data, width = 320, height = 250 }) => {
  */
 export const StatCard = ({ title, value, colorClass }) => {
   return (
-    <div className="bg-white border border-gray-200 p-6 rounded-xl">
-      <h2 className="text-lg font-medium text-gray-500 mb-1">{title}</h2>
+    <div className="bg-surface border border-border p-6 rounded-xl">
+      <h2 className="text-lg font-medium text-textSecondary mb-1">{title}</h2>
       <p className={`text-3xl font-bold ${colorClass}`}>{value}</p>
     </div>
   );
@@ -91,8 +91,8 @@ export const Leaderboard = ({
   onPageChange = () => {}
 }) => {
   const filterOptions = [
-    { value: 'overall', label: 'All Time', color: 'bg-blue-500', hover: 'hover:bg-blue-600' },
-    { value: 'weekly', label: 'This Week', color: 'bg-green-500', hover: 'hover:bg-green-600' },
+    { value: 'overall', label: 'All Time', color: 'bg-primary', hover: 'hover:bg-primaryHover' },
+    { value: 'weekly', label: 'This Week', color: 'bg-success', hover: 'hover:bg-success' },
   ];
 
   const handlePageChange = (newPage) => {
@@ -103,9 +103,9 @@ export const Leaderboard = ({
 
   if (loading) {
     return (
-      <div className="bg-white border border-gray-200 p-6 rounded-xl mb-6">
+      <div className="bg-surface border border-border p-6 rounded-xl mb-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-700">Leaderboard</h2>
+          <h2 className="text-xl font-semibold text-textPrimary">Leaderboard</h2>
           <div className="flex gap-2">
             {filterOptions.map((filter) => (
               <button
@@ -119,24 +119,24 @@ export const Leaderboard = ({
           </div>
         </div>
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-          <span className="ml-3 text-gray-500">Loading leaderboard...</span>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+          <span className="ml-3 text-textSecondary">Loading leaderboard...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-gray-200 p-6 rounded-xl mb-6">
+    <div className="bg-surface border border-border p-6 rounded-xl mb-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-700">Leaderboard</h2>
+        <h2 className="text-xl font-semibold text-textPrimary">Leaderboard</h2>
         <div className="flex gap-2">
           {filterOptions.map((filter) => (
             <button
               key={filter.value}
               onClick={() => setLeaderboardFilter(filter.value)}
               className={`px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors ${filter.color} ${
-                leaderboardFilter === filter.value ? 'ring-2 ring-offset-2 ring-gray-400' : ''
+                leaderboardFilter === filter.value ? 'ring-2 ring-offset-2 ring-borderDark' : ''
               } ${leaderboardFilter !== filter.value ? filter.hover : ''} opacity-90 hover:opacity-100`}
             >
               {filter.label}
@@ -153,7 +153,7 @@ export const Leaderboard = ({
               label: 'RANK',
               render: (row) => {
                 const rank = row.rank;
-                const colorClass = rank === 1 ? 'bg-yellow-400 text-yellow-900' : rank === 2 ? 'bg-gray-300 text-gray-700' : rank === 3 ? 'bg-orange-300 text-orange-900' : 'bg-gray-200 text-gray-600';
+                const colorClass = rank === 1 ? 'bg-warningBg text-warning' : rank === 2 ? 'bg-borderDark text-textPrimary' : rank === 3 ? 'bg-warningBg text-warning' : 'bg-border text-textSecondary';
                 return (
                   <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold ${colorClass}`}>
                     {rank}
@@ -166,14 +166,14 @@ export const Leaderboard = ({
               key: 'language', 
               label: 'LANGUAGE',
               render: (row) => row.language ? (
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">{row.language}</span>
+                <span className="px-2 py-1 bg-infoBg text-info rounded text-sm">{row.language}</span>
               ) : null
             },
             { 
               key: 'score', 
               label: 'SCORE',
               render: (row) => (
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${leaderboardFilter === 'weekly' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${leaderboardFilter === 'weekly' ? 'bg-successBg text-success' : 'bg-infoBg text-info'}`}>
                   {row.score || 0}
                 </span>
               )

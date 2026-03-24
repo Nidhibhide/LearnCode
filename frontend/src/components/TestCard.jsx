@@ -8,15 +8,15 @@ const TestCard = ({ test }) => {
   const role = useSelector((state) => state.user?.role);
   const navigate = useNavigate();
   const levelColor = {
-    Basic: "border-green-400 bg-green-100",
-    Intermediate: "border-yellow-400 bg-yellow-100",
-    Advanced: "border-red-400 bg-red-100",
+    Basic: "border-success bg-successBg",
+    Intermediate: "border-warning bg-warningBg",
+    Advanced: "border-error bg-errorBg",
   };
 
   const levelText = {
-    Basic: "text-green-700",
-    Intermediate: "text-yellow-700",
-    Advanced: "text-red-700",
+    Basic: "text-success",
+    Intermediate: "text-warning",
+    Advanced: "text-error",
   };
 
   const handleDelete = () => {
@@ -65,15 +65,15 @@ const TestCard = ({ test }) => {
         </div>
       )}
 
-      <p className="text-xs sm:text-sm text-gray-600">
+      <p className="text-xs sm:text-sm text-textSecondary">
         <strong>Language:</strong> {test.language}
       </p>
       <p className={`text-xs sm:text-sm ${levelText[test.level]} `}>
         <strong>Level:</strong> {test.level}
       </p>
-      <p onClick={handleClick} className="text-xs sm:text-sm text-gray-600">
+      <p onClick={handleClick} className="text-xs sm:text-sm text-textSecondary">
         <strong>Questions:</strong>
-        <span className="text-blue-600 hover:underline hover:font-medium cursor-pointer">
+        <span className="text-primary hover:underline hover:font-medium cursor-pointer">
           {" "}
           Preview
         </span>

@@ -177,20 +177,20 @@ const TestLayout = () => {
     <div className="h-full  py-12  px-6  flex flex-col  w-full">
       {/* Sample Input/Output */}
       <div className="">
-        <h2 className="text-lg font-semibold mb-4 text-red-500">
+        <h2 className="text-lg font-semibold mb-4 text-error">
           {"Que : " + question?.questionText}
         </h2>
         <h2 className="text-sm font-semibold mb-1">Sample Test Case</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <p className="font-medium mb-1">Input:</p>
-            <pre className="bg-gray-100 p-2 rounded">
+            <pre className="bg-surfaceAlt p-2 rounded">
               {question?.sampleInput || "NA"}
             </pre>
           </div>
           <div>
             <p className="font-medium mb-1">Expected Output:</p>
-            <pre className="bg-gray-100 p-2 rounded">
+            <pre className="bg-surfaceAlt p-2 rounded">
               {question?.expectedOutput || "NA"}
             </pre>
           </div>
@@ -216,14 +216,14 @@ const TestLayout = () => {
       {/* Action Buttons */}
       <div className="flex gap-4 mt-5 justify-end">
         <Button
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+          className="bg-primary text-white px-4 py-2 rounded hover:bg-primaryDark text-sm"
           onClick={runCode}
           disabled={loading}
         >
          Run Code
         </Button>
         <Button
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
+          className="bg-success text-white px-4 py-2 rounded hover:bg-success text-sm"
           onClick={submitCode}
         >
           Submit Output
@@ -232,7 +232,7 @@ const TestLayout = () => {
       {/* Output Display */}
       <div className=" mt-5">
         <h2 className="text-sm font-semibold mb-3">Output</h2>
-        <pre className="bg-gray-100 p-3 rounded whitespace-pre-wrap ">
+        <pre className="bg-surfaceAlt p-3 rounded whitespace-pre-wrap ">
           {output ? output : "No output generated yet..."}
         </pre>
       </div>

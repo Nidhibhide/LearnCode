@@ -90,7 +90,7 @@ const ChangePassword = () => {
       size="xl"
     >
       <div className="text-center mb-4">
-        <span className="text-blue-600 font-bold text-lg tracking-wide">
+        <span className="text-primary font-bold text-lg tracking-wide">
           🔐 Step {step + 1} of 2
         </span>
       </div>

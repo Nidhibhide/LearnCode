@@ -9,7 +9,7 @@ export const SearchFilters = ({ search, setSearch, setLevel, setLanguageFilter }
       <input
         type="text"
         placeholder="Search here..."
-        className="w-full lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm md:text-base"
+        className="w-full lg:w-1/2 px-4 py-2 border border-borderDark rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-sm md:text-base"
         name="search"
         value={search || ''}
         onChange={(e) => setSearch?.(e.target.value)}
@@ -20,9 +20,9 @@ export const SearchFilters = ({ search, setSearch, setLevel, setLanguageFilter }
         {/* 🧠 Filter by Level */}
         {setLevel && (
           <div className="relative w-full">
-            <MdFilterList className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+            <MdFilterList className="absolute left-3 top-1/2 transform -translate-y-1/2 text-textSecondary" />
             <select
-              className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm md:text-base"
+              className="w-full pl-7 pr-3 py-2 border border-borderDark rounded-lg bg-surface focus:ring-2 focus:ring-primary focus:outline-none text-sm md:text-base"
               name="level"
               onChange={(e) => setLevel(e.target.value)}
             >
@@ -39,7 +39,7 @@ export const SearchFilters = ({ search, setSearch, setLevel, setLanguageFilter }
         {setLanguageFilter && (
           <div className="relative w-full">
             <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm md:text-base"
+              className="w-full px-3 py-2 border border-borderDark rounded-lg bg-surface focus:ring-2 focus:ring-primary focus:outline-none text-sm md:text-base"
               name="language"
               onChange={(e) => setLanguageFilter(e.target.value)}
             >
@@ -63,19 +63,19 @@ export const PaginationControls = ({ page, setPage, hasNext, total, limit }) => 
   return (
     <div className="md:mt-8 mt-3 flex justify-center items-center gap-2">
       <Button
-        className="px-3 md:px-4 py-2 font-medium text-sm md:text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
+        className="px-3 md:px-4 py-2 font-medium text-sm md:text-base bg-surfaceAlt text-textPrimary rounded hover:bg-border transition duration-150 ease-in-out"
         onClick={() => setPage(page - 1)}
         disabled={page <= 1}
       >
         Previous
       </Button>
 
-      <span className="text-sm md:text-base text-gray-600">
+      <span className="text-sm md:text-base text-textSecondary">
         Page {page} of {totalPages}
       </span>
 
       <Button
-        className="px-3 md:px-4 py-2 font-medium text-sm md:text-base bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-150 ease-in-out"
+        className="px-3 md:px-4 py-2 font-medium text-sm md:text-base bg-surfaceAlt text-textPrimary rounded hover:bg-border transition duration-150 ease-in-out"
         onClick={() => setPage(page + 1)}
         disabled={!hasNext || page >= totalPages}
       >
@@ -96,8 +96,8 @@ export const NotFoundControls = ({
         alt="No data"
         className="md:w-64 md:h-64 w-52 h-44 object-contain mb-6"
       />
-      <h2 className="md:text-2xl text-xl  font-semibold text-gray-700">{title}</h2>
-      <p className="text-gray-500 mt-2">{description}</p>
+      <h2 className="md:text-2xl text-xl  font-semibold text-textPrimary">{title}</h2>
+      <p className="text-textSecondary mt-2">{description}</p>
     </div>
   );
 };

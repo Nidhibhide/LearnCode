@@ -27,9 +27,9 @@ function TableComponent({
           setSelectedKey?.(keyArray[0]);
         }}
         classNames={{
-          wrapper: "bg-white border border-gray-200 rounded-xl",
-          th: "bg-gray-100 text-gray-700 text-sm font-semibold",
-          td: "text-gray-800 text-sm",
+          wrapper: "bg-surface border border-border rounded-xl",
+          th: "bg-surfaceAlt text-textPrimary text-sm font-semibold",
+          td: "text-textPrimary text-sm",
         }}
       >
         <TableHeader>
@@ -45,7 +45,7 @@ function TableComponent({
 
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row._id} className="hover:bg-gray-50">
+            <TableRow key={row._id} className="hover:bg-surfaceAlt">
               {columns.map((col) => (
                 <TableCell
                   key={col.key}

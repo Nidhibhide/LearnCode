@@ -121,7 +121,7 @@ function MyScores() {
   }, [search, level, languageFilter, page]);
 
   return (
-    <div className="p-4 md:p-6 bg-gray-100 min-h-screen overflow-x-hidden">
+    <div className="p-4 md:p-6 bg-background min-h-screen overflow-x-hidden">
       <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center mb-6">
         My Progress
       </h1>
@@ -141,11 +141,11 @@ function MyScores() {
         {/* Scoreboard - full width */}
         <div className="w-full">
           {/* SECTION 2: SOLVED TESTS TABLE */}
-          <section className="bg-white border border-gray-200 p-4 md:p-6 rounded-xl flex flex-col overflow-hidden">
+          <section className="bg-surface border border-border p-4 md:p-6 rounded-xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between ">
               <div className="flex items-center gap-2">
-                <FaList className="text-blue-500 text-xl" />
-                <h2 className="text-xl font-semibold text-gray-700">
+                <FaList className="text-primary text-xl" />
+                <h2 className="text-xl font-semibold text-textPrimary">
                   Scoreboard
                 </h2>
               </div>
@@ -164,7 +164,7 @@ function MyScores() {
             {/* Table */}
             {loading ? (
               <div className="flex justify-center py-8">
-                <span className="text-gray-500">Loading...</span>
+                <span className="text-textSecondary">Loading...</span>
               </div>
             ) : (
               <>

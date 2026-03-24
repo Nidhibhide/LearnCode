@@ -35,18 +35,18 @@ const Notification = () => {
 
   return (
     <div className="w-full h-full py-4 sm:py-8 md:py-12 px-4">
-      <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-8 text-center text-gray-800 flex items-center justify-center gap-2">
+      <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-8 text-center text-textPrimary flex items-center justify-center gap-2">
         Notifications
       </h1>
 
       {/* Tabs for Unread and Read notifications */}
-      <div className="flex border-b border-gray-200 mb-6">
+      <div className="flex border-b border-border mb-6">
         <button
           onClick={() => setActiveTab("unread")}
           className={`px-4 py-2 font-medium text-sm sm:text-base transition-colors ${
             activeTab === "unread"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              ? "border-b-2 border-primary text-primary"
+              : "text-textSecondary hover:text-textPrimary"
           }`}
         >
           Unread ({unreadNotifications.length})
@@ -55,8 +55,8 @@ const Notification = () => {
           onClick={() => setActiveTab("read")}
           className={`px-4 py-2 font-medium text-sm sm:text-base transition-colors ${
             activeTab === "read"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              ? "border-b-2 border-primary text-primary"
+              : "text-textSecondary hover:text-textPrimary"
           }`}
         >
           Read ({readNotifications.length})
@@ -84,27 +84,27 @@ const Notification = () => {
                 key={note._id}
                 className={`px-5 py-4 transition-all mb-3 ${
                   note.type === "success"
-                    ? "bg-green-100 hover:bg-green-200"
+                    ? "bg-successBg hover:bg-success/20"
                     : note.type === "warning"
-                    ? "bg-yellow-100 hover:bg-yellow-200"
-                    : "bg-blue-100 hover:bg-blue-200"
+                    ? "bg-warningBg hover:bg-warning/20"
+                    : "bg-infoBg hover:bg-info/20"
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {note.type === "success" ? (
                     <IoMdCheckmarkCircleOutline
                       size={32}
-                      className="text-green-600 mt-2"
+                      className="text-success mt-2"
                     />
                   ) : note.type === "warning" ? (
                     <IoMdWarning
                       size={32}
-                      className="text-yellow-600 mt-2"
+                      className="text-warning mt-2"
                     />
                   ) : (
                     <IoMdInformationCircleOutline
                       size={28}
-                      className="text-blue-600 mt-1"
+                      className="text-info mt-1"
                     />
                   )}
                   <div className="flex-1">
@@ -112,7 +112,7 @@ const Notification = () => {
                       <h3 className="md:text-lg text-base font-semibold">
                         {note.title}
                       </h3>
-                      <span className="md:text-sm text-xs text-gray-500 self-start sm:self-auto">
+                      <span className="md:text-sm text-xs text-textSecondary self-start sm:self-auto">
                         {getDaysAgo(note?.createdAt)}
                       </span>
                     </div>
@@ -121,7 +121,7 @@ const Notification = () => {
                       {activeTab === "unread" && (
                         <button
                           onClick={() => handleMarkAsRead(note._id)}
-                          className="text-blue-600 hover:text-blue-800 underline text-left"
+                          className="text-primary hover:text-primaryDark underline text-left"
                         >
                           Mark as read
                         </button>

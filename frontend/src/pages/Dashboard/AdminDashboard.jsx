@@ -122,8 +122,8 @@ const AdminDashboard = () => {
 
 
   return (
-    <div className="p-4 md:p-6 bg-gray-100 h-screen overflow-y-auto overflow-x-hidden">
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8 ml-10 xl:ml-0">
+    <div className="p-4 md:p-6 bg-background h-screen overflow-y-auto overflow-x-hidden">
+      <h1 className="text-2xl md:text-3xl font-bold text-textPrimary mb-8 ml-10 xl:ml-0">
         Admin Dashboard — Analytics
       </h1>
 
@@ -132,55 +132,55 @@ const AdminDashboard = () => {
         <StatCard
           title="Total Users"
           value={userStats.totalUsers}
-          colorClass="text-blue-600"
+          colorClass="text-primary"
         />
         <StatCard
           title="Today's Active"
           value={userStats.todayActive}
-          colorClass="text-green-600"
+          colorClass="text-success"
         />
         <StatCard
           title="Pass Rate"
           value={`${userStats.passRate}%`}
-          colorClass="text-purple-600"
+          colorClass="text-primary"
         />
         <StatCard
           title="Completion Rate"
           value={`${userStats.completionRate}%`}
-          colorClass="text-orange-600"
+          colorClass="text-warning"
         />
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         {/* Most Attempted Languages */}
-        <div className="bg-white border border-gray-200 p-6 rounded-xl flex flex-col items-center">
-          <h2 className="text-lg font-semibold text-gray-700 mb-1 w-full">
+        <div className="bg-surface border border-border p-6 rounded-xl flex flex-col items-center">
+          <h2 className="text-lg font-semibold text-textPrimary mb-1 w-full">
             Most Attempted Languages
           </h2>
-          <p className="text-sm text-gray-500 mb-4 w-full">
+          <p className="text-sm text-textSecondary mb-4 w-full">
             Programming languages preferred by students
           </p>
           <LanguageBarChart data={languageData} />
         </div>
 
         {/* Difficulty Distribution Pie Chart */}
-        <div className="bg-white border border-gray-200 p-6 rounded-xl flex flex-col items-center">
-          <h2 className="text-lg font-semibold text-gray-700 mb-1 w-full">
+        <div className="bg-surface border border-border p-6 rounded-xl flex flex-col items-center">
+          <h2 className="text-lg font-semibold text-textPrimary mb-1 w-full">
             Tests by Difficulty
           </h2>
-          <p className="text-sm text-gray-500 mb-4 w-full">
+          <p className="text-sm text-textSecondary mb-4 w-full">
             Distribution of test difficulty levels
           </p>
           <DifficultyPieChart data={difficultyData} />
         </div>
 
         {/* Weekly Activity Line Chart */}
-        <div className="bg-white border border-gray-200 p-6 rounded-xl flex flex-col items-center">
-          <h2 className="text-lg font-semibold text-gray-700 mb-1 w-full">
+        <div className="bg-surface border border-border p-6 rounded-xl flex flex-col items-center">
+          <h2 className="text-lg font-semibold text-textPrimary mb-1 w-full">
             Weekly Activity
           </h2>
-          <p className="text-sm text-gray-500 mb-4 w-full">
+          <p className="text-sm text-textSecondary mb-4 w-full">
             Test attempts per day this week
           </p>
           <WeeklyActivityChart data={weeklyActivityData} />
