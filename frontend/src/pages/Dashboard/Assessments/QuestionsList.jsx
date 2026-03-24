@@ -19,6 +19,7 @@ const QuestionsList = () => {
   const [rules, setRules] = useState(false);
   const userId = useSelector((state) => state.user?._id);
   const [selectedKey, setSelectedKey] = useState(null);
+  const [attemptId, setAttemptId] = useState(null);
   const navigate = useNavigate();
   const transformedQuestions = questions.map((item, index) => ({
     id: index + 1,
@@ -35,7 +36,11 @@ const QuestionsList = () => {
         testId,
         remainingQuestionIds,
       };
-      await create(values);
+      const response = await create(values);
+      if (response.data?._id) {
+        return response.data._id;
+      }
+      return null;
     } catch (err) {
       toast.error(err.message || "testAttempt creation failed");
     }
@@ -43,15 +48,19 @@ const QuestionsList = () => {
 
   const handleClick = (row) => {
     navigate("/dashboard/TestLayout", {
-      state: { question: row, language: test?.language, test: test },
+      state: { question: row, language: test?.language, test: test, attemptId },
     });
   };
 
   useEffect(() => {
-    if (!isAttempted && !hasCreatedAttempt) {
-      hasCreatedAttempt = true;
-      createAttempt();
-    }
+    const initAttempt = async () => {
+      if (!isAttempted && !hasCreatedAttempt) {
+        hasCreatedAttempt = true;
+        const id = await createAttempt();
+        setAttemptId(id);
+      }
+    };
+    initAttempt();
   }, []);
 
   const columns = [

@@ -6,33 +6,25 @@ import User from "../models/user";
 export let io: Server;
 
 // Helper function to calculate days until next birthday
+// Returns positive if birthday is upcoming, negative if birthday has passed this year
 const getDaysUntilBirthday = (dob: Date): number => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   const birthDate = new Date(dob);
   const currentYear = today.getFullYear();
-  
+
   // Create birthday for current year
-  let nextBirthday = new Date(
+  const nextBirthday = new Date(
     currentYear,
     birthDate.getMonth(),
-    birthDate.getDate()
+    birthDate.getDate(),
   );
-  
-  // If birthday has passed this year, use next year
-  if (nextBirthday < today) {
-    nextBirthday = new Date(
-      currentYear + 1,
-      birthDate.getMonth(),
-      birthDate.getDate()
-    );
-  }
-  
-  // Calculate difference in days
+
+  // Calculate difference in days (can be negative if birthday already passed this year)
   const diffTime = nextBirthday.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
+  console.log("DIFF IN DAYS ", diffDays);
   return diffDays;
 };
 
@@ -62,18 +54,18 @@ export const socketService = (server: http.Server) => {
 
         console.log(`Socket ${socket.id} → joined personal room [${userId}]`);
         try {
-          console.log("userID"+userId)
+          console.log("userID" + userId);
           // Get unread notifications
           const unreadNotifications = await Notification.find({
             userId,
-            read: false
+            read: false,
           }).lean();
 
           // Get read notifications
           const readNotifications = await Notification.find({
             userId,
             read: true,
-            title: { $ne: "Complete Your Profile" }
+            title: { $ne: "Complete Your Profile" },
           }).lean();
 
           // Send unread notifications
@@ -100,13 +92,13 @@ export async function sendToUser(
     message: string;
     type?: "info" | "success" | "warning";
   },
-  pushViaSocket: boolean = true // default to push for backward compatibility
+  pushViaSocket: boolean = true, // default to push for backward compatibility
 ) {
   try {
     // Check if a notification with the same title already exists for this user to avoid duplicates
     const existingNotification = await Notification.findOne({
       userId,
-      title: payload.title
+      title: payload.title,
     }).lean();
 
     if (existingNotification) {
@@ -134,11 +126,15 @@ export async function sendToUser(
 export async function sendWelcomeMessage(userId: string, name: string) {
   // Save to DB only - user will see on next page visit
   // No socket push needed since user just registered
-  await sendToUser(userId, {
-    type: "success",
-    title: "Welcome to LearnCode!",
-    message: `Hi ${name}, we're excited to have you on board! Explore tutorials, take quizzes, and enhance your learning journey!`,
-  }, false); // false = don't push via socket
+  await sendToUser(
+    userId,
+    {
+      type: "success",
+      title: "Welcome to LearnCode!",
+      message: `Hi ${name}, we're excited to have you on board! Explore tutorials, take quizzes, and enhance your learning journey!`,
+    },
+    false,
+  ); // false = don't push via socket
 }
 
 export async function notifyAdminOfNewUser(name: string) {
@@ -155,7 +151,7 @@ export async function notifyAdminOfNewUser(name: string) {
 export async function notifyDobMissing(userId: string) {
   try {
     const user = await User.findById(userId).lean();
-    
+
     if (!user) {
       console.error(`User not found: ${userId}`);
       return false;
@@ -165,11 +161,15 @@ export async function notifyDobMissing(userId: string) {
     if (!user.dob) {
       // Save to DB only - user will see when they visit profile page
       // No socket push needed
-      await sendToUser(userId, {
-        type: "warning",
-        title: "Complete Your Profile",
-        message: `Hi ${user.name}, your date of birth is missing. Please update your profile to enjoy personalized features and a better experience!`,
-      }, false); // false = don't push via socket
+      await sendToUser(
+        userId,
+        {
+          type: "warning",
+          title: "Complete Your Profile",
+          message: `Hi ${user.name}, your date of birth is missing. Please update your profile to enjoy personalized features and a better experience!`,
+        },
+        false,
+      ); // false = don't push via socket
       return true;
     }
 
@@ -184,45 +184,55 @@ export async function notifyDobMissing(userId: string) {
 export const notifyUpcomingBirthday = async (userId: string) => {
   try {
     const user = await User.findById(userId).lean();
-    
+
     if (!user || !user.dob) {
       return false;
     }
-    
+
     const daysUntil = getDaysUntilBirthday(user.dob);
-    
+
+    // Check if notification exists
+    const existingNotification = await Notification.findOne({
+      userId,
+      title: "Upcoming Birthday",
+    }).lean();
+
     // Show notification if birthday is within 10 days (10, 9, 8, 7, 6, 5, 4, 3, 2, 1 days before or on birthday)
     if (daysUntil >= 0 && daysUntil <= 10) {
-      // Use static title so sendToUser's duplicate check prevents multiple notifications
-      const title = "Upcoming Birthday";
-      const message = daysUntil === 0 
-        ? `🎂 Today is ${user.name}'s birthday! Wishing them a very Happy Birthday!`
-        : `🎂 ${user.name}'s birthday is in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}!`;
-
-      // Check if notification already exists
-      const existingNotification = await Notification.findOne({
-        userId,
-        title
-      }).lean();
+      const message =
+        daysUntil === 0
+          ? `🎂 Today is ${user.name}'s birthday! Wishing them a very Happy Birthday!`
+          : `🎂 ${user.name}'s birthday is in ${daysUntil} day${daysUntil !== 1 ? "s" : ""}!`;
 
       if (existingNotification) {
         // Update the message with current days count and set read to false
-        await Notification.findByIdAndUpdate(existingNotification._id, { message, read: false });
+        await Notification.findByIdAndUpdate(existingNotification._id, {
+          message,
+          read: false,
+        });
         return true;
       }
 
       // Create new notification if doesn't exist
-      await sendToUser(userId, {
-        type: "success",
-        title: title,
-        message: message,
-      }, false); // false = don't push via socket
+      await sendToUser(
+        userId,
+        {
+          type: "success",
+          title: "Upcoming Birthday",
+          message: message,
+        },
+        false,
+      ); // false = don't push via socket
       return true;
+    } else if (daysUntil < 0 && existingNotification) {
+      // If birthday has passed (negative days), delete the notification completely
+      await Notification.findByIdAndDelete(existingNotification._id);
+      return false;
     }
-    
+
     return false;
   } catch (error) {
     console.error("Error checking upcoming birthday:", error);
     return false;
   }
-}
+};

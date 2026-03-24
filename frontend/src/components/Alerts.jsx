@@ -38,7 +38,6 @@ export const PasswordRules = ({ isVisible, password = "" }) => {
 
 export const checkDobAndShowNotification = (userDob) => {
   const isDobSet = userDob !== null && userDob !== undefined && userDob !== '';
-  console.log("this is dob notification")
   if (!isDobSet) {
     // Return notification object instead of showing toast
     return {

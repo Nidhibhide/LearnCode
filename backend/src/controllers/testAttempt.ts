@@ -1,4 +1,5 @@
 //create test attempt
+import mongoose from "mongoose";
 import { TestAttempt } from "../models";
 import { JsonOne, JsonAll, getPaginationParams, buildAggregationPipeline, handleError } from "../utils";
 import { Request, Response } from "express";
@@ -17,7 +18,7 @@ const create = async (req: Request, res: Response) => {
       return JsonOne(res, 500, "Failed to create test Attempt", false);
     }
 
-    JsonOne(res, 201, "Test attempt created successfully", true);
+    JsonOne(res, 201, "Test attempt created successfully", true, test);
   } catch (error) {
     return handleError(res, "unexpected error occurred while create test Attempt");
   }
@@ -25,7 +26,7 @@ const create = async (req: Request, res: Response) => {
 
 const update = async (req: Request, res: Response) => {
   try {
-    const { questionId, flag } = req.body;
+    const { questionId, flag, submissionCount } = req.body;
     const { id } = req.params;
 
     const attempt = await TestAttempt.findById(id);
@@ -33,18 +34,47 @@ const update = async (req: Request, res: Response) => {
       return JsonOne(res, 404, "Test Attempt not found", false);
     }
 
-    attempt.remainingQuestionIds = attempt.remainingQuestionIds.filter(
-      (id) => id.toString() !== questionId
-    );
+    const questionIdStr = questionId.toString();
+    const isCorrect = attempt.correctQuestionIds.some(id => id.toString() === questionIdStr);
+    const isWrong = attempt.wrongQuestionIds.some(id => id.toString() === questionIdStr);
+    const isRemaining = attempt.remainingQuestionIds.some(id => id.toString() === questionIdStr);
+
+    // Track submission count for this question
+    if (typeof submissionCount === 'number') {
+      attempt.questionSubmissionCounts.set(questionIdStr, submissionCount);
+    }
 
     if (flag) {
-      if (!attempt.correctQuestionIds.includes(questionId)) {
+      // If correct - remove from remaining, add to correct (if not already), remove from wrong if there
+      attempt.remainingQuestionIds = attempt.remainingQuestionIds.filter(
+        id => id.toString() !== questionIdStr
+      );
+      if (!isCorrect) {
         attempt.correctQuestionIds.push(questionId);
         attempt.score += 10;
       }
+      // Remove from wrong array if it was previously marked as wrong
+      if (isWrong) {
+        attempt.wrongQuestionIds = attempt.wrongQuestionIds.filter(
+          id => id.toString() !== questionIdStr
+        );
+      }
     } else {
-      if (!attempt.wrongQuestionIds.includes(questionId)) {
+      // If wrong - add back to remaining (if not already), add to wrong (if not already)
+      // If question was previously correct, remove it from correct array
+      if (isCorrect) {
+        attempt.correctQuestionIds = attempt.correctQuestionIds.filter(
+          id => id.toString() !== questionIdStr
+        );
+        attempt.score = Math.max(0, attempt.score - 10);
+      }
+      if (isRemaining && !isWrong) {
         attempt.wrongQuestionIds.push(questionId);
+      } else if (!isRemaining) {
+        attempt.remainingQuestionIds.push(new mongoose.Types.ObjectId(questionId));
+        if (!isWrong) {
+          attempt.wrongQuestionIds.push(questionId);
+        }
       }
     }
 
@@ -146,4 +176,35 @@ const getAll = async (req: Request, res: Response) => {
     return handleError(res, "unexpected error occurred while fetching test attempts");
   }
 };
-export { create, update, getAll };
+
+// Get single test attempt by ID (to fetch existing questionSubmissionCounts)
+const getById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const attempt = await TestAttempt.findById(id);
+    if (!attempt) {
+      return JsonOne(res, 404, "Test Attempt not found", false);
+    }
+
+    // Convert Map to plain object for JSON response
+    const questionSubmissionCountsObj = Object.fromEntries(attempt.questionSubmissionCounts);
+
+    return JsonOne(res, 200, "Test Attempt fetched successfully", true, {
+      _id: attempt._id,
+      userId: attempt.userId,
+      testId: attempt.testId,
+      correctQuestionIds: attempt.correctQuestionIds,
+      wrongQuestionIds: attempt.wrongQuestionIds,
+      remainingQuestionIds: attempt.remainingQuestionIds,
+      questionSubmissionCounts: questionSubmissionCountsObj,
+      score: attempt.score,
+      completedAt: attempt.completedAt,
+      createdAt: attempt.createdAt,
+    });
+  } catch (err) {
+    return handleError(res, "unexpected error occurred while fetching test Attempt");
+  }
+};
+
+export { create, update, getAll, getById };

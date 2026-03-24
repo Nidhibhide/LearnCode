@@ -32,3 +32,14 @@ export const getAttemptAll = async (filters) => {
     );
   }
 };
+
+export const getById = async (id) => {
+  try {
+    const res = await globalaxios.get(`/testAttempt/${id}`);
+    return res.data;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};

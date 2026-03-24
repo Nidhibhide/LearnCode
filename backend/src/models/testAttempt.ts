@@ -30,6 +30,11 @@ const TestAttemptSchema = new mongoose.Schema(
         required: false,
       },
     ],
+    questionSubmissionCounts: {
+      type: Map,
+      of: Number,
+      default: {},
+    },
     score: {
       type: Number,
       default: 0,

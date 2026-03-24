@@ -59,7 +59,6 @@ const EditProfile = () => {
       const res = await update({ ...values, dob }, id);
       const { status, data } = handleApiResponse(res);
 
-      console.log(data);
       if (status === 200) {
         dispatch(setUser(data));
 

@@ -11,7 +11,7 @@ import Button from "./Button";
 import ConfirmationDialog from "./ConfirmationDialog";
 import AuthImage from "./AuthImage";
 import { LanguageBarChart, DifficultyPieChart, WeeklyActivityChart, StatCard, Leaderboard } from "./AdminCharts";
-import { SummaryCards, LevelBreakdown, TechStack, ActivityCalendar } from "./StudentCharts";
+import { SummaryCards, LevelBreakdown, TechStack, ActivityCalendar, SolvedTestsTable } from "./StudentCharts";
 
 export {
   InputField,
@@ -41,5 +41,6 @@ export {
   SummaryCards,
   LevelBreakdown,
   TechStack,
-  ActivityCalendar
+  ActivityCalendar,
+  SolvedTestsTable
 };

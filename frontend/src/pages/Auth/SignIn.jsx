@@ -41,7 +41,6 @@ const SignIn = () => {
         //fetch user api
         const userRes = await getMe();
         const { statusCode: getMeStatus, data } = userRes;
-        console.log(data);
         if (getMeStatus === 200) {
           dispatch(setUser(data));
         }

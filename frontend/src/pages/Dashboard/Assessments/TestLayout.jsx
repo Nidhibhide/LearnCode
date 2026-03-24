@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import {
   getComment,
   Button,
 } from "../../../components";
-import { update } from "../../../api/testAttempt";
+import { update, getById } from "../../../api/testAttempt";
 import { navigateTo, delay, ROUTES } from "../../../utils";
 
 const TestLayout = () => {
@@ -23,8 +23,29 @@ const TestLayout = () => {
   const test = state?.test;
   const question = state?.question || [];
   const language = test?.language;
+  const attemptId = state?.attemptId;
 
   const [code, setCode] = useState(getComment(language));
+
+  // Track submission count per question
+  const [questionSubmissionCounts, setQuestionSubmissionCounts] = useState({});
+
+  // Fetch existing submission counts when component loads
+  useEffect(() => {
+    const fetchSubmissionCounts = async () => {
+      if (test?._id) {
+        try {
+          const response = await getById(attemptId);
+          if (response.success && response.data?.questionSubmissionCounts) {
+            setQuestionSubmissionCounts(response.data.questionSubmissionCounts);
+          }
+        } catch (err) {
+          console.error("Error fetching submission counts:", err);
+        }
+      }
+    };
+    fetchSubmissionCounts();
+  }, [test?._id]);
 
   const runCode = async () => {
     // Check if code is empty or just placeholder comment
@@ -40,11 +61,6 @@ const TestLayout = () => {
     setOutput("");
 
     try {
-      console.log("Starting code execution...");
-      console.log("Language:", language);
-      console.log("Code:", code);
-      console.log("Sample Input:", question?.sampleInput);
-
       // Submit code to Judge0
       const submission = await axios.post(
         `${JUDGE_BASE_URL}/submissions?base64_encoded=false&wait=false`,
@@ -62,10 +78,7 @@ const TestLayout = () => {
         }
       );
 
-      console.log("Submission response:", submission.data);
-
       const token = submission.data.token;
-      console.log("Token:", token);
 
       // Poll for result
       let result;
@@ -81,7 +94,6 @@ const TestLayout = () => {
         );
 
         result = response.data;
-        console.log("Result status:", result.status);
 
         if (result.status.id <= 2) {
           await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -89,8 +101,6 @@ const TestLayout = () => {
           break;
         }
       }
-
-      console.log("Final result:", result);
 
       // Set output based on result
       if (result.stdout) {
@@ -104,7 +114,6 @@ const TestLayout = () => {
       }
 
       if (result.stdout || result.stderr || result.compile_output) {
-        console.log("Setting hasRunCode to true");
         setHasRunCode(true);
       }
     } catch (error) {
@@ -116,38 +125,49 @@ const TestLayout = () => {
   };
 
   const submitCode = async () => {
-    console.log("Submit button clicked!");
-    console.log("hasRunCode:", hasRunCode);
-    
     // Show warning toast if code hasn't been run
     if (!hasRunCode) {
       toast.warn("Please run your code first before submitting");
       return;
     }
     
-    console.log("output:", output);
-    console.log("expectedOutput:", question?.expectedOutput);
-    console.log("test._id:", test?._id);
-    
     try {
       const isCorrect = output.trim() === question?.expectedOutput.trim();
-      console.log("isCorrect:", isCorrect);
+      
+      // Get current submission count for this question
+      const questionId = question?._id;
+      const currentCount = questionSubmissionCounts[questionId] || 0;
+      const submissionCount = currentCount + 1;
+      
+      // Update local state
+      setQuestionSubmissionCounts(prev => ({
+        ...prev,
+        [questionId]: submissionCount
+      }));
       
       const values = {
         questionId: question?._id,
         flag: isCorrect,
+        submissionCount: submissionCount,
       };
-      console.log("Submitting values:", values);
       
-      const response = await update(test?._id, values);
-      console.log("Update response:", response);
+      const response = await update(attemptId, values);
       
       const { statusCode } = response;
       if (statusCode === 200) {
         setScore(isCorrect ? 10 : 0);
+        // Show message - for correct navigate after delay, for wrong hide result after delay
+        if (isCorrect) {
+          toast.success("Correct! Well done!");
+          await delay(3000);
+          navigateTo(navigate, ROUTES.DASHBOARD + "/assessments");
+        } else {
+          toast.warn("Incorrect - you can try again!");
+          // Hide result display after 3 seconds but stay on same question
+          await delay(3000);
+          setScore(null);
+        }
       }
-      await delay(3000);
-      navigateTo(navigate, ROUTES.DASHBOARD + "/assessments");
     } catch (err) {
       console.error("Submit error:", err);
       alert(err?.message || "Test attempt update failed");

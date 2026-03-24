@@ -17,7 +17,7 @@ function TableComponent({
   ariaLabel = "Data Table",
 }) {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-auto">
       <Table
         aria-label={ariaLabel}
         selectionMode={selectionMode}
@@ -36,7 +36,7 @@ function TableComponent({
           {columns.map((col) => (
             <TableColumn
               key={col.key}
-              className="text-xs md:text-sm font-bold text-black whitespace-nowrap"
+              className={`text-xs md:text-sm font-bold text-black whitespace-nowrap ${col.width || ""}`}
             >
               {col.label}
             </TableColumn>
@@ -49,7 +49,7 @@ function TableComponent({
               {columns.map((col) => (
                 <TableCell
                   key={col.key}
-                  className="text-xs md:text-sm text-black"
+                  className="text-sm md:text-base text-black"
                 >
                   {col.render ? col.render(row) : row[col.key]}
                 </TableCell>

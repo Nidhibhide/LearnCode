@@ -1,6 +1,7 @@
 import React from 'react';
-import { FaCheckCircle, FaClock, FaTrophy, FaLanguage, FaCalendarAlt } from 'react-icons/fa';
+import { FaCheckCircle, FaClock, FaTrophy, FaLanguage, FaCalendarAlt, FaCode, FaStar, FaCheck, FaTimes } from 'react-icons/fa';
 import { SUPPORTED_LANGUAGES, DAYS, MONTHS, YEARS } from '../constants';
+import TableComponent from './TableComponent';
 
 /**
  * Summary cards component for MyScores page
@@ -192,6 +193,114 @@ export const LevelBreakdown = ({ basic = 0, intermediate = 0, advanced = 0 }) =>
 /**
  * Activity Calendar component for displaying user's daily activity
  */
+/**
+ * Get difficulty badge class based on level
+ */
+const getDifficultyBadge = (difficulty) => {
+  const level = difficulty?.toLowerCase();
+  switch (level) {
+    case 'basic':
+      return { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' };
+    case 'intermediate':
+      return { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-300' };
+    case 'advanced':
+      return { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' };
+    default:
+      return { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300' };
+  }
+};
+
+/**
+ * Solved Tests Table component for displaying user's solved tests
+ * Uses TableComponent from @heroui/react
+ * Maps API fields: questionName, testName, language, level, isCorrect, submittedAt
+ */
+export const SolvedTestsTable = ({ 
+  tests = [], 
+  onTestClick = null,
+  showLanguage = true,
+  showDate = true,
+  showDifficulty = true,
+  showScore = true,
+  emptyMessage = "No solved tests yet. Start solving tests to see your progress!"
+}) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // DD/MM/YYYY format
+  };
+
+  // Build columns based on visibility props
+  const columns = [
+    { key: "questionName", label: "QUESTION NAME", width: "min-w-[250px]" },
+    { key: "testName", label: "TEST NAME", width: "min-w-[180px]" },
+    ...(showLanguage ? [{ key: "language", label: "LANGUAGE", width: "min-w-[120px]" }] : []),
+    ...(showDifficulty ? [{
+      key: "level",
+      label: "LEVEL",
+      width: "min-w-[100px]",
+      render: (row) => {
+        const diff = getDifficultyBadge(row.level);
+        return (
+          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${diff.bg} ${diff.text} ${diff.border}`}>
+            {row.level || 'Basic'}
+          </span>
+        );
+      }
+    }] : []),
+    {
+      key: "status",
+      label: "STATUS",
+      width: "min-w-[120px]",
+      render: (row) => {
+        const status = row.status || "not_attempted";
+        const statusConfig = {
+          correct: { bg: "bg-green-100", text: "text-green-700", label: "Correct" },
+          wrong: { bg: "bg-red-100", text: "text-red-700", label: "Wrong" },
+          not_attempted: { bg: "bg-gray-100", text: "text-gray-700", label: "Not Attempted" },
+        };
+        const config = statusConfig[status] || statusConfig.not_attempted;
+        return (
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
+            {config.label}
+          </span>
+        );
+      },
+    },
+    ...(showDate ? [{
+      key: "submittedAt",
+      label: "SUBMITTED AT",
+      width: "min-w-[130px]",
+      render: (row) => formatDate(row.submittedAt)
+    }] : []),
+  ];
+
+  return (
+    <div className="overflow-x-auto">
+      {tests.length > 0 ? (
+        <TableComponent
+          columns={columns}
+          rows={tests}
+          onSelectionChange={(keys) => {
+            if (onTestClick && keys.size > 0) {
+              const key = Array.from(keys)[0];
+              const selectedTest = tests.find(t => t._id === key);
+              if (selectedTest) onTestClick(selectedTest);
+            }
+          }}
+        />
+      ) : (
+        <div className="flex items-center justify-center h-full text-gray-500 py-8">
+          {emptyMessage}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Activity Calendar component for displaying user's daily activity
+ */
 export const ActivityCalendar = ({ 
   events = [], 
   selectedMonth = new Date().getMonth(),
@@ -255,4 +364,5 @@ export default {
   LevelBreakdown,
   TechStack,
   ActivityCalendar,
+  SolvedTestsTable,
 };
