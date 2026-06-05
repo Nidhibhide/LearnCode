@@ -3,6 +3,7 @@ import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { MdOpenInFull, MdCloseFullscreen } from "react-icons/md";
 import { JUDGE_API_KEY, JUDGE_HOST, JUDGE_BASE_URL } from "../../../constants";
 import {
   CalculateCode,
@@ -30,6 +31,9 @@ const TestLayout = () => {
   // Track submission count per question
   const [questionSubmissionCounts, setQuestionSubmissionCounts] = useState({});
 
+  // Track fullscreen state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   // Fetch existing submission counts when component loads
   useEffect(() => {
     const fetchSubmissionCounts = async () => {
@@ -56,7 +60,7 @@ const TestLayout = () => {
       setLoading(false);
       return;
     }
-    
+
     setLoading(true);
     setOutput("");
 
@@ -75,7 +79,7 @@ const TestLayout = () => {
             "X-RapidAPI-Key": JUDGE_API_KEY,
             "X-RapidAPI-Host": JUDGE_HOST,
           },
-        }
+        },
       );
 
       const token = submission.data.token;
@@ -90,7 +94,7 @@ const TestLayout = () => {
               "X-RapidAPI-Key": JUDGE_API_KEY,
               "X-RapidAPI-Host": JUDGE_HOST,
             },
-          }
+          },
         );
 
         result = response.data;
@@ -130,29 +134,29 @@ const TestLayout = () => {
       toast.warn("Please run your code first before submitting");
       return;
     }
-    
+
     try {
       const isCorrect = output.trim() === question?.expectedOutput.trim();
-      
+
       // Get current submission count for this question
       const questionId = question?._id;
       const currentCount = questionSubmissionCounts[questionId] || 0;
       const submissionCount = currentCount + 1;
-      
+
       // Update local state
-      setQuestionSubmissionCounts(prev => ({
+      setQuestionSubmissionCounts((prev) => ({
         ...prev,
-        [questionId]: submissionCount
+        [questionId]: submissionCount,
       }));
-      
+
       const values = {
         questionId: question?._id,
         flag: isCorrect,
         submissionCount: submissionCount,
       };
-      
+
       const response = await update(attemptId, values);
-      
+
       const { statusCode } = response;
       if (statusCode === 200) {
         setScore(isCorrect ? 10 : 0);
@@ -173,8 +177,23 @@ const TestLayout = () => {
       alert(err?.message || "Test attempt update failed");
     }
   };
+
+  const handleFullScreen = () => {
+    const element = document.getElementById("test-area");
+    if (!document.fullscreenElement) {
+      element.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+       document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
   return (
-    <div className="h-full  py-12  px-6  flex flex-col  w-full">
+    <div
+      id="test-area"
+      className="h-full py-12 px-6 flex flex-col w-full bg-white"
+    >
       {/* Sample Input/Output */}
       <div className="">
         <h2 className="text-lg font-semibold mb-4 text-error">
@@ -220,7 +239,7 @@ const TestLayout = () => {
           onClick={runCode}
           disabled={loading}
         >
-         Run Code
+          Run Code
         </Button>
         <Button
           className="bg-success text-white px-4 py-2 rounded hover:bg-success text-sm"
@@ -243,6 +262,14 @@ const TestLayout = () => {
           {score}
         </div>
       )}
+      {/* Fullscreen Button */}
+      <div className="fixed bottom-6 right-6 text-primary cursor-pointer">
+        {isFullscreen ? (
+          <MdCloseFullscreen size={24} onClick={handleFullScreen} />
+        ) : (
+          <MdOpenInFull size={24} onClick={handleFullScreen} />
+        )}
+      </div>
     </div>
   );
 };

@@ -129,7 +129,7 @@ export const Leaderboard = ({
   return (
     <div className="bg-surface border border-border p-6 rounded-xl mb-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-textPrimary">Leaderboard</h2>
+        <h2 className="text-xl font-semibold text-textPrimary">Leaderboard777</h2>
         <div className="flex gap-2">
           {filterOptions.map((filter) => (
             <button

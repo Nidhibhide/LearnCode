@@ -23,7 +23,7 @@ export default {
         // ⚪ BACKGROUND COLORS
         background: "#F3F4F6", // page background (gray-100)
         surface: "#FFFFFF", // cards, modals, containers
-        surfaceAlt: "#F9FAFB", // subtle sections (gray-50)
+        surfaceAlt: "#F3F4F6", // subtle sections (gray-50)
 
         // 📝 TEXT COLORS
         textPrimary: "#111827", // main text (gray-900)
