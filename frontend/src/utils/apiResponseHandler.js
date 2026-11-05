@@ -30,7 +30,8 @@ export const handleApiResponse = (response, options = {}) => {
       "An error occurred";
     data = response.data;
 
-    if (showErrorToast) {
+    // 429 is already toasted by the axios interceptor
+    if (showErrorToast && status !== 429) {
       toast.error(message);
     }
   }
@@ -52,6 +53,14 @@ export const handleApiError = (
   error,
   fallbackMessage = "An error occurred"
 ) => {
+  // 429 is already toasted by the axios interceptor
+  if (error?.__rateLimited || error?.response?.status === 429) {
+    return (
+      error.response?.data?.message ||
+      "Too many requests. Please try again later."
+    );
+  }
+
   const message = error.message || fallbackMessage;
   toast.error(message);
   return message;

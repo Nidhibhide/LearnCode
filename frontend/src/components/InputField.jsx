@@ -14,6 +14,8 @@ const InputField = ({
   onFocus,
   onBlur,
   radioOptions = [],
+  min,
+  max,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -102,8 +104,22 @@ const InputField = ({
                   {...field}
                   type={type === "password" ? (showPassword ? "text" : "password") : type}
                   placeholder={placeholder}
+                  min={min}
+                  max={max}
                   className="md:py-3 md:px-4 py-2 px-2 pr-10 rounded-lg border border-borderDark placeholder:text-base w-full"
+                  onKeyDown={(e) => {
+                    if (type === "number" && ["-", "+", "e", "E"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   onChange={(e) => {
+                    if (type === "number") {
+                      const value = e.target.value;
+                      // Block negative values (e.g. paste)
+                      if (value !== "" && Number(value) < 0) {
+                        return;
+                      }
+                    }
                     field.onChange(e);
                     if (onChange) onChange(e);
                   }}
@@ -122,7 +138,9 @@ const InputField = ({
               </button>
             )}
           </div>
-          {type === "password" && <PasswordRules isVisible={isHovered || isFocused} password={fieldValue} />}
+          {type === "password" && (
+            <PasswordRules isVisible={isHovered || isFocused} password={fieldValue} />
+          )}
         </>
       )}
       <ErrorMessage

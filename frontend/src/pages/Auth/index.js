@@ -4,6 +4,7 @@ import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
 import Verification from "./Verification";
 import ResendVerification from "./ResendVerification";
+import VerifyEmailChange from "./VerifyEmailChange";
 
 export {
   SignIn,
@@ -12,4 +13,5 @@ export {
   ResetPassword,
   Verification,
   ResendVerification,
+  VerifyEmailChange,
 };

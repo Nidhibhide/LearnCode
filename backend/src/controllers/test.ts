@@ -5,11 +5,39 @@ import { Request, Response } from "express";
 import { TEST_LANGUAGES, TEST_LEVELS } from "../constants";
 
 
-const create = async (req: Request, res: Response) => {
-  const { name, numOfQuestions, language, level } = req.body;
+const previewQuestions = async (req: Request, res: Response) => {
+  const { language, level, numOfQuestions } = req.body;
 
   try {
     const questions = await generateQuestions(language, level, numOfQuestions);
+    return JsonOne(res, 200, "Questions generated successfully", true, questions);
+  } catch (error) {
+    console.error(error);
+    return handleError(res, "unexpected error occurred while generating questions");
+  }
+};
+
+const create = async (req: Request, res: Response) => {
+  const { name, numOfQuestions, language, level, questions: previewQuestions } = req.body;
+
+  try {
+    let questions = previewQuestions;
+
+    // Use reviewed preview questions when provided; otherwise generate (backward compatible)
+    if (Array.isArray(previewQuestions) && previewQuestions.length > 0) {
+      if (previewQuestions.length !== Number(numOfQuestions)) {
+        return JsonOne(
+          res,
+          400,
+          "Questions count must match No of Questions",
+          false
+        );
+      }
+      questions = previewQuestions;
+    } else {
+      questions = await generateQuestions(language, level, numOfQuestions);
+    }
+
     const test = await Test.create({
       name,
       numOfQuestions,
@@ -33,6 +61,7 @@ const create = async (req: Request, res: Response) => {
 
     JsonOne(res, 201, `${name} created successfully  `, true);
   } catch (error) {
+    console.error(error);
     return handleError(res, "unexpected error occurred while create test");
   }
 };
@@ -154,32 +183,19 @@ const restore = async (req: Request, res: Response) => {
 
 const edit = async (req: Request, res: Response) => {
   try {
-    const { name, numOfQuestions, language, level } = req.body;
+    const { name } = req.body;
     const { id } = req.params;
     const oldTest = await Test.findById(id);
     if (!oldTest) {
       return JsonOne(res, 404, "Old Test not found", false);
     }
 
-    const shouldUpdateQuestions =
-      oldTest.language !== language ||
-      oldTest.level !== level ||
-      oldTest.numOfQuestions !== numOfQuestions;
-
-    const updatedFields: any = { name, numOfQuestions, language, level };
-
-    if (shouldUpdateQuestions) {
-      const newQuestions = await generateQuestions(
-        language,
-        level,
-        numOfQuestions
-      );
-      updatedFields.questions = newQuestions;
-    }
-
-    const updatedTest = await Test.findByIdAndUpdate(id, updatedFields, {
-      new: true,
-    });
+    // Only test name can be updated; other fields stay unchanged
+    const updatedTest = await Test.findByIdAndUpdate(
+      id,
+      { name },
+      { new: true }
+    );
 
     if (!updatedTest) {
       return JsonOne(res, 404, "Test not found", false);
@@ -346,4 +362,4 @@ const getOngoing = async (req: Request, res: Response) => {
     return handleError(res, "Unexpected error occurred while fetching attempted tests");
   }
 };
-export { create, getAll, softDelete, restore, edit, getDeletedAll, getOngoing };
+export { previewQuestions, create, getAll, softDelete, restore, edit, getDeletedAll, getOngoing };

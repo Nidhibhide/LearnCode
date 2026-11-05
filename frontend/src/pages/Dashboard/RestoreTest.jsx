@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { GetDeletedAll, restore } from "../../api/test";
 import {
   SearchFilters,
@@ -8,11 +9,12 @@ import {
   Button,
 } from "../../components/index";
 
-import { toast } from "react-toastify";
 import { FaArrowsRotate } from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa";
 import { handleApiResponse, handleApiError } from "../../utils";
 
 function RestoreTest() {
+  const navigate = useNavigate();
   // Column definitions
   const columns = [
     { 
@@ -100,7 +102,7 @@ function RestoreTest() {
       const { status } = handleApiResponse(res);
 
       if (status === 200) {
-        setTimeout(() => navigate("/dashboard/restoreTest"), 3000);
+        setTimeout(() => handleViewTests(), 3000);
       }
     } catch (err) {
       handleApiError(err, "test restore failed");
@@ -113,7 +115,16 @@ function RestoreTest() {
 
   return (
     <div className="md:py-12 py-4 px-4 w-full">
-      <h1 className="md:text-2xl text-xl font-bold text-center">Restore Test</h1>
+      <div className="relative flex items-center justify-center mb-4">
+        <Button
+          onClick={() => navigate("/dashboard/setting")}
+          className="absolute left-0 flex items-center gap-2 bg-transparent text-textPrimary hover:text-primary font-medium text-base md:text-lg py-2 px-0 mb-0 shadow-none"
+        >
+          <FaArrowLeft size={16} />
+          Back
+        </Button>
+        <h1 className="md:text-2xl text-xl font-bold text-center">Restore Test</h1>
+      </div>
 
       {/* Search, Filter, Sort UI */}
       <SearchFilters

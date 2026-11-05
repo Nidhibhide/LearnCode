@@ -10,6 +10,8 @@ import FormWrapper from "./FormWrapper";
 import Button from "./Button";
 import ConfirmationDialog from "./ConfirmationDialog";
 import AuthImage from "./AuthImage";
+import DesktopOnly from "./DesktopOnly";
+import GuestOnly from "./GuestOnly";
 import { LanguageBarChart, DifficultyPieChart, WeeklyActivityChart, StatCard, Leaderboard } from "./AdminCharts";
 import { SummaryCards, LevelBreakdown, TechStack, ActivityCalendar, SolvedTestsTable } from "./StudentCharts";
 
@@ -33,6 +35,8 @@ export {
   Button,
   ConfirmationDialog,
   AuthImage,
+  DesktopOnly,
+  GuestOnly,
   LanguageBarChart,
   DifficultyPieChart,
   WeeklyActivityChart,

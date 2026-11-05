@@ -12,6 +12,7 @@ import {
   notifyDobMissing,
   notifyUpcomingBirthday,
   mailOptionsForVerify,
+  mailOptionsForEmailChange,
   transporterFun,
   refreshTokenOptions,
   accessTokenOptions,
@@ -171,7 +172,7 @@ const login = async (req: Request, res: Response) => {
     const { password, email, role } = req.body;
     const user = await findUserByEmail(email);
     if (!user || !user.password) {
-      return JsonOne(res, 404, "User or password not found", false);
+      return JsonOne(res, 401, "Invalid email or password", false);
     }
     if (!user.isVerified) {
       return JsonOne(res, 400, "User is not verified", false);
@@ -194,7 +195,7 @@ const login = async (req: Request, res: Response) => {
         user.isBlocked = true;
       }
       await user.save();
-      return JsonOne(res, 401, "Incorrect password", false);
+      return JsonOne(res, 401, "Invalid email or password", false);
     }
 
     // Successful login
@@ -277,11 +278,11 @@ const updateProfile = async (req: Request, res: Response) => {
       }
 
       // Create token with user ID and new email
-      const token = jwt.sign({ id: user._id, newEmail: email }, process.env.ACCESS_TOKEN as string, { expiresIn: "10m" });
+      const token = jwt.sign({ id: user._id, newEmail: email }, process.env.ACCESS_TOKEN as string, { expiresIn: "5m" });
       
       await nodemailer.createTestAccount();
       const transporter = transporterFun();
-      await transporter.sendMail(mailOptionsForVerify(email, token));
+      await transporter.sendMail(mailOptionsForEmailChange(email, token));
 
       return JsonOne(res, 200, `Verification email sent to ${email}. Verify to complete email change.`, true);
     }

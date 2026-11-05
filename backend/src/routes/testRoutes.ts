@@ -1,4 +1,5 @@
 import {
+  previewQuestions,
   createTest,
   getAllTests,
   softDelete,
@@ -10,15 +11,23 @@ import {
 import express from "express";
 import { TokenAuth, RoleAuth, BlockCheck } from "../middlewares";
 
-import { TestValidMid } from "../middlewares/validationMid";
+import { TestValidMid, PreviewQuestionsValidMid, EditTestValidMid } from "../middlewares/validationMid";
 
 const router = express.Router();
 
+router.post(
+  "/preview-questions",
+  TokenAuth,
+  BlockCheck,
+  RoleAuth("admin"),
+  PreviewQuestionsValidMid,
+  previewQuestions
+);
 router.post("/create", TokenAuth, BlockCheck, RoleAuth("admin"), TestValidMid, createTest);
 router.get("/getAll", TokenAuth, BlockCheck, RoleAuth("admin", "student"), getAllTests); // use for get all tests and non attempted tests for a user
 router.get("/get-deleted-All", TokenAuth, BlockCheck, RoleAuth("admin"), getDeletedAll);
 router.put("/delete/:id", TokenAuth, BlockCheck, RoleAuth("admin"), softDelete);
-router.put("/edit/:id", TokenAuth, BlockCheck, RoleAuth("admin"), TestValidMid, edit);
+router.put("/edit/:id", TokenAuth, BlockCheck, RoleAuth("admin"), EditTestValidMid, edit);
 router.put("/restore/:id", TokenAuth, BlockCheck, RoleAuth("admin"), restore);
 router.get("/getOngoing/:user", TokenAuth, BlockCheck, RoleAuth("student"), getOngoing);
 

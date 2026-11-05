@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { deleteTest } from "../../../api/test";
 import { ConfirmationDialog } from "../../../components";
 import { ROUTES } from "../../../constants";
@@ -9,6 +8,7 @@ import { navigateTo, delay, handleApiResponse, handleApiError } from "../../../u
 function DeleteTest() {
   const { testId } = useParams();
   const { state } = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const name = state?.name || "Not Available";
@@ -27,7 +27,7 @@ function DeleteTest() {
 
       if (status === 200) {
         await delay(3000);
-        navigateTo(window.history, ROUTES.DASHBOARD + "/viewTest");
+        navigateTo(navigate, ROUTES.DASHBOARD + "/viewTest");
       }
     } catch (err) {
       handleApiError(err, "test deletion failed");
@@ -35,11 +35,6 @@ function DeleteTest() {
       setLoading(false);
       setIsOpen(false);
     }
-  };
-
-  const handleCancel = () => {
-    setIsOpen(false);
-    navigateTo(window.history, ROUTES.DASHBOARD + "/viewTest");
   };
 
   return (

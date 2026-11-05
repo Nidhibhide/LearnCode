@@ -159,18 +159,18 @@ export async function notifyDobMissing(userId: string) {
 
     // Check if DOB is not set (null, undefined, or not present)
     if (!user.dob) {
-      // Save to DB only - user will see when they visit profile page
-      // No socket push needed
-      await sendToUser(
-        userId,
-        {
-          type: "warning",
-          title: "Complete Your Profile",
-          message: `Hi ${user.name}, your date of birth is missing. Please update your profile to enjoy personalized features and a better experience!`,
-        },
-        false,
-      ); // false = don't push via socket
-      return true;
+      // Temporarily disabled: "Complete Your Profile" notification
+      // await sendToUser(
+      //   userId,
+      //   {
+      //     type: "warning",
+      //     title: "Complete Your Profile",
+      //     message: `Hi ${user.name}, your date of birth is missing. Please update your profile to enjoy personalized features and a better experience!`,
+      //   },
+      //   false,
+      // ); // false = don't push via socket
+      // return true;
+      return false;
     }
 
     return false;

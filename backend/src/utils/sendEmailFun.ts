@@ -39,6 +39,33 @@ This link expires in 5 minutes. If you didn't sign up, ignore this email.`,
   };
 };
 
+const mailOptionsForEmailChange = (email: string, token: string) => {
+  const CLIENT = process.env.CLIENT;
+  const verifyUrl = `${CLIENT}/verify-email-change?token=${token}`;
+
+  return {
+    from: process.env.USER,
+    to: email,
+    subject: "Learncode - Confirm Email Change",
+    text: `You requested to change your Learncode email.
+
+Confirm using the link below:
+
+${verifyUrl}
+
+This link expires in 5 minutes. If you didn't request this, ignore this email.`,
+    html: `
+    <div style="font-family: Arial, sans-serif;">
+      <p><strong>Confirm your email change</strong></p>
+      <p>Click the button below to confirm your new email address:</p>
+      <a href="${verifyUrl}" style="padding: 10px 16px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 4px;">Confirm Email</a>
+      <p>This link expires in 5 minutes.</p>
+      <p>If you didn't request this, please ignore this email.</p>
+    </div>
+  `,
+  };
+};
+
 const mailOptionsForVResetPass = (email: string, token: string) => {
   const CLIENT = process.env.CLIENT;
   const resetUrl = `${CLIENT}/resetPass?token=${token}`;
@@ -64,4 +91,9 @@ This link will expire in 5 minutes. If you didn't request this, you can ignore i
   };
 };
 
-export { transporterFun, mailOptionsForVResetPass, mailOptionsForVerify };
+export {
+  transporterFun,
+  mailOptionsForVResetPass,
+  mailOptionsForVerify,
+  mailOptionsForEmailChange,
+};

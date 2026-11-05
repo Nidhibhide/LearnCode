@@ -1,5 +1,16 @@
 import {globalaxios} from "../globals";
 
+export const previewQuestions = async (data) => {
+  try {
+    const res = await globalaxios.post("/test/preview-questions", data);
+    return res.data;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};
+
 export const create = async (data) => {
   try {
     const res = await globalaxios.post("/test/create", data);

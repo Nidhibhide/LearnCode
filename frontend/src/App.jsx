@@ -6,13 +6,13 @@ import {
   ResetPassword,
   Verification,
   ResendVerification,
+  VerifyEmailChange,
 } from "./pages/Auth/index";
 import Unauthorized from "./Unauthorized";
 import SessionExpired from "./SessionExpired";
 import {
   ViewTest,
   Setting,
-  Logout,
   RestoreTest,
   Assessments,
   MyScores,
@@ -36,22 +36,38 @@ import {
   Rules,
 } from "./pages/Dashboard/Assessments/index";
 import { DashboardPage } from "./pages/Dashboard";
+import { DesktopOnly, GuestOnly } from "./components";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <>
+    <DesktopOnly>
       <Router>
         <Routes>
-          <Route path="/" element={<SignUp />} />
+          <Route
+            path="/"
+            element={
+              <GuestOnly>
+                <SignUp />
+              </GuestOnly>
+            }
+          />
           <Route path="/unauthorize" element={<Unauthorized />} />
           <Route path="/session-expired" element={<SessionExpired />} />
-          <Route path="/login" element={<SignIn />} />
+          <Route
+            path="/login"
+            element={
+              <GuestOnly>
+                <SignIn />
+              </GuestOnly>
+            }
+          />
           <Route path="/forgotPass" element={<ForgotPassword />} />
           <Route path="/resetPass" element={<ResetPassword />} />
           <Route path="/verify" element={<Verification />} />
+          <Route path="/verify-email-change" element={<VerifyEmailChange />} />
           <Route path="/resend-verify" element={<ResendVerification />} />
 
           {/* Dashboard */}
@@ -202,19 +218,11 @@ function App() {
                 }
               />
             </Route>
-            <Route
-              path="logout"
-              element={
-                <RoleAuth allowedRoles={["admin", "student"]}>
-                  <Logout />
-                </RoleAuth>
-              }
-            />
           </Route>
         </Routes>
       </Router>
       <ToastContainer />
-    </>
+    </DesktopOnly>
   );
 }
 

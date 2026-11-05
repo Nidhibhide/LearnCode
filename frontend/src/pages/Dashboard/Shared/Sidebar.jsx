@@ -13,23 +13,23 @@ import { useSelector } from "react-redux";
 // Define parent-child route relationships for active state
 const parentChildRoutes = {
   "/dashboard/assessments": [
-    "/dashboard/questionsList", 
-    "/dashboard/TestLayout", 
-    "/dashboard/rules"
+    "/dashboard/questionsList",
+    "/dashboard/TestLayout",
+    "/dashboard/rules",
   ],
   "/dashboard/viewTest": [
-    "/dashboard/viewTest/createTest", 
-    "/dashboard/viewTest/editTest", 
-    "/dashboard/viewTest/deleteTest"
+    "/dashboard/viewTest/createTest",
+    "/dashboard/viewTest/editTest",
+    "/dashboard/viewTest/deleteTest",
   ],
   "/dashboard/setting": [
-    "/dashboard/setting/changePassword", 
+    "/dashboard/setting/changePassword",
     "/dashboard/setting/editProfile",
-    "/dashboard/restoreTest"
+    "/dashboard/restoreTest",
   ],
 };
 
-const Sidebar = ({ onLinkClick }) => {
+const Sidebar = ({ onLinkClick, onLogoutClick }) => {
   const user = useSelector((state) => state.user);
   const role = user?.role;
   const name = user?.name;
@@ -40,7 +40,7 @@ const Sidebar = ({ onLinkClick }) => {
     if (location.pathname === routePath) return true;
     const childRoutes = parentChildRoutes[routePath];
     if (childRoutes) {
-      return childRoutes.some(child => location.pathname.startsWith(child));
+      return childRoutes.some((child) => location.pathname.startsWith(child));
     }
     return false;
   };
@@ -98,17 +98,16 @@ const Sidebar = ({ onLinkClick }) => {
       icon: <IoSettingsSharp size={28} />,
       roles: ["admin", "student"],
     },
-    {
-      to: "/dashboard/logout",
-      label: "Logout",
-      icon: <MdOutlineLogout size={28} />,
-      roles: ["admin", "student"],
-    },
   ];
 
   const filteredLinks = sidebarLinks.filter((link) =>
     link.roles.includes(role)
   );
+
+  const navClass = (active) =>
+    active
+      ? "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full bg-surface text-sidebar font-semibold py-2.5"
+      : "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full text-sidebarText hover:bg-sidebarHover py-2.5";
 
   return (
     <div className="w-full xl:w-72 h-full">
@@ -123,7 +122,7 @@ const Sidebar = ({ onLinkClick }) => {
 
           <div className="flex flex-col items-center justify-center text-center">
             <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold capitalize text-white">
-              {name?.split(' ')[0]}
+              {name?.split(" ")[0]}
             </h1>
             <p className="text-xs sm:text-sm md:text-base font-medium text-success">
               {role.toUpperCase()}
@@ -141,7 +140,7 @@ const Sidebar = ({ onLinkClick }) => {
               >
                 <NavLink
                   to={link.to}
-                  className={() => isRouteActive(link.to) ? "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full bg-surface text-sidebar font-semibold py-2.5" : "flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg lg:text-xl w-full text-sidebarText hover:bg-sidebarHover py-2.5"}
+                  className={() => navClass(isRouteActive(link.to))}
                   onClick={handleLinkClick}
                 >
                   <span className="flex-shrink-0">{link.icon}</span>
@@ -149,6 +148,21 @@ const Sidebar = ({ onLinkClick }) => {
                 </NavLink>
               </li>
             ))}
+            <li className="flex items-center gap-2 cursor-pointer py-1 sm:py-2 px-2">
+              <button
+                type="button"
+                className={navClass(false)}
+                onClick={() => {
+                  handleLinkClick();
+                  if (onLogoutClick) onLogoutClick();
+                }}
+              >
+                <span className="flex-shrink-0">
+                  <MdOutlineLogout size={28} />
+                </span>
+                <span className="truncate">Logout</span>
+              </button>
+            </li>
           </ul>
         </div>
       </div>

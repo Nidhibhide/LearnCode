@@ -45,13 +45,16 @@ const index = () => {
   };
 
   useEffect(() => {
-    handleViewTests();
-  }, [level, sortOrder, search, page]);
+    // Refetch when filters change, or when returning from create/edit/delete nested routes
+    if (location.pathname === "/dashboard/viewTest") {
+      handleViewTests();
+    }
+  }, [level, sortOrder, search, page, languageFilter, location.pathname]);
 
   return (
     <div className="md:py-12 py-4 px-4  h-full">
       <h1 className="md:text-2xl text-xl font-bold text-center md:mb-4">
-        View Testss
+        View Tests
       </h1>
 
       {/* Search, Filter, Sort UI */}

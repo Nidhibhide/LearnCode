@@ -60,14 +60,17 @@ const EditProfile = () => {
       const { status, data } = handleApiResponse(res);
 
       if (status === 200) {
-        dispatch(setUser(data));
+        // Email-change flow returns no user data until the link is verified
+        if (data) {
+          dispatch(setUser(data));
 
-        // Call notification update if user has existing DOB
-        if (data?.dob) {
-          await updateDobNotify(id);
+          // Call notification update if user has existing DOB
+          if (data?.dob) {
+            await updateDobNotify(id);
 
-          // Filter out from both arrays using the ID
-          dispatch(filterProfileNotification());
+            // Filter out from both arrays using the ID
+            dispatch(filterProfileNotification());
+          }
         }
 
         await delay(3000);

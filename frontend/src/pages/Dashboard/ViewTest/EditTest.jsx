@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { edit } from "../../../api/test";
-import { toast } from "react-toastify";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import {
   ModalWrapper,
   FormWrapper,
   InputField,
   Button
 } from "../../../components/index";
-import { stringValidator, integerValidator, selectValidator } from "../../../validation/GlobalValidation";
-import { SUPPORTED_LANGUAGES, TEST_LEVELS, ROUTES } from "../../../constants";
+import { stringValidator } from "../../../validation/GlobalValidation";
+import { ROUTES } from "../../../constants";
 import { navigateTo, delay, handleApiResponse, handleApiError } from "../../../utils";
 import * as Yup from "yup";
 
 function EditTest() {
   const { testId } = useParams();
   const { state } = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const test = state?.test || {};
@@ -30,12 +30,12 @@ function EditTest() {
     try {
       if (loading) return;
       setLoading(true);
-      const response = await edit(testId, values);
+      const response = await edit(testId, { name: values.name });
       const { status } = handleApiResponse(response);
 
       if (status === 200) {
         await delay(3000);
-        navigateTo(window.history, ROUTES.DASHBOARD + "/viewTest");
+        navigateTo(navigate, ROUTES.DASHBOARD + "/viewTest");
       }
       resetForm();
     } catch (err) {
@@ -47,10 +47,16 @@ function EditTest() {
 
   const testValidationSchema = Yup.object().shape({
     name: stringValidator("Test name", 3, 100, true),
-    numOfQuestions: integerValidator("Number of questions", 1, 100, true),
-    language: selectValidator("Language", SUPPORTED_LANGUAGES, true),
-    level: selectValidator("Level", TEST_LEVELS, true),
   });
+
+  const readOnlyField = (label, value) => (
+    <div className="flex flex-col space-y-1">
+      <p className="md:text-lg text-base font-medium">{label}</p>
+      <div className="md:py-3 md:px-4 py-2 px-2 rounded-lg border border-borderDark bg-surfaceAlt text-textSecondary w-full">
+        {value || "—"}
+      </div>
+    </div>
+  );
 
   return (
     <ModalWrapper
@@ -61,9 +67,6 @@ function EditTest() {
       <FormWrapper
         initialValues={{
           name: test?.name || "",
-          level: test?.level || "",
-          language: test?.language || "",
-          numOfQuestions: test?.numOfQuestions || "",
         }}
         validationSchema={testValidationSchema}
         onSubmit={handleEdit}
@@ -77,24 +80,9 @@ function EditTest() {
                 type="text"
                 placeholder="Enter test name"
               />
-              <InputField
-                label="No of Questions"
-                name="numOfQuestions"
-                type="number"
-                placeholder="Enter No of Questions"
-              />
-              <InputField
-                label="Language"
-                name="language"
-                as="select"
-                options={SUPPORTED_LANGUAGES}
-              />
-              <InputField
-                label="Test Level"
-                name="level"
-                as="select"
-                options={TEST_LEVELS}
-              />
+              {readOnlyField("No of Questions", test?.numOfQuestions)}
+              {readOnlyField("Language", test?.language)}
+              {readOnlyField("Test Level", test?.level)}
             </div>
 
             <Button

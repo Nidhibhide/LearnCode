@@ -22,7 +22,7 @@ export const PasswordRules = ({ isVisible, password = "" }) => {
   ];
 
   return (
-    <div className="mt-2 bg-surfaceAlt border border-border text-base text-textPrimary  rounded-lg p-3">
+    <div className="mt-2 bg-surfaceAlt border border-border text-base text-textPrimary rounded-lg p-3">
       <p className="font-semibold mb-2 ">Password must :</p>
       <ul className="grid grid-cols-2 gap-x-4 gap-y-1  ">
         {rules.map((rule) => (

@@ -43,6 +43,17 @@ export const verify = async (token) => {
     );
   }
 };
+
+export const verifyEmailChange = async (token) => {
+  try {
+    const res = await globalaxios.get(`/user/verifyEmailChange/${token}`);
+    return res.data;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};
 export const resetPassword = async (token) => {
   try {
     const res = await globalaxios.get(`/auth/reset/${token}`);
@@ -124,8 +135,13 @@ export const checkToken = async () => {
     const res = await globalaxios.get("/auth/checkToken");
     return res.data;
   } catch (err) {
+    // Always return API body shape ({ statusCode, message, ... }) for consistent checks
     return (
-      err.response || { message: "Unexpected error occurred", status: 500 }
+      err.response?.data || {
+        message: "Unexpected error occurred",
+        statusCode: 500,
+        success: false,
+      }
     );
   }
 };
@@ -136,7 +152,11 @@ export const refreshToken = async () => {
     return res.data;
   } catch (err) {
     return (
-      err.response || { message: "Unexpected error occurred", status: 500 }
+      err.response?.data || {
+        message: "Unexpected error occurred",
+        statusCode: 500,
+        success: false,
+      }
     );
   }
 };
