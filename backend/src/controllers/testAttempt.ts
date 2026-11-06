@@ -26,7 +26,7 @@ const create = async (req: Request, res: Response) => {
 
 const update = async (req: Request, res: Response) => {
   try {
-    const { questionId, flag, submissionCount } = req.body;
+    const { questionId, flag, submissionCount, code } = req.body;
     const { id } = req.params;
 
     const attempt = await TestAttempt.findById(id);
@@ -34,7 +34,26 @@ const update = async (req: Request, res: Response) => {
       return JsonOne(res, 404, "Test Attempt not found", false);
     }
 
+    if (!questionId) {
+      return JsonOne(res, 400, "questionId is required", false);
+    }
+
     const questionIdStr = questionId.toString();
+
+    // Save draft code for this question (resume later)
+    if (typeof code === "string") {
+      if (!attempt.savedCode) {
+        attempt.savedCode = new Map();
+      }
+      attempt.savedCode.set(questionIdStr, code);
+    }
+
+    // Draft-only save (no submit) — do not change score/status
+    if (typeof flag !== "boolean") {
+      await attempt.save();
+      return JsonOne(res, 200, "Code saved successfully", true);
+    }
+
     const isCorrect = attempt.correctQuestionIds.some(id => id.toString() === questionIdStr);
     const isWrong = attempt.wrongQuestionIds.some(id => id.toString() === questionIdStr);
     const isRemaining = attempt.remainingQuestionIds.some(id => id.toString() === questionIdStr);
@@ -187,8 +206,11 @@ const getById = async (req: Request, res: Response) => {
       return JsonOne(res, 404, "Test Attempt not found", false);
     }
 
-    // Convert Map to plain object for JSON response
-    const questionSubmissionCountsObj = Object.fromEntries(attempt.questionSubmissionCounts);
+    // Convert Maps to plain objects for JSON response
+    const questionSubmissionCountsObj = Object.fromEntries(
+      attempt.questionSubmissionCounts || []
+    );
+    const savedCodeObj = Object.fromEntries(attempt.savedCode || []);
 
     return JsonOne(res, 200, "Test Attempt fetched successfully", true, {
       _id: attempt._id,
@@ -198,6 +220,7 @@ const getById = async (req: Request, res: Response) => {
       wrongQuestionIds: attempt.wrongQuestionIds,
       remainingQuestionIds: attempt.remainingQuestionIds,
       questionSubmissionCounts: questionSubmissionCountsObj,
+      savedCode: savedCodeObj,
       score: attempt.score,
       completedAt: attempt.completedAt,
       createdAt: attempt.createdAt,

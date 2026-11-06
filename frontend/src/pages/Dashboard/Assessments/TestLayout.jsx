@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { MdOpenInFull, MdCloseFullscreen } from "react-icons/md";
+import { FaListUl } from "react-icons/fa";
 import { JUDGE_API_KEY, JUDGE_HOST, JUDGE_BASE_URL } from "../../../constants";
 import {
   CalculateCode,
   GetEditorLang,
   getComment,
   Button,
+  ConfirmationDialog,
 } from "../../../components";
-import { update, getById } from "../../../api/testAttempt";
+import { update, getById, saveCode } from "../../../api/testAttempt";
 import { navigateTo, delay, ROUTES } from "../../../utils";
 
 const TestLayout = () => {
@@ -25,31 +27,92 @@ const TestLayout = () => {
   const question = state?.question || [];
   const language = test?.language;
   const attemptId = state?.attemptId;
+  const questionId = question?._id;
 
   const [code, setCode] = useState(getComment(language));
+  const [draftReady, setDraftReady] = useState(false);
+  const codeRef = useRef(code);
+  const saveTimerRef = useRef(null);
+  const draftReadyRef = useRef(false);
 
   // Track submission count per question
   const [questionSubmissionCounts, setQuestionSubmissionCounts] = useState({});
 
   // Track fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
-  // Fetch existing submission counts when component loads
   useEffect(() => {
-    const fetchSubmissionCounts = async () => {
-      if (test?._id) {
-        try {
-          const response = await getById(attemptId);
-          if (response.success && response.data?.questionSubmissionCounts) {
+    codeRef.current = code;
+  }, [code]);
+
+  useEffect(() => {
+    draftReadyRef.current = draftReady;
+  }, [draftReady]);
+
+  const persistCode = async (codeToSave = codeRef.current) => {
+    if (!attemptId || !questionId || typeof codeToSave !== "string") return;
+    try {
+      await saveCode(attemptId, {
+        questionId: String(questionId),
+        code: codeToSave,
+      });
+    } catch (err) {
+      console.error("Error saving code draft:", err);
+    }
+  };
+
+  // Load submission counts + saved draft code
+  useEffect(() => {
+    setDraftReady(false);
+    const fetchAttemptData = async () => {
+      if (!attemptId || !questionId) {
+        setDraftReady(true);
+        return;
+      }
+      try {
+        const response = await getById(attemptId);
+        if (response.success && response.data) {
+          if (response.data.questionSubmissionCounts) {
             setQuestionSubmissionCounts(response.data.questionSubmissionCounts);
           }
-        } catch (err) {
-          console.error("Error fetching submission counts:", err);
+          const saved =
+            response.data.savedCode?.[String(questionId)] ??
+            response.data.savedCode?.[questionId];
+          if (typeof saved === "string" && saved.length > 0) {
+            setCode(saved);
+          }
         }
+      } catch (err) {
+        console.error("Error fetching attempt data:", err);
+      } finally {
+        setDraftReady(true);
       }
     };
-    fetchSubmissionCounts();
-  }, [test?._id]);
+    fetchAttemptData();
+  }, [attemptId, questionId]);
+
+  // Auto-save draft while typing (also covers sidebar leave)
+  useEffect(() => {
+    if (!attemptId || !questionId || !draftReady) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      persistCode(code);
+    }, 1000);
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [code, attemptId, questionId, draftReady]);
+
+  // Flush latest draft on leave/unmount so sidebar navigation keeps code
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (draftReadyRef.current) {
+        persistCode(codeRef.current);
+      }
+    };
+  }, [attemptId, questionId]);
 
   const runCode = async () => {
     // Check if code is empty or just placeholder comment
@@ -153,6 +216,7 @@ const TestLayout = () => {
         questionId: question?._id,
         flag: isCorrect,
         submissionCount: submissionCount,
+        code, // keep latest draft saved with submit too
       };
 
       const response = await update(attemptId, values);
@@ -189,11 +253,33 @@ const TestLayout = () => {
     }
   };
 
+  const handleConfirmLeaveToQuestionList = async () => {
+    await persistCode();
+    setLeaveOpen(false);
+    navigate("/dashboard/questionsList", {
+      state: {
+        test,
+        attemptId,
+        isAttempted: true,
+      },
+    });
+  };
+
   return (
     <div
       id="test-area"
       className="h-full py-12 px-6 flex flex-col w-full bg-white"
     >
+      <div className="flex justify-start mb-4">
+        <Button
+          onClick={() => setLeaveOpen(true)}
+          className="flex items-center gap-2 bg-transparent text-textPrimary hover:text-primary font-medium text-base md:text-lg py-2 px-0 mb-0 shadow-none"
+        >
+          <FaListUl size={16} />
+          Question List
+        </Button>
+      </div>
+
       {/* Sample Input/Output */}
       <div className="">
         <h2 className="text-lg font-semibold mb-4 text-error">
@@ -270,6 +356,18 @@ const TestLayout = () => {
           <MdOpenInFull size={24} onClick={handleFullScreen} />
         )}
       </div>
+
+      <ConfirmationDialog
+        isOpen={leaveOpen}
+        onOpenChange={setLeaveOpen}
+        title="Leave test?"
+        message="Your code for this question is saved. Submitted answers are kept. You can continue later from Ongoing."
+        onConfirm={handleConfirmLeaveToQuestionList}
+        confirmText="Leave"
+        cancelText="Stay"
+        confirmColor="danger"
+        navigateOnClose={false}
+      />
     </div>
   );
 };

@@ -11,7 +11,8 @@ const ConfirmationDialog = ({
   confirmText = "Confirm",
   cancelText = "Cancel",
   confirmColor = "primary",
-  loading = false
+  loading = false,
+  navigateOnClose = true,
 }) => {
   const handleConfirm = () => {
     onConfirm();
@@ -20,7 +21,7 @@ const ConfirmationDialog = ({
   const footer = (
     <>
       <Button
-        color="danger"
+        color="default"
         variant="light"
         onPress={() => onOpenChange(false)}
         disabled={loading}
@@ -43,6 +44,7 @@ const ConfirmationDialog = ({
       onOpenChange={onOpenChange}
       title={title}
       footer={footer}
+      navigateOnClose={navigateOnClose}
     >
       <p>{message}</p>
     </ModalWrapper>

@@ -65,13 +65,26 @@ export const WeeklyActivityChart = ({ data, width = 320, height = 250 }) => {
 };
 
 /**
- * User stats card component
+ * User stats card component — colored like student SummaryCards
  */
-export const StatCard = ({ title, value, colorClass }) => {
+export const StatCard = ({ title, value, bgClass = "bg-primary", actionLabel, onAction }) => {
   return (
-    <div className="bg-surface border border-border p-6 rounded-xl">
-      <h2 className="text-lg font-medium text-textSecondary mb-1">{title}</h2>
-      <p className={`text-3xl font-bold ${colorClass}`}>{value}</p>
+    <div className={`${bgClass} rounded-xl p-5 md:p-6 text-white`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-3xl md:text-4xl font-bold">{value}</span>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-base md:text-lg font-medium opacity-90">{title}</h3>
+        {actionLabel && onAction && (
+          <button
+            type="button"
+            onClick={onAction}
+            className="text-sm font-bold underline opacity-90 hover:opacity-100 cursor-pointer whitespace-nowrap"
+          >
+            {actionLabel}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

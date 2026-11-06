@@ -5,6 +5,8 @@ import {
   WeeklyActivityChart,
   StatCard,
   Leaderboard,
+  ModalWrapper,
+  TableComponent,
 } from "../../components";
 import {
   getUserStats,
@@ -12,6 +14,7 @@ import {
   getDifficultyStats,
   getWeeklyActivity,
   getLeaderboard,
+  getStudents,
 } from "../../api";
 
 const AdminDashboard = () => {
@@ -32,6 +35,9 @@ const AdminDashboard = () => {
   const [languageData, setLanguageData] = useState([]);
   const [difficultyData, setDifficultyData] = useState([]);
   const [weeklyActivityData, setWeeklyActivityData] = useState([]);
+  const [usersOpen, setUsersOpen] = useState(false);
+  const [students, setStudents] = useState([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
 
   // Fetch user stats from API
   useEffect(() => {
@@ -119,7 +125,20 @@ const AdminDashboard = () => {
     return leaderboardData.slice(startIndex, endIndex);
   };
 
-
+  const handleOpenUsers = async () => {
+    setUsersOpen(true);
+    setLoadingStudents(true);
+    try {
+      const response = await getStudents();
+      if (response.success) {
+        setStudents(response.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
 
   return (
     <div className="p-4 md:p-6 bg-background h-screen overflow-y-auto overflow-x-hidden">
@@ -132,22 +151,24 @@ const AdminDashboard = () => {
         <StatCard
           title="Total Users"
           value={userStats.totalUsers}
-          colorClass="text-primary"
+          bgClass="bg-primary"
+          actionLabel="View all"
+          onAction={handleOpenUsers}
         />
         <StatCard
           title="Today's Active"
           value={userStats.todayActive}
-          colorClass="text-success"
+          bgClass="bg-success"
         />
         <StatCard
           title="Pass Rate"
           value={`${userStats.passRate}%`}
-          colorClass="text-primary"
+          bgClass="bg-secondary"
         />
         <StatCard
           title="Completion Rate"
           value={`${userStats.completionRate}%`}
-          colorClass="text-warning"
+          bgClass="bg-warning"
         />
       </div>
 
@@ -199,6 +220,68 @@ const AdminDashboard = () => {
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
       />
+
+      <ModalWrapper
+        isOpen={usersOpen}
+        onOpenChange={setUsersOpen}
+        title="All Students"
+        size="5xl"
+        navigateOnClose={false}
+      >
+        {loadingStudents ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-3 text-textSecondary">Loading users...</span>
+          </div>
+        ) : students.length === 0 ? (
+          <p className="text-textSecondary py-4 text-center">No students found.</p>
+        ) : (
+          <div className="overflow-y-auto max-h-[60vh] overflow-x-auto">
+            <TableComponent
+              columns={[
+                { key: "name", label: "NAME" },
+                { key: "email", label: "EMAIL" },
+                {
+                  key: "createdAt",
+                  label: "CREATED AT",
+                  render: (row) =>
+                    row.createdAt
+                      ? new Date(row.createdAt).toLocaleDateString("en-GB")
+                      : "—",
+                },
+                {
+                  key: "lastLogin",
+                  label: "LAST LOGIN",
+                  render: (row) =>
+                    row.lastLogin
+                      ? new Date(row.lastLogin).toLocaleString("en-GB")
+                      : "—",
+                },
+                { key: "attemptedTests", label: "ATTEMPTED" },
+                { key: "completedTests", label: "COMPLETED" },
+                {
+                  key: "isVerified",
+                  label: "VERIFIED",
+                  render: (row) => (row.isVerified ? "Yes" : "No"),
+                },
+                {
+                  key: "isBlocked",
+                  label: "BLOCKED",
+                  render: (row) => (row.isBlocked ? "Yes" : "No"),
+                },
+                {
+                  key: "authProvider",
+                  label: "AUTH TYPE",
+                  render: (row) =>
+                    row.authProvider === "google" ? "Google" : "Local",
+                },
+              ]}
+              rows={students}
+              ariaLabel="Students list"
+            />
+          </div>
+        )}
+      </ModalWrapper>
     </div>
   );
 };

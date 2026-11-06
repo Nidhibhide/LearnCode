@@ -16,7 +16,20 @@ export const update = async (id, data) => {
     return res.data;
   } catch (err) {
     return (
-      err.response || { message: "Unexpected error occurred", status: 500 }
+      err.response?.data ||
+      err.response || { message: "Unexpected error occurred", statusCode: 500 }
+    );
+  }
+};
+
+export const saveCode = async (id, data) => {
+  try {
+    const res = await globalaxios.put(`/testAttempt/update/${id}`, data);
+    return res.data;
+  } catch (err) {
+    return (
+      err.response?.data ||
+      err.response || { message: "Unexpected error occurred", statusCode: 500 }
     );
   }
 };

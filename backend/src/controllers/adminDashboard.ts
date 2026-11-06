@@ -30,7 +30,13 @@ const getLeaderboard = async (req: Request, res: Response) => {
         break;
     }
 
-    const matchCondition = startDate ? { createdAt: { $gte: startDate } } : {};
+    // Only completed attempts count toward the leaderboard
+    const matchCondition: Record<string, unknown> = {
+      completedAt: { $ne: null },
+    };
+    if (startDate) {
+      matchCondition.createdAt = { $gte: startDate };
+    }
 
     const aggregation = [
       { $match: matchCondition },
@@ -348,10 +354,54 @@ const getWeeklyActivity = async (req: Request, res: Response) => {
   }
 };
 
+// List all students (for Total Users "View all")
+const getStudents = async (req: Request, res: Response) => {
+  try {
+    const students = await User.aggregate([
+      { $match: { role: "student" } },
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "testattempts",
+          localField: "_id",
+          foreignField: "userId",
+          as: "attempts",
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          createdAt: 1,
+          lastLogin: 1,
+          isVerified: 1,
+          isBlocked: 1,
+          authProvider: 1,
+          attemptedTests: { $size: "$attempts" },
+          completedTests: {
+            $size: {
+              $filter: {
+                input: "$attempts",
+                as: "a",
+                cond: { $ne: ["$$a.completedAt", null] },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    return JsonOne(res, 200, "Students fetched successfully", true, students);
+  } catch (error) {
+    return handleError(res, "Error fetching students");
+  }
+};
+
 export {
   getUserStats,
   getLanguageStats,
   getDifficultyStats,
   getWeeklyActivity,
   getLeaderboard,
+  getStudents,
 };

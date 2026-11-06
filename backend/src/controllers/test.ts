@@ -327,6 +327,7 @@ const getOngoing = async (req: Request, res: Response) => {
           { $limit: limit },
           {
             $project: {
+              attemptId: "$_id",
               testId: "$test._id",
               name: "$test.name",
               language: "$test.language",

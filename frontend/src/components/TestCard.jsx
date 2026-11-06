@@ -41,10 +41,25 @@ const TestCard = ({ test }) => {
     }
   };
   const handleStart = () => {
+    const isOngoing = test?.completedAt === null;
     navigate("/dashboard/questionsList", {
       state: {
-        isAttempted: test?.completedAt === null ? true : false,
-        test: test,
+        isAttempted: isOngoing,
+        // Ongoing cards are attempt-shaped: _id is attemptId, testId is the real test id
+        attemptId: isOngoing ? test?.attemptId || test?._id : undefined,
+        test: isOngoing
+          ? {
+              _id: test?.testId || test?._id,
+              name: test?.name,
+              language: test?.language,
+              level: test?.level,
+              numOfQuestions: test?.numOfQuestions,
+              questions: test?.questions,
+              correctQuestionIds: test?.correctQuestionIds || [],
+              wrongQuestionIds: test?.wrongQuestionIds || [],
+              remainingQuestionIds: test?.remainingQuestionIds || [],
+            }
+          : test,
       },
     });
   };

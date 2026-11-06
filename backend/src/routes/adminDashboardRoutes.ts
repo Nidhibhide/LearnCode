@@ -1,11 +1,14 @@
 import express from "express";
-import { getUserStats, getLanguageStats, getDifficultyStats, getWeeklyActivity, getLeaderboard } from "../controllers/adminDashboard";
+import { getUserStats, getLanguageStats, getDifficultyStats, getWeeklyActivity, getLeaderboard, getStudents } from "../controllers/adminDashboard";
 import { TokenAuth, BlockCheck, RoleAuth } from "../middlewares";
 
 const router = express.Router();
 
 // Get user stats for admin dashboard 
 router.get("/user-stats", TokenAuth, BlockCheck, RoleAuth("admin"), getUserStats);
+
+// List all students
+router.get("/students", TokenAuth, BlockCheck, RoleAuth("admin"), getStudents);
 
 // Get most attempted languages for admin dashboard 
 router.get("/language-stats", TokenAuth, BlockCheck, RoleAuth("admin"), getLanguageStats);

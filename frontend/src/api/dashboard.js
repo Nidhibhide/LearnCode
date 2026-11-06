@@ -12,6 +12,18 @@ export const getUserStats = async () => {
   }
 };
 
+// List all students for admin Total Users modal
+export const getStudents = async () => {
+  try {
+    const res = await globalaxios.get("/admin/students");
+    return res.data;
+  } catch (err) {
+    return (
+      err.response || { message: "Unexpected error occurred", status: 500 }
+    );
+  }
+};
+
 // Get most attempted languages for admin dashboard
 export const getLanguageStats = async () => {
   try {

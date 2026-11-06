@@ -35,6 +35,12 @@ const TestAttemptSchema = new mongoose.Schema(
       of: Number,
       default: {},
     },
+    // Draft code per question so students can resume later
+    savedCode: {
+      type: Map,
+      of: String,
+      default: {},
+    },
     score: {
       type: Number,
       default: 0,

@@ -19,7 +19,7 @@ const QuestionsList = () => {
   const [rules, setRules] = useState(false);
   const userId = useSelector((state) => state.user?._id);
   const [selectedKey, setSelectedKey] = useState(null);
-  const [attemptId, setAttemptId] = useState(null);
+  const [attemptId, setAttemptId] = useState(state?.attemptId || null);
   const navigate = useNavigate();
   const transformedQuestions = questions.map((item, index) => ({
     id: index + 1,
@@ -54,6 +54,8 @@ const QuestionsList = () => {
 
   useEffect(() => {
     const initAttempt = async () => {
+      // Coming back from a question — reuse existing attempt
+      if (state?.attemptId) return;
       if (!isAttempted && !hasCreatedAttempt) {
         hasCreatedAttempt = true;
         const id = await createAttempt();
