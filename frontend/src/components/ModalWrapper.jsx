@@ -17,7 +17,8 @@ const ModalWrapper = ({
   footer,
   size = "md",
   navigateOnClose = true,
-  className = ""
+  className = "",
+  classNames = {},
 }) => {
   const navigate = useNavigate();
 
@@ -36,12 +37,19 @@ const ModalWrapper = ({
       onOpenChange={handleOpenChange}
       size={size}
       className={className}
+      classNames={classNames}
     >
       <ModalContent>
         {(onClose) => (
           <>
-            {title && <ModalHeader>{title}</ModalHeader>}
-            <ModalBody>
+            {title && (
+              <ModalHeader
+                className={`border-b-0 shadow-none ${classNames.header || ""}`}
+              >
+                {title}
+              </ModalHeader>
+            )}
+            <ModalBody className={classNames.body || ""}>
               {typeof children === 'function' ? children(onClose) : children}
             </ModalBody>
             {footer && <ModalFooter>{footer}</ModalFooter>}

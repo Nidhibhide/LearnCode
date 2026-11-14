@@ -3,7 +3,16 @@ import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { MdOpenInFull, MdCloseFullscreen } from "react-icons/md";
+import {
+  MdOpenInFull,
+  MdCloseFullscreen,
+  MdDarkMode,
+  MdLightMode,
+  MdContentCopy,
+  MdRestartAlt,
+  MdTextDecrease,
+  MdTextIncrease,
+} from "react-icons/md";
 import { FaListUl } from "react-icons/fa";
 import { JUDGE_API_KEY, JUDGE_HOST, JUDGE_BASE_URL } from "../../../constants";
 import {
@@ -15,6 +24,10 @@ import {
 } from "../../../components";
 import { update, getById, saveCode } from "../../../api/testAttempt";
 import { navigateTo, delay, ROUTES } from "../../../utils";
+
+const FONT_MIN = 12;
+const FONT_MAX = 24;
+const FONT_STEP = 2;
 
 const TestLayout = () => {
   const [output, setOutput] = useState("");
@@ -30,10 +43,17 @@ const TestLayout = () => {
   const questionId = question?._id;
 
   const [code, setCode] = useState(getComment(language));
+  const [customInput, setCustomInput] = useState(
+    () => question?.sampleInput || ""
+  );
   const [draftReady, setDraftReady] = useState(false);
   const codeRef = useRef(code);
   const saveTimerRef = useRef(null);
   const draftReadyRef = useRef(false);
+
+  useEffect(() => {
+    setCustomInput(question?.sampleInput || "");
+  }, [questionId, question?.sampleInput]);
 
   // Track submission count per question
   const [questionSubmissionCounts, setQuestionSubmissionCounts] = useState({});
@@ -41,6 +61,91 @@ const TestLayout = () => {
   // Track fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [editorTheme, setEditorTheme] = useState(() => {
+    try {
+      return localStorage.getItem("learncode-editor-theme") === "light"
+        ? "light"
+        : "dark";
+    } catch {
+      return "dark";
+    }
+  });
+  const [fontSize, setFontSize] = useState(() => {
+    try {
+      const saved = Number(localStorage.getItem("learncode-editor-font"));
+      if (
+        Number.isFinite(saved) &&
+        saved >= FONT_MIN &&
+        saved <= FONT_MAX
+      ) {
+        return saved;
+      }
+    } catch {
+      /* ignore */
+    }
+    return 14;
+  });
+
+  const monacoTheme = editorTheme === "light" ? "vs" : "vs-dark";
+
+  const persistFontSize = (size) => {
+    try {
+      localStorage.setItem("learncode-editor-font", String(size));
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const decreaseFontSize = () => {
+    setFontSize((prev) => {
+      const next = Math.max(FONT_MIN, prev - FONT_STEP);
+      persistFontSize(next);
+      return next;
+    });
+  };
+
+  const increaseFontSize = () => {
+    setFontSize((prev) => {
+      const next = Math.min(FONT_MAX, prev + FONT_STEP);
+      persistFontSize(next);
+      return next;
+    });
+  };
+
+  const toggleEditorTheme = () => {
+    setEditorTheme((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem("learncode-editor-theme", next);
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
+
+  const copyCode = async () => {
+    const text = code ?? "";
+    if (!text.trim()) {
+      toast.warn("Nothing to copy");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Code copied");
+    } catch {
+      toast.error("Could not copy code");
+    }
+  };
+
+  const resetCode = () => {
+    const starter = getComment(language);
+    setCode(starter);
+    setHasRunCode(false);
+    setOutput("");
+    setScore(null);
+    toast.success("Code reset");
+  };
 
   useEffect(() => {
     codeRef.current = code;
@@ -133,7 +238,7 @@ const TestLayout = () => {
         `${JUDGE_BASE_URL}/submissions?base64_encoded=false&wait=false`,
         {
           source_code: code,
-          stdin: question?.sampleInput,
+          stdin: customInput,
           language_id: CalculateCode(language),
         },
         {
@@ -268,34 +373,37 @@ const TestLayout = () => {
   return (
     <div
       id="test-area"
-      className="h-full py-12 px-6 flex flex-col w-full bg-white"
+      className="min-h-full pt-4 pb-10 px-6 flex flex-col w-full bg-white"
     >
-      <div className="flex justify-start mb-4">
-        <Button
-          onClick={() => setLeaveOpen(true)}
-          className="flex items-center gap-2 bg-transparent text-textPrimary hover:text-primary font-medium text-base md:text-lg py-2 px-0 mb-0 shadow-none"
-        >
-          <FaListUl size={16} />
-          Question List
-        </Button>
-      </div>
-
       {/* Sample Input/Output */}
       <div className="">
-        <h2 className="text-lg font-semibold mb-4 text-error">
-          {"Que : " + question?.questionText}
-        </h2>
-        <h2 className="text-sm font-semibold mb-1">Sample Test Case</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h2 className="text-lg md:text-xl font-semibold text-error leading-snug flex-1 min-w-0">
+            {"Que : " + question?.questionText}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setLeaveOpen(true)}
+            className="flex items-center gap-2 shrink-0 bg-transparent text-primary hover:text-primaryDark font-semibold text-base md:text-lg py-0 px-0 transition-colors"
+          >
+            <FaListUl size={16} />
+            Question List
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="font-medium mb-1">Input:</p>
-            <pre className="bg-surfaceAlt p-2 rounded">
+            <p className="text-base md:text-lg font-semibold mb-1.5">
+              Sample input
+            </p>
+            <pre className="bg-surfaceAlt p-3 md:p-4 rounded-lg text-base md:text-lg whitespace-pre-wrap break-words">
               {question?.sampleInput || "NA"}
             </pre>
           </div>
           <div>
-            <p className="font-medium mb-1">Expected Output:</p>
-            <pre className="bg-surfaceAlt p-2 rounded">
+            <p className="text-base md:text-lg font-semibold mb-1.5">
+              Expected output
+            </p>
+            <pre className="bg-surfaceAlt p-3 md:p-4 rounded-lg text-base md:text-lg whitespace-pre-wrap break-words">
               {question?.expectedOutput || "NA"}
             </pre>
           </div>
@@ -303,32 +411,110 @@ const TestLayout = () => {
       </div>
       {/* Code Editor */}
       <div className=" mt-4">
-        <h2 className="text-sm font-semibold mb-2">Code Editor</h2>
-        <div className="border rounded overflow-hidden">
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <h2 className="text-base md:text-lg font-semibold">Code Editor</h2>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={decreaseFontSize}
+              disabled={fontSize <= FONT_MIN}
+              aria-label="Decrease font size"
+              className="inline-flex items-center justify-center p-1.5 rounded-md text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              <MdTextDecrease size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={increaseFontSize}
+              disabled={fontSize >= FONT_MAX}
+              aria-label="Increase font size"
+              className="inline-flex items-center justify-center p-1.5 rounded-md text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              <MdTextIncrease size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={resetCode}
+              aria-label="Reset code"
+              className="inline-flex items-center justify-center p-1.5 rounded-md text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt transition"
+            >
+              <MdRestartAlt size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={copyCode}
+              aria-label="Copy code"
+              className="inline-flex items-center justify-center p-1.5 rounded-md text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt transition"
+            >
+              <MdContentCopy size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={toggleEditorTheme}
+              aria-label={
+                editorTheme === "dark"
+                  ? "Switch to light theme"
+                  : "Switch to dark theme"
+              }
+              className="inline-flex items-center justify-center p-1.5 rounded-md text-textSecondary hover:text-textPrimary hover:bg-surfaceAlt transition"
+            >
+              {editorTheme === "dark" ? (
+                <MdDarkMode size={20} />
+              ) : (
+                <MdLightMode size={20} />
+              )}
+            </button>
+          </div>
+        </div>
+        <div className="border rounded-lg overflow-hidden">
           <Editor
-            height="300px"
+            height="420px"
             language={GetEditorLang(language)}
-            theme="vs-dark"
+            theme={monacoTheme}
             value={code}
             onChange={(value) => setCode(value)}
             options={{
-              fontSize: 14,
+              fontSize,
               minimap: { enabled: false },
             }}
           />
         </div>
       </div>
+
+      {/* Custom Input */}
+      <div className="mt-4">
+        <div className="flex items-center justify-between gap-3 mb-1.5">
+          <h2 className="text-base md:text-lg font-semibold text-textPrimary">
+            Custom input
+          </h2>
+          <button
+            type="button"
+            onClick={() => setCustomInput(question?.sampleInput || "")}
+            className="text-sm md:text-base font-bold text-primary hover:text-primaryDark transition-colors"
+          >
+            Use sample
+          </button>
+        </div>
+        <textarea
+          value={customInput}
+          onChange={(e) => setCustomInput(e.target.value)}
+          rows={2}
+          placeholder="Enter input for Run Code"
+          className="w-full py-2 px-3 rounded-md border border-[#6B7280] bg-surface text-textPrimary text-sm md:text-base focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary resize-y min-h-[56px] max-h-[200px]"
+        />
+      </div>
+
       {/* Action Buttons */}
       <div className="flex gap-4 mt-5 justify-end">
         <Button
-          className="bg-primary text-white px-4 py-2 rounded hover:bg-primaryDark text-sm"
+          className="bg-primary text-white px-4 py-2.5 rounded-lg hover:bg-primaryDark text-sm md:text-base"
           onClick={runCode}
           disabled={loading}
         >
           Run Code
         </Button>
         <Button
-          className="bg-success text-white px-4 py-2 rounded hover:bg-success text-sm"
+          className="bg-success text-white px-4 py-2.5 rounded-lg hover:bg-success text-sm md:text-base"
           onClick={submitCode}
         >
           Submit Output
@@ -336,8 +522,8 @@ const TestLayout = () => {
       </div>
       {/* Output Display */}
       <div className=" mt-5">
-        <h2 className="text-sm font-semibold mb-3">Output</h2>
-        <pre className="bg-surfaceAlt p-3 rounded whitespace-pre-wrap ">
+        <h2 className="text-base md:text-lg font-semibold mb-3">Output</h2>
+        <pre className="bg-surfaceAlt p-3 md:p-4 rounded-lg text-base md:text-lg whitespace-pre-wrap break-words min-h-[96px]">
           {output ? output : "No output generated yet..."}
         </pre>
       </div>
@@ -348,8 +534,8 @@ const TestLayout = () => {
           {score}
         </div>
       )}
-      {/* Fullscreen Button */}
-      <div className="fixed bottom-6 right-6 text-primary cursor-pointer">
+      {/* Fullscreen Button — in page flow below Output */}
+      <div className="mt-3 mb-2 flex justify-end text-primary cursor-pointer">
         {isFullscreen ? (
           <MdCloseFullscreen size={24} onClick={handleFullScreen} />
         ) : (

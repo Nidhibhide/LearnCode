@@ -183,26 +183,139 @@ const restore = async (req: Request, res: Response) => {
 
 const edit = async (req: Request, res: Response) => {
   try {
-    const { name } = req.body;
+    const { name, language, level, questions } = req.body;
     const { id } = req.params;
-    const oldTest = await Test.findById(id);
-    if (!oldTest) {
-      return JsonOne(res, 404, "Old Test not found", false);
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return JsonOne(res, 400, "Invalid test ID", false);
     }
 
-    // Only test name can be updated; other fields stay unchanged
-    const updatedTest = await Test.findByIdAndUpdate(
-      id,
-      { name },
-      { new: true }
-    );
-
-    if (!updatedTest) {
+    const oldTest = await Test.findById(id);
+    if (!oldTest || oldTest.isDeleted) {
       return JsonOne(res, 404, "Test not found", false);
     }
 
-    JsonOne(res, 200, "test updated successfully", true);
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return JsonOne(res, 400, "At least one question is required", false);
+    }
+
+    const cleanedQuestions = questions.map(
+      (q: {
+        _id?: string;
+        questionText: string;
+        sampleInput?: string;
+        expectedOutput: string;
+      }) => ({
+        ...(q._id ? { _id: q._id } : {}),
+        questionText: String(q.questionText || "").trim(),
+        sampleInput: String(q.sampleInput || "").trim(),
+        expectedOutput: String(q.expectedOutput || "").trim(),
+      })
+    );
+
+    const numOfQuestions = cleanedQuestions.length;
+    const attemptCount = await TestAttempt.countDocuments({ testId: id });
+
+    // No students started → update existing test
+    if (attemptCount === 0) {
+      try {
+        const updatedTest = await Test.findByIdAndUpdate(
+          id,
+          {
+            name,
+            language,
+            level,
+            questions: cleanedQuestions,
+            numOfQuestions,
+          },
+          { new: true, runValidators: true }
+        );
+
+        if (!updatedTest) {
+          return JsonOne(res, 404, "Test not found", false);
+        }
+
+        return JsonOne(res, 200, "Test updated successfully", true, {
+          versioned: false,
+          test: updatedTest,
+        });
+      } catch (err: any) {
+        if (err?.code === 11000) {
+          return JsonOne(res, 400, "Test name already exists", false);
+        }
+        throw err;
+      }
+    }
+
+    // Students already started → archive old, create new version (attempts stay on old id)
+    const stamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+    let archiveName = `${oldTest.name} (archived ${stamp})`;
+    if (archiveName.length > 100) {
+      archiveName = archiveName.slice(0, 100);
+    }
+
+    await Test.findByIdAndUpdate(id, {
+      name: archiveName,
+      isDeleted: true,
+    });
+
+    const versionQuestions = cleanedQuestions.map(
+      (q: {
+        questionText: string;
+        sampleInput?: string;
+        expectedOutput: string;
+      }) => ({
+        questionText: q.questionText,
+        sampleInput: q.sampleInput || "",
+        expectedOutput: q.expectedOutput,
+      })
+    );
+
+    try {
+      const newTest = await Test.create({
+        name,
+        language,
+        level,
+        questions: versionQuestions,
+        numOfQuestions,
+      });
+
+      if (!newTest) {
+        return JsonOne(res, 500, "Failed to create new test version", false);
+      }
+
+      const users = await User.find({ role: "student" });
+      users.forEach((user) => {
+        sendToUser(user._id.toString(), {
+          type: "info",
+          message: `Test '${name}' was updated. A new version is available.`,
+          title: "Test Updated",
+        });
+      });
+
+      return JsonOne(
+        res,
+        201,
+        "New test version created (students already started)",
+        true,
+        {
+          versioned: true,
+          test: newTest,
+        }
+      );
+    } catch (err: any) {
+      // Roll back archive if create failed
+      await Test.findByIdAndUpdate(id, {
+        name: oldTest.name,
+        isDeleted: false,
+      });
+      if (err?.code === 11000) {
+        return JsonOne(res, 400, "Test name already exists", false);
+      }
+      throw err;
+    }
   } catch (err) {
+    console.error(err);
     return handleError(res, "unexpected error occurred while updating test");
   }
 };

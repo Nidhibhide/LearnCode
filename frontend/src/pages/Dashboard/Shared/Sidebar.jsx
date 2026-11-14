@@ -257,7 +257,7 @@ const Sidebar = ({
                 onClick={onToggleCollapse}
                 title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-                className={`flex items-center justify-center gap-2 p-2 rounded-md bg-black/30 hover:bg-black/50 text-white w-full ${
+                className={`flex items-center justify-center gap-2 p-2 rounded-md text-white w-full hover:bg-sidebarHover ${
                   collapsed ? "" : "max-w-[140px]"
                 }`}
               >
