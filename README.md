@@ -24,7 +24,6 @@
 ### Coding Assessments
 - Solve coding questions in an online code editor.
 - Run code with custom input.
-- Execute multiple test cases.
 - Compile and evaluate code using Judge0.
 
 ### User & Access Management
