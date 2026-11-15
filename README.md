@@ -1,6 +1,6 @@
 # LearnCode – Coding Assessment Platform
 
-**LearnCode** is a MERN stack platform for creating and conducting coding assessments. It helps administrators manage tests and users while allowing students to solve programming questions, run code, and track their performance.
+**LearnCode** is a MERN stack platform for creating and conducting coding assessments. It allows admins to manage tests and users, while students can solve coding questions and view their results.
 
 **Live Demo:** [https://learn-code-three.vercel.app/](https://learn-code-three.vercel.app/)
 
