@@ -1,74 +1,72 @@
+# LearnCode – Coding Assessment Platform
 
+**LearnCode** is a MERN stack platform for creating and conducting coding assessments. It helps administrators manage tests and users while allowing students to solve programming questions, run code, and track their performance.
 
-#  LearnCode - Coding Platform
+**Live Demo:** [https://learn-code-three.vercel.app/](https://learn-code-three.vercel.app/)
 
-**LearnCode** is a coding assessment platform built with the **MERN stack**, designed to simulate real-world coding evaluations. It features AI-powered dynamic question generation, real-time collaboration, multi-language support, and role-based access — all designed to create an intelligent, efficient, and secure learning environment.
+## Tech Stack
 
- **Live Demo**:
-[https://learn-code-three.vercel.app/](https://learn-code-three.vercel.app/)
+- **Frontend:** React.js, Tailwind CSS, Hero UI
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **Authentication:** JWT, refresh tokens, HTTP-only cookie-based sessions
+- **AI:** Gemini API
+- **Code Execution:** Judge0
+- **Real-time Updates:** Socket.io
+- **Email:** Gmail SMTP
 
-##  Tech Stack
+## Features
 
-* **Frontend**: React.js, Tailwind CSS, Hero UI
-* **Backend**: Node.js, Express.js, MongoDB
-* **Authentication**: JWT, Cookie-based Sessions
-* **AI Integration**: Gemini API 
-* **Compiler API**: Judge0 
-* **Email Services**: Gmail SMTP
-* **Real-time Communication**: Socket.io
+### Test & Question Management
+- Create, update, delete, and restore coding tests.
+- Generate coding questions using Gemini AI.
+- Import questions in bulk using CSV files.
 
-##  Features
+### Coding Assessments
+- Solve coding questions in an online code editor.
+- Run code with custom input.
+- Execute multiple test cases.
+- Compile and evaluate code using Judge0.
 
-###  Role-Based Access Control
+### User & Access Management
+- Role-based access for administrators and students.
+- Secure registration with email verification.
+- Admin tools to manage users and monitor test activity.
 
-**Admin Dashboard**
+### Results & Notifications
+- View assessment results and student performance.
+- Track test analytics through the admin dashboard.
+- Receive real-time test updates and system notifications.
 
-* Create, update, delete, and restore coding tests
-* Manage users and monitor test performance
+### Security & User Experience
+- JWT authentication with refresh tokens.
+- Cookie-based session management and protected routes.
+- Responsive interface for a smooth experience across devices.
 
-**User Panel**
+## Getting Started
 
-* Secure registration with email verification
-* Attempt real-time coding assessments
-* View results and receive system notifications
+### Prerequisites
+- Node.js and npm
+- MongoDB (local or cloud instance)
+- Gmail account for SMTP email service
+- Docker Desktop (optional, for Dockerized setup)
 
-###  Authentication & Security
+### Environment Variables
 
-* Secure login with JWT and refresh tokens
-* Cookie-based session management
-* Role-based route protection and data access control
+Sample environment files are available in the `frontend/` and `backend/` directories as `.env.example`.
 
-###  Intelligent & Interactive
+Copy each example file to `.env` and add the required credentials.
 
-* AI-generated coding questions using Gemini API
-* Real-time test updates powered by Socket.io
-* Fully responsive, user-friendly UI/UX
+### Local Development Setup
 
-##  Getting Started
-
-###  Prerequisites
-
-* Node.js & npm
-* MongoDB (local or cloud instance)
-* Gmail account for SMTP email service
-* **Docker Desktop** (if using Dockerized setup)
-  
-
-##  Environment Variables
-
-You can find sample environment configuration files in both the frontend/ and backend/ directories as .env.example.
-Duplicate each .env.example file, rename it to .env, and add your credentials.
-
-##  Local Development Setup
-
-###  Clone the Repository
+Clone the repository:
 
 ```bash
 git clone https://github.com/Nidhibhide/LearnCode.git
 cd LearnCode
 ```
 
-### Backend Setup
+Start the backend:
 
 ```bash
 cd backend
@@ -76,7 +74,7 @@ npm install
 npm run dev
 ```
 
-### Frontend Setup
+In a separate terminal, start the frontend:
 
 ```bash
 cd frontend
@@ -84,15 +82,10 @@ npm install
 npm run dev
 ```
 
-##  Dockerized Setup (Optional)
+### Docker Setup (Optional)
 
-> Make sure Docker Desktop is installed and running.
-
-### Run the app using Docker:
+Make sure Docker Desktop is installed and running, then run:
 
 ```bash
 docker-compose up --build
 ```
-
-
-
