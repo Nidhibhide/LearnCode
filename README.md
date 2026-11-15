@@ -9,7 +9,6 @@
 - **Frontend:** React.js, Tailwind CSS, Hero UI
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB
-- **Authentication:** JWT, refresh tokens, HTTP-only cookie-based sessions
 - **AI:** Gemini API
 - **Code Execution:** Judge0
 - **Real-time Updates:** Socket.io
