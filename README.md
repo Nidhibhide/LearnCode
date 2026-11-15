@@ -38,11 +38,6 @@
 - Track test analytics through the admin dashboard.
 - Receive real-time test updates and system notifications.
 
-### Security & User Experience
-- JWT authentication with refresh tokens.
-- Cookie-based session management and protected routes.
-- Responsive interface for a smooth experience across devices.
-
 ## Getting Started
 
 ### Prerequisites
