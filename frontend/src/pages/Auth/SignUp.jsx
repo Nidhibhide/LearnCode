@@ -24,7 +24,7 @@ const SignUp = () => {
       const response = await signup(values);
       const { status, message } = handleApiResponse(response);
 
-      if (status === 200) {
+      if (status === 200 || status === 201) {
         setTimeout(() => navigate("/login"), 3000);
       }
       resetForm();

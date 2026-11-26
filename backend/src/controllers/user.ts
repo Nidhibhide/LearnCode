@@ -39,15 +39,16 @@ const registerUser = async (req: Request, res: Response) => {
     }
 
     const hashedPass = await bcrypt.hash(password, 10);
-    const time = expireTime();
-    const token = crypto.randomBytes(12).toString("hex");
+    // const time = expireTime();
+    // const token = crypto.randomBytes(12).toString("hex");
 
     const user = await User.create({
       name,
       email,
       password: hashedPass,
-      expireTime: time,
-      verificationToken: token,
+      // expireTime: time,
+      // verificationToken: token,
+      isVerified: true,
       role: role || "student",
     });
 
@@ -61,16 +62,17 @@ const registerUser = async (req: Request, res: Response) => {
       await notifyAdminOfNewUser(name);
     }
 
-    await nodemailer.createTestAccount();
-    const transporter = transporterFun();
-    await transporter.sendMail(mailOptionsForVerify(email, token));
+    // await nodemailer.createTestAccount();
+    // const transporter = transporterFun();
+    // await transporter.sendMail(mailOptionsForVerify(email, token));
 
-    JsonOne(
-      res,
-      201,
-      `User registered successfully. Verification email has been sent to ${email}  `,
-      true
-    );
+    // JsonOne(
+    //   res,
+    //   201,
+    //   `User registered successfully. Verification email has been sent to ${email}  `,
+    //   true
+    // );
+    JsonOne(res, 201, "User registered successfully.", true);
   } catch (error) {
     return handleError(res, "unexpected error occurred while sign up");
   }
@@ -120,9 +122,9 @@ const googleLogin = async (req: Request, res: Response) => {
     }
 
     // Check if user is verified
-    if (!user.isVerified) {
-      return JsonOne(res, 400, "User is not verified", false);
-    }
+    // if (!user.isVerified) {
+    //   return JsonOne(res, 400, "User is not verified", false);
+    // }
 
     // Check if user is blocked (same as login)
     if (user.isBlocked) {
@@ -174,9 +176,9 @@ const login = async (req: Request, res: Response) => {
     if (!user || !user.password) {
       return JsonOne(res, 401, "Invalid email or password", false);
     }
-    if (!user.isVerified) {
-      return JsonOne(res, 400, "User is not verified", false);
-    }
+    // if (!user.isVerified) {
+    //   return JsonOne(res, 400, "User is not verified", false);
+    // }
     if (user.isBlocked) {
       return JsonOne(
         res,
@@ -270,21 +272,22 @@ const updateProfile = async (req: Request, res: Response) => {
       );
     }
 
-    // If email is being changed, send verification email
+    // If email is being changed, update directly without verification
     if (email && email !== user.email) {
       const existingUser = await findUserByEmail(email);
       if (existingUser) {
         return JsonOne(res, 400, "Email already in use", false);
       }
 
-      // Create token with user ID and new email
-      const token = jwt.sign({ id: user._id, newEmail: email }, process.env.ACCESS_TOKEN as string, { expiresIn: "5m" });
+      // // Create token with user ID and new email
+      // const token = jwt.sign({ id: user._id, newEmail: email }, process.env.ACCESS_TOKEN as string, { expiresIn: "5m" });
       
-      await nodemailer.createTestAccount();
-      const transporter = transporterFun();
-      await transporter.sendMail(mailOptionsForEmailChange(email, token));
+      // await nodemailer.createTestAccount();
+      // const transporter = transporterFun();
+      // await transporter.sendMail(mailOptionsForEmailChange(email, token));
 
-      return JsonOne(res, 200, `Verification email sent to ${email}. Verify to complete email change.`, true);
+      // return JsonOne(res, 200, `Verification email sent to ${email}. Verify to complete email change.`, true);
+      user.email = email;
     }
 
     // Update name only
@@ -311,28 +314,28 @@ const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
-const verifyEmailChange = async (req: Request, res: Response) => {
-  try {
-    const { token } = req.params;
-    if (!token) {
-      return JsonOne(res, 401, "Token not provided", false);
-    }
+// const verifyEmailChange = async (req: Request, res: Response) => {
+//   try {
+//     const { token } = req.params;
+//     if (!token) {
+//       return JsonOne(res, 401, "Token not provided", false);
+//     }
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN as string) as { id: string; newEmail: string };
-    const user = await User.findById(decoded.id);
+//     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN as string) as { id: string; newEmail: string };
+//     const user = await User.findById(decoded.id);
     
-    if (!user) {
-      return JsonOne(res, 404, "User not found", false);
-    }
+//     if (!user) {
+//       return JsonOne(res, 404, "User not found", false);
+//     }
 
-    // Update email
-    user.email = decoded.newEmail;
-    await user.save();
+//     // Update email
+//     user.email = decoded.newEmail;
+//     await user.save();
 
-    JsonOne(res, 200, "Email changed successfully", true);
-  } catch (err) {
-    return JsonOne(res, 400, "Invalid or expired token", false);
-  }
-};
+//     JsonOne(res, 200, "Email changed successfully", true);
+//   } catch (err) {
+//     return JsonOne(res, 400, "Invalid or expired token", false);
+//   }
+// };
 
-export { registerUser, login, getMe, logOut, updateProfile, googleLogin, verifyEmailChange };
+export { registerUser, login, getMe, logOut, updateProfile, googleLogin /*, verifyEmailChange */ };
